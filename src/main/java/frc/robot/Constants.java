@@ -24,6 +24,13 @@ public final class Constants {
     public static final double scaleRotation = -0.25;
   }
 
+  public static class Turret {
+    public static final int firingMotor = 1;
+    public static final int turnMotor = 2;
+    public static final int angleMotor = 3;
+
+  }
+
   public static class Drivetrain {
 
 
