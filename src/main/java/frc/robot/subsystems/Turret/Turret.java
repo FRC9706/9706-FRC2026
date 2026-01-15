@@ -8,7 +8,7 @@ public class Turret {
     // Create an instance for the Turret
     public static Turret mInstance = null;
     public static Turret getInstance() {
-       if(mInstance==null){
+       if(mInstance == null){
            mInstance = new Turret();
        }
        return mInstance;
