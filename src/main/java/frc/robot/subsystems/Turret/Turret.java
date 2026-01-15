@@ -3,7 +3,6 @@ package frc.robot.subsystems.Turret;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import frc.robot.Constants;
-import frc.robot.subsystems.Vision.Limelight;
 
 public class Turret {
     // Create an instance for the Turret
