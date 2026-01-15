@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.Turret.Turret;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
@@ -40,7 +41,9 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  // Initialize instances for each subsystem for better subsystem management
   public final Limelight limelightInstance = Limelight.getInstance();
+  public final Turret turretInstance = Turret.getInstance();
 
   public SwerveSubsystem getDrivebase() {
     return drivebase;
