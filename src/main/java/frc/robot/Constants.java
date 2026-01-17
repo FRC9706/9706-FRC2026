@@ -26,7 +26,10 @@ public final class Constants {
   public static class Turret {
     public static final int firingMotor = 1;
     public static final int rotationMotor = 2;
-    public static final int tiltMotor = 3;
+    public static final int pitchMotor = 3;
+
+    // This is the Height of the target from the floor
+    public static final double targetH = 1;
 
     public static class limelight {
     // Turret Limelight variables

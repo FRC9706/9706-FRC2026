@@ -2,7 +2,6 @@ package frc.robot.subsystems.Turret;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.LimelightHelpers;
 
@@ -19,12 +18,15 @@ public class Turret {
     // Initialize the motors for the turret
     private TalonFX firingMotor;
     private TalonFX rotationMotor;
-    private TalonFX tiltMotor;
+    private TalonFX pitchMotor;
 
     // Initalize limelight variables
     private double tx;
     private double ty;
     private boolean tv;
+
+    // Initalize turret variables
+    private double rotationPos;
 
     public static enum state {
         Idle,
@@ -36,7 +38,7 @@ public class Turret {
     public void turret() {
         firingMotor = new TalonFX(Constants.Turret.firingMotor);
         rotationMotor = new TalonFX(Constants.Turret.rotationMotor);
-        tiltMotor = new TalonFX(Constants.Turret.tiltMotor);
+        pitchMotor = new TalonFX(Constants.Turret.pitchMotor);
 
     }
 
@@ -49,21 +51,26 @@ public class Turret {
     }
 
     public void stopTiltMotor() {
-        tiltMotor.stopMotor();
+        pitchMotor.stopMotor();
+    }
+
+    public double getTargetRotationAngle() {
+        // Gets the angular error of the turret to the tag
+        double e = rotationPos - tx;
+        return e;
     }
 
     public void getDistance() {
         
     }
 
-    public void getTargetRotationAngle() {
-
-    }
-
     public void periodic() {
-        // Asign limelight variables in periodic to update continously
+        // Asign limelight variables periodically to update continously
         tx = LimelightHelpers.getTX("limelight");
         ty = LimelightHelpers.getTY("limelight");
         tv = LimelightHelpers.getTV("limelight");
+
+        // Asign turret rotational values for calculations
+        rotationPos = rotationMotor.getPosition().getValueAsDouble();
     }
 }
