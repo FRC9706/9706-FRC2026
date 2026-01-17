@@ -25,9 +25,32 @@ public final class Constants {
 
   public static class Turret {
     public static final int firingMotor = 1;
-    public static final int turnMotor = 2;
-    public static final int angleMotor = 3;
+    public static final int rotationMotor = 2;
+    public static final int tiltMotor = 3;
 
+    public static class limelight {
+    // Turret Limelight variables
+
+    /*  
+      CRITICAL NOTE: when talking about horizontal/veritcal offsets 
+        I am speaking in a 2D manner viewing from the top of the robot
+        (horizontal: left & right, vertical foward & back)
+    */
+
+    // offset X is the horiztonal offset of the limelight from the center of the turret
+    public static final double offsetX = 10;
+    // offset Y is the vertical offset of the limelight from the center of thr robot 
+    public static final double offsetY = 10;
+    // offset H is the height of the limelight's lense to the ground 
+    public static final double offsetH = 10;
+
+    /*
+      These are the the offset angle measurements for how the limelight is mounted 
+      They are in degrees
+
+      
+    */
+    }
   }
 
   public static class Drivetrain {
