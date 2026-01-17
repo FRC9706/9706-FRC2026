@@ -48,8 +48,13 @@ public final class Constants {
       These are the the offset angle measurements for how the limelight is mounted 
       They are in degrees
 
-      
+      ROLL: similar to the motion of a barrel roll
+      PITCH: similar to the motion of nodding yes
+      YAW: similar to the motion of shaking your head no
     */
+    public static final double offsetRoll = 1;
+    public static final double offsetPitch = 1;
+    public static final double offsetYaw = 1;
     }
   }
 
