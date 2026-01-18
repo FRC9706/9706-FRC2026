@@ -1,5 +1,6 @@
-package frc.robot.subsystems.Turret;
+package frc.robot.subsystems.Shooting;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import frc.robot.Constants;
@@ -20,11 +21,16 @@ public class Turret {
     private TalonFX rotationMotor;
     private TalonFX pitchMotor;
 
+    // Initialize Can Coders for the turret motors
+    private CANcoder rotationCC;
+    private CANcoder pitchCC;
+
     // Initalize limelight variables
     private double tx;
     private double ty;
     private boolean tv;
     private double tagID;
+    private int[] targetTags;
 
     // Initalize turret variables
     private double rotationPos;
@@ -33,7 +39,7 @@ public class Turret {
         Idle,
         TagFinding,
         Tracking,
-        FcTracking
+    //    FcTracking
     }
 
     private state currentState = state.Idle;
@@ -42,10 +48,15 @@ public class Turret {
         currentState = newState;
     }
 
-    public void turret() {
+    public Turret() {
+        // Create the motor objects
         firingMotor = new TalonFX(Constants.Turret.firingMotor);
         rotationMotor = new TalonFX(Constants.Turret.rotationMotor);
         pitchMotor = new TalonFX(Constants.Turret.pitchMotor);
+
+        // Create the can coder objects
+        rotationCC = new CANcoder(Constants.Turret.rotationCanCoder);
+        pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
 
     }
 
@@ -62,12 +73,42 @@ public class Turret {
     }
 
     public void targetRoaming() {
-        
+        // Check if the variable actually has things in it, if not print out an error
+        if (targetTags.length == 0) {
+            stopRotationMotor();  // No alliance = don't move
+            System.out.println("Roaming failed, no april tag ID list! Check Alliance logic");
+            return;
+        }
+
+        // Check if we see a valid target
+        if (!tv) {
+            // No target detected -> keep roaming
+            rotationMotor.set(Constants.Turret.roamSpeed);
+            return;
+        }
+
+        // We see something, check if it's our alliance tag
+        boolean isValidTag = false;
+        for (int validId : targetTags) {
+            if ((int)tagID == validId) {
+                isValidTag = true;
+                break;
+            }
+        }
+
+        if (isValidTag) {
+            // Found a tag, switching to tracking mode
+            setState(state.Tracking);
+            stopRotationMotor();
+                } else {
+            // Wrong tag or enemy tag -> keep roaming
+            rotationMotor.set(Constants.Turret.roamSpeed);
+        }
     }
 
     public double getTargetRotationAngle() {
         // Gets the angular error of the turret to the tag
-        double e = rotationPos - tx;
+        double e = rotationPos - tx; // WIP, prolly wrong
         return e;
     }
 
@@ -84,6 +125,9 @@ public class Turret {
         // Asign turret rotational values for calculations
         rotationPos = rotationMotor.getPosition().getValueAsDouble();
 
+        // Get target tag IDs
+        targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
+
         // STATE LOGIC
         tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
@@ -97,7 +141,7 @@ public class Turret {
 
             // What should be done in the tag finding state?
             case TagFinding:
-                stopFiringMotor();
+                targetRoaming();
             break;
 
             // What should be done in the tracking state?
