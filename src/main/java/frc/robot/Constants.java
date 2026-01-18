@@ -26,9 +26,17 @@ public final class Constants {
   }
 
   public static class Turret {
+    // Motor IDs
     public static final int firingMotor = 1;
     public static final int rotationMotor = 2;
     public static final int pitchMotor = 3;
+
+    // CAN coder IDs
+    public static final int rotationCanCoder = 1;
+    public static final int pitchCanCoder = 2;
+
+    // Turret settings
+    public static final double roamSpeed = 0.15;
 
     // This is the Height of the target from the floor
     public static final double targetH = 1;
