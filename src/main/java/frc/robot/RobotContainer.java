@@ -42,6 +42,7 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
   // Initialize instances for each subsystem for better subsystem management
+  public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
   public final Limelight limelightInstance = Limelight.getInstance();
   public final Turret turretInstance = Turret.getInstance();
 
@@ -129,7 +130,7 @@ public class RobotContainer {
       drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
     } else {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
-      ControllerConfigurator.configureControllerTL(this);
+      controllerConfiguratorInstance.configureControllerTL(this);
     }
 
     if (Robot.isSimulation()) {

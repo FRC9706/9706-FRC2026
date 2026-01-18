@@ -17,7 +17,7 @@ public class ControllerConfigurator {
         return instance;
     }
 
-    public static void configureControllerTL(RobotContainer container) {
+    public void configureControllerTL(RobotContainer container) {
 
 
     // ====================
