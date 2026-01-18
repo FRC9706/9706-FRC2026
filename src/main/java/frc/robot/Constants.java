@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import frc.robot.util.Alliance.AllianceUtils;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -31,9 +33,22 @@ public final class Constants {
     // This is the Height of the target from the floor
     public static final double targetH = 1;
 
-    public static class limelight {
-    // Turret Limelight variables
+    public static class Limelight {
+      public static class Tags {
+        public static final int[] blueHubTags = {1, 2};
+        public static final int[] redHubTags = {1, 2};
 
+        public static int[] getAprilTags() {
+          AllianceUtils.Alliance alliance = AllianceUtils.getCurrentAlliance(); 
+          return switch (alliance) {
+            case Blue -> blueHubTags;
+            case Red -> redHubTags;
+            case Unknown -> new int[0];
+          };
+        }
+
+      }
+    // Turret Limelight variables
     /*  
       CRITICAL NOTE: when talking about horizontal/veritcal offsets 
         I am speaking in a 2D manner viewing from the top of the robot

@@ -24,15 +24,22 @@ public class Turret {
     private double tx;
     private double ty;
     private boolean tv;
+    private double tagID;
 
     // Initalize turret variables
     private double rotationPos;
 
     public static enum state {
         Idle,
-        Roaming,
+        TagFinding,
         Tracking,
         FcTracking
+    }
+
+    private state currentState = state.Idle;
+
+    public void setState(state newState) {
+        currentState = newState;
     }
 
     public void turret() {
@@ -54,6 +61,10 @@ public class Turret {
         pitchMotor.stopMotor();
     }
 
+    public void targetRoaming() {
+        
+    }
+
     public double getTargetRotationAngle() {
         // Gets the angular error of the turret to the tag
         double e = rotationPos - tx;
@@ -66,11 +77,33 @@ public class Turret {
 
     public void periodic() {
         // Asign limelight variables periodically to update continously
-        tx = LimelightHelpers.getTX("limelight");
-        ty = LimelightHelpers.getTY("limelight");
-        tv = LimelightHelpers.getTV("limelight");
+        tx = LimelightHelpers.getTX("turretLimelight");
+        ty = LimelightHelpers.getTY("turretLimelight");
+        tv = LimelightHelpers.getTV("turretLimelight");
 
         // Asign turret rotational values for calculations
         rotationPos = rotationMotor.getPosition().getValueAsDouble();
+
+        // STATE LOGIC
+        tagID = LimelightHelpers.getFiducialID("turretLimelight");
+
+        switch (currentState) {
+            // What should be done in the idle state?
+            case Idle:
+                stopFiringMotor();
+                stopRotationMotor();
+                stopTiltMotor();
+            break;
+
+            // What should be done in the tag finding state?
+            case TagFinding:
+                stopFiringMotor();
+            break;
+
+            // What should be done in the tracking state?
+            case Tracking:
+                stopFiringMotor();
+            break;
+        }
     }
 }
