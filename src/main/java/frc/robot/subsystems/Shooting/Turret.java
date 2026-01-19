@@ -106,6 +106,10 @@ public class Turret {
         }
     }
 
+    public void targetTracking() {
+
+    }
+
     public double getTargetRotationAngle() {
         // Gets the angular error of the turret to the tag
         double e = rotationPos - tx; // WIP, prolly wrong
@@ -127,9 +131,9 @@ public class Turret {
 
         // Get target tag IDs
         targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
+        tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         // STATE LOGIC
-        tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         switch (currentState) {
             // What should be done in the idle state?
