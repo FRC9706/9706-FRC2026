@@ -14,15 +14,15 @@ public class Limelight {
        return mInstance;
    }
 
-   public void createVisionMeasurements(RobotContainer container) {
+   public void createVisionMeasurements(RobotContainer container, double timeStamp) {
     // The limelight for the turret
-      container.getDrivebase().createVisionMeasurement("turretLimelight");
+      container.getDrivebase().createVisionMeasurement("turretLimelight", timeStamp);
     // The front & back limelights
-      container.getDrivebase().createVisionMeasurement("frontLimelight");
-      container.getDrivebase().createVisionMeasurement("backLimelight");
+      container.getDrivebase().createVisionMeasurement("frontLimelight", timeStamp);
+      container.getDrivebase().createVisionMeasurement("backLimelight", timeStamp);
     // The side limelights
-      container.getDrivebase().createVisionMeasurement("rightLimelight");
-      container.getDrivebase().createVisionMeasurement("leftLimelight");
+      container.getDrivebase().createVisionMeasurement("rightLimelight", timeStamp);
+      container.getDrivebase().createVisionMeasurement("leftLimelight", timeStamp);
    }
 
 }
