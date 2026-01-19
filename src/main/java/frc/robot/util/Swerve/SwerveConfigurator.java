@@ -7,6 +7,7 @@ import swervelib.SwerveInputStream;
 
 
 public class SwerveConfigurator {
+    // Private constructor to prevent instantiation (since this is a utility)
     private SwerveConfigurator() {} 
 
     public static class SwerveStreams {
