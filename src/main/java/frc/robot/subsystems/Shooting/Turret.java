@@ -10,11 +10,11 @@ public class Turret {
     // Create an instance for the Turret
     public static Turret mInstance = null;
     public static Turret getInstance() {
-       if(mInstance == null){
-           mInstance = new Turret();
-       }
-       return mInstance;
-   }
+        if (mInstance == null) {
+            mInstance = new Turret();
+        }
+        return mInstance;
+    }
 
     // Initialize the motors for the turret
     private TalonFX firingMotor;
@@ -30,16 +30,20 @@ public class Turret {
     private double ty;
     private boolean tv;
     private double tagID;
-    private int[] targetTags;
+    private int[][] targetTags;
 
     // Initalize turret variables
-    private double rotationPos;
+    private double turretAngleDeg;   // Absolute turret angle
+
+    // Face tracking variables
+    private int[] currentFace = null;   // {tag1, tag2} of current alliance face
+    private double bestFace = 0;         // Reserved for future scoring logic
+    private double faceCenterTX = 0;     // PID target (face center)
 
     public static enum state {
         Idle,
         TagFinding,
         Tracking,
-    //    FcTracking
     }
 
     private state currentState = state.Idle;
@@ -54,10 +58,9 @@ public class Turret {
         rotationMotor = new TalonFX(Constants.Turret.rotationMotor);
         pitchMotor = new TalonFX(Constants.Turret.pitchMotor);
 
-        // Create the can coder objects
+        // Create the CANcoder objects
         rotationCC = new CANcoder(Constants.Turret.rotationCanCoder);
         pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
-
     }
 
     public void stopFiringMotor() {
@@ -72,52 +75,83 @@ public class Turret {
         pitchMotor.stopMotor();
     }
 
+    /* ==============================
+       TAG FINDING (ROAM)
+       ============================== */
+
     public void targetRoaming() {
         // Check if the variable actually has things in it, if not print out an error
-        if (targetTags.length == 0) {
+        if (targetTags == null || targetTags.length == 0) {
             stopRotationMotor();  // No alliance = don't move
             System.out.println("Roaming failed, no april tag ID list! Check Alliance logic");
             return;
         }
 
-        // Check if we see a valid target
+        // If no target visible, keep roaming
         if (!tv) {
-            // No target detected -> keep roaming
             rotationMotor.set(Constants.Turret.roamSpeed);
             return;
         }
 
-        // We see something, check if it's our alliance tag
-        boolean isValidTag = false;
-        for (int validId : targetTags) {
-            if ((int)tagID == validId) {
-                isValidTag = true;
-                break;
+        // If we see something, check if it's our alliance tag
+        for (int[] face : targetTags) {
+            if ((int) tagID == face[0] || (int) tagID == face[1]) {
+                currentFace = face;
+                setState(state.Tracking);
+                stopRotationMotor();
+                return;
             }
         }
 
-        if (isValidTag) {
-            // Found a tag, switching to tracking mode
-            setState(state.Tracking);
-            stopRotationMotor();
-                } else {
-            // Wrong tag or enemy tag -> keep roaming
-            rotationMotor.set(Constants.Turret.roamSpeed);
-        }
+        // Wrong tag  -> keep roaming
+        rotationMotor.set(Constants.Turret.roamSpeed);
     }
 
-    public void targetTracking() {
+    /* ==============================
+       TARGET TRACKING
+       ============================== */
 
+    public void targetTracking() {
+        // No targets -> back to TagFinding
+        if (!tv || currentFace == null) {
+            setState(state.TagFinding);
+            return;
+        }
+
+        // Validate the currently visible tag still belongs to our face
+        if ((int) tagID != currentFace[0] && (int) tagID != currentFace[1]) {
+            setState(state.TagFinding);
+            return;
+        }
+
+        // For now, use Limelight best target tx directly
+        faceCenterTX = tx;
+
+        // Deadband to prevent motor chatter
+        if (Math.abs(faceCenterTX) < Constants.Turret.txDeadbandDeg) {
+            stopRotationMotor();
+            return;
+        }
+
+        // Simple proportional control
+        double rotationPower = faceCenterTX * Constants.Turret.kpRotation;
+
+        // Clamp output power
+        rotationPower = Math.copySign(
+            Math.min(Math.abs(rotationPower), Constants.Turret.maxRotPower),
+            rotationPower
+        );
+
+        rotationMotor.set(rotationPower);
     }
 
     public void getDistance() {
-        
+        // Reserved for future distance calculations
     }
 
     public double getTargetRotationAngle() {
         // Gets the angular error of the turret to the tag
-        double e = rotationPos - tx; // WIP, prolly wrong
-        return e;
+        return faceCenterTX;
     }
 
     public void periodic() {
@@ -125,33 +159,29 @@ public class Turret {
         tx = LimelightHelpers.getTX("turretLimelight");
         ty = LimelightHelpers.getTY("turretLimelight");
         tv = LimelightHelpers.getTV("turretLimelight");
+        tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         // Asign turret rotational values for calculations
-        rotationPos = rotationMotor.getPosition().getValueAsDouble();
+        turretAngleDeg = rotationCC.getAbsolutePosition().getValueAsDouble() * 360.0;
 
         // Get target tag IDs
         targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
-        tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         // STATE LOGIC
-
         switch (currentState) {
-            // What should be done in the idle state?
             case Idle:
                 stopFiringMotor();
                 stopRotationMotor();
                 stopTiltMotor();
-            break;
+                break;
 
-            // What should be done in the tag finding state?
             case TagFinding:
                 targetRoaming();
-            break;
+                break;
 
-            // What should be done in the tracking state?
             case Tracking:
-                stopFiringMotor();
-            break;
+                targetTracking();
+                break;
         }
     }
 }
