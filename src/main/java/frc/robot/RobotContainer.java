@@ -64,7 +64,7 @@ public class RobotContainer {
     DirectAngleKeyboard
   }
 
-  // Method to get swerve input streams for classes that cannot access the protected variables
+  // Method to get swerve input streams
   public SwerveInputStream getSwerveInputStream(SwerveStreamType type) {
     switch (type) {
         case AngularVelocity:
@@ -78,7 +78,7 @@ public class RobotContainer {
         case DirectAngleKeyboard:
             return driveDirectAngleKeyboard;
         default:
-            // Handle error case, return null or throw an exception
+            // Handle error case; return null
             System.err.println("Requested SwerveInputStream type not found!");
             return null;
     }
