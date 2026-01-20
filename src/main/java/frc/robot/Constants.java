@@ -37,19 +37,18 @@ public final class Constants {
 
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
-    public static final double kpRotation = 0.04;
     public static final double maxRotPower = 0.3;
     public static final double[] kRotPID = {
-      1, // kP
-      2, // kI
-      3 // kD
+      0.25, // kP
+      0, // kI
+      0 // kD
     };
 
     // Pitch motor settings
     public static final double[] kPitchPID = {
-      1, // kP
-      2, // kI
-      3, // kD
+      0.25, // kP
+      0, // kI
+      0, // kD
     };
 
     // Dead bands
