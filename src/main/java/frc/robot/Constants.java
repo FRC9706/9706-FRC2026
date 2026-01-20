@@ -35,10 +35,22 @@ public final class Constants {
     public static final int rotationCanCoder = 1;
     public static final int pitchCanCoder = 2;
 
-    // Turret settings
+    // Rotational motor settings
     public static final double roamSpeed = 0.15;
     public static final double kpRotation = 0.04;
     public static final double maxRotPower = 0.3;
+    public static final double[] kRotPID = {
+      1, // kP
+      2, // kI
+      3 // kD
+    };
+
+    // Pitch motor settings
+    public static final double[] kPitchPID = {
+      1, // kP
+      2, // kI
+      3, // kD
+    };
 
     // Dead bands
     public static final double txDeadbandDeg = 0.5;
