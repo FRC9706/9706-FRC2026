@@ -37,25 +37,49 @@ public final class Constants {
 
     // Turret settings
     public static final double roamSpeed = 0.15;
+    public static final double kpRotation = 0.04;
+    public static final double maxRotPower = 0.3;
 
-    // This is the Height of the target from the floor
-    public static final double targetH = 1;
+    // Dead bands
+    public static final double txDeadbandDeg = 0.5;
+
 
     public static class Limelight {
       public static class Tags {
-        public static final int[] blueHubTags = {1, 2};
-        public static final int[] redHubTags = {1, 2};
+        // This is the Height of the TAGS (target) from the floor
+        public static final double targetH = 1;
 
-        public static int[] getAprilTags() {
+        /* 
+          ALL of the following directions are based on as 
+          if you where looking at the hub from the front
+
+          Side Note: They are ordered in whicever one is closest
+          to the edge
+        */
+        public static final int[][] blueHubTags = {
+          {25, 26}, // Front face
+          {24, 21}, // Left face
+          {19, 20}, // Back face
+          {27, 18} // Right face
+        };
+
+        public static final int[][] redHubTags = {
+          {9, 10}, // Front face
+          {8, 5}, // Left face
+          {3, 4}, // Back face
+          {11, 2} // Right face
+        };
+
+        public static int[][] getAprilTags() {
           AllianceUtils.Alliance alliance = AllianceUtils.getCurrentAlliance(); 
           return switch (alliance) {
             case Blue -> blueHubTags;
             case Red -> redHubTags;
-            case Unknown -> new int[0];
+            case Unknown -> new int[0][0];
           };
         }
-
       }
+
     // Turret Limelight variables
     /*  
       CRITICAL NOTE: when talking about horizontal/veritcal offsets 
