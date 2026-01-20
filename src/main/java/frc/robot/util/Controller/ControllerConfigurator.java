@@ -6,6 +6,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
+import frc.robot.subsystems.Shooting.Turret.state;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern
@@ -36,7 +37,17 @@ public class ControllerConfigurator {
     container.getDriverController().y().whileTrue(
         Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
     );
-    
+
+    container.getDriverController().x().onTrue(
+        Commands.runOnce(() -> {
+            if (container.turretInstance.getState() == state.Idle) {
+                container.turretInstance.setState(state.TagFinding);
+            } else {
+                container.turretInstance.setState(state.Idle);
+            }
+        })
+    );
+
   }
 
     public static void configureControllerSim(RobotContainer container) {
