@@ -1,13 +1,17 @@
 package frc.robot.subsystems.Shooting;
 
+import java.lang.module.Configuration;
+
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.LimelightHelpers;
 
-public class Turret {
+public class Turret extends SubsystemBase{
     // Create an instance for the Turret
     public static Turret mInstance = null;
     public static Turret getInstance() {
@@ -23,7 +27,6 @@ public class Turret {
     private TalonFX pitchMotor;
 
     // Initialize Can Coders for the turret motors
-    private CANcoder rotationCC;
     private CANcoder pitchCC;
 
     // Initalize limelight variables
@@ -57,14 +60,42 @@ public class Turret {
         currentState = newState;
     }
 
+    public void configureMotors() {
+        // Rotional motor configs
+        var rotConfig = new TalonFXConfiguration();
+
+        // Pitch motor configs
+        var pitchConfig = new TalonFXConfiguration();
+
+        // Configuration for slot 0 configs for the rotational motor
+        var rotSlot0Configs = rotConfig.Slot0;
+        rotSlot0Configs.kP = Constants.Turret.kRotPID[0];
+        rotSlot0Configs.kI = Constants.Turret.kRotPID[1];
+        rotSlot0Configs.kD = Constants.Turret.kRotPID[2];
+
+        // Configuration for slot 0 configs for the pitch motor
+        var pitchSlot0Configs = pitchConfig.Slot0;
+        pitchSlot0Configs.kP = Constants.Turret.kPitchPID[0];
+        pitchSlot0Configs.kI = Constants.Turret.kPitchPID[1];
+        pitchSlot0Configs.kD = Constants.Turret.kPitchPID[2];
+
+        // Apply the configurations to each motor respectivly
+        rotationMotor.getConfigurator().apply(rotSlot0Configs);
+        pitchMotor.getConfigurator().apply(pitchSlot0Configs);
+
+        System.out.println("Motor configurations applied!");
+    }
+
     public Turret() {
         // Create the motor objects
         firingMotor = new TalonFX(Constants.Turret.firingMotor);
         rotationMotor = new TalonFX(Constants.Turret.rotationMotor);
         pitchMotor = new TalonFX(Constants.Turret.pitchMotor);
 
+        // Apply the configurations for each motor
+        configureMotors();
+
         // Create the CANcoder objects
-        rotationCC = new CANcoder(Constants.Turret.rotationCanCoder);
         pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
     }
 
@@ -78,6 +109,11 @@ public class Turret {
 
     public void stopTiltMotor() {
         pitchMotor.stopMotor();
+    }
+
+    public void roaming() {
+        double pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
+
     }
 
     /* ==============================
@@ -94,7 +130,7 @@ public class Turret {
 
         // If no target visible, keep roaming
         if (!tv) {
-            rotationMotor.set(Constants.Turret.roamSpeed);
+            rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
             return;
         }
 
@@ -109,7 +145,7 @@ public class Turret {
         }
 
         // Wrong tag  -> keep roaming
-        rotationMotor.set(Constants.Turret.roamSpeed);
+        rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
     }
 
     /* ==============================
@@ -167,7 +203,7 @@ public class Turret {
         tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         // Asign turret rotational values for calculations
-        turretAngleDeg = rotationCC.getAbsolutePosition().getValueAsDouble() * 360.0;
+        turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble()) * 360;
 
         // Get target tag IDs
         targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
