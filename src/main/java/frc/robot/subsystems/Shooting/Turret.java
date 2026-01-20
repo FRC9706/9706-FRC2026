@@ -4,9 +4,11 @@ import java.lang.module.Configuration;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.Vision.LimelightHelpers;
@@ -39,6 +41,7 @@ public class Turret extends SubsystemBase{
     // Initalize turret variables
     private double turretAngleDeg;   // Absolute turret angle
     private double pos; // Current turret position angle
+    private int isTrig;
 
     // Face tracking variables
     private int[] currentFace = null;   // {tag1, tag2} of current alliance face
@@ -93,7 +96,7 @@ public class Turret extends SubsystemBase{
         rotationMotor = new TalonFX(Constants.Turret.rotationMotor);
         pitchMotor = new TalonFX(Constants.Turret.pitchMotor);
 
-        // Apply the configurations for each motor
+        // Apply the configurations for the motors
         configureMotors();
 
         // Create the CANcoder objects
@@ -112,8 +115,18 @@ public class Turret extends SubsystemBase{
         pitchMotor.stopMotor();
     }
 
-    public void roaming() {
+    public void roam() {
+        while (isTrig != 360) {
+            rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
+        } while (isTrig != -360) {
+            rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
+        }
+    }
 
+    public void safeTrack(double rotPower) {
+        while (isTrig != 360 && isTrig != -360) {
+            rotationMotor.setControl(new DutyCycleOut(rotPower));
+        } 
     }
 
     /* ==============================
@@ -130,7 +143,7 @@ public class Turret extends SubsystemBase{
 
         // If no target visible, keep roaming
         if (!tv) {
-            rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
+            roam();
             return;
         }
 
@@ -145,7 +158,7 @@ public class Turret extends SubsystemBase{
         }
 
         // Wrong tag  -> keep roaming
-        rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
+        roam();
     }
 
     /* ==============================
@@ -175,7 +188,7 @@ public class Turret extends SubsystemBase{
         }
 
         // Simple proportional control
-        double rotationPower = faceCenterTX * Constants.Turret.kpRotation;
+        double rotationPower = faceCenterTX * Constants.Turret.kRotPID[0];
 
         // Clamp output power
         rotationPower = Math.copySign(
@@ -183,7 +196,7 @@ public class Turret extends SubsystemBase{
             rotationPower
         );
 
-        rotationMotor.setControl(new DutyCycleOut(rotationPower));
+        safeTrack(rotationPower);
     }
 
     public void getDistance() {
@@ -205,6 +218,15 @@ public class Turret extends SubsystemBase{
         // Asign turret rotational values for calculations
         turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble()) * 360;
         pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
+
+        // Safety values for when the turret reaches 360/-360
+        if (pos >= 360) {
+            isTrig = 360;
+        } else if (pos <= -360) {
+            isTrig = -360;
+        } else {
+            isTrig = 0;
+        }
 
 
         // Get target tag IDs
