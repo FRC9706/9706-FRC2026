@@ -38,6 +38,7 @@ public class Turret extends SubsystemBase{
 
     // Initalize turret variables
     private double turretAngleDeg;   // Absolute turret angle
+    private double pos; // Current turret position angle
 
     // Face tracking variables
     private int[] currentFace = null;   // {tag1, tag2} of current alliance face
@@ -112,7 +113,6 @@ public class Turret extends SubsystemBase{
     }
 
     public void roaming() {
-        double pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
 
     }
 
@@ -204,6 +204,8 @@ public class Turret extends SubsystemBase{
 
         // Asign turret rotational values for calculations
         turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble()) * 360;
+        pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
+
 
         // Get target tag IDs
         targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
