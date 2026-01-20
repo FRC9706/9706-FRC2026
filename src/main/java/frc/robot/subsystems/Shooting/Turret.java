@@ -110,14 +110,14 @@ public class Turret {
 
     }
 
+    public void getDistance() {
+        
+    }
+
     public double getTargetRotationAngle() {
         // Gets the angular error of the turret to the tag
         double e = rotationPos - tx; // WIP, prolly wrong
         return e;
-    }
-
-    public void getDistance() {
-        
     }
 
     public void periodic() {
