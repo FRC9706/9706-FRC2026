@@ -38,7 +38,7 @@ public class Turret {
 
     // Face tracking variables
     private int[] currentFace = null;   // {tag1, tag2} of current alliance face
-    private double bestFace = 0;         // Reserved for future scoring logic
+    private double bestFace = 0;         // For future scoring logic
     private double faceCenterTX = 0;     // PID target (face center)
 
     public static enum state {
@@ -52,7 +52,7 @@ public class Turret {
     public state getState() {
         return currentState;
     }
-    
+
     public void setState(state newState) {
         currentState = newState;
     }
@@ -132,7 +132,7 @@ public class Turret {
         // For now, use Limelight best target tx directly
         faceCenterTX = tx;
 
-        // Deadband to prevent motor chatter
+        // Deadband to prevent motor overshoot
         if (Math.abs(faceCenterTX) < Constants.Turret.txDeadbandDeg) {
             stopRotationMotor();
             return;
@@ -151,7 +151,7 @@ public class Turret {
     }
 
     public void getDistance() {
-        // Reserved for future distance calculations
+        // For future distance calculations
     }
 
     public double getTargetRotationAngle() {
