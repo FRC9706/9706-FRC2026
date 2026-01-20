@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Shooting;
 
+import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -48,6 +49,10 @@ public class Turret {
 
     private state currentState = state.Idle;
 
+    public state getState() {
+        return currentState;
+    }
+    
     public void setState(state newState) {
         currentState = newState;
     }
@@ -142,7 +147,7 @@ public class Turret {
             rotationPower
         );
 
-        rotationMotor.set(rotationPower);
+        rotationMotor.setControl(new DutyCycleOut(rotationPower));
     }
 
     public void getDistance() {
