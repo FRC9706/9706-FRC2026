@@ -116,17 +116,19 @@ public class Turret extends SubsystemBase{
     }
 
     public void roam() {
-        while (isTrig != 170) {
+        if (isTrig != 170) {
             rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
-        } while (isTrig != -170) {
+        } else if (isTrig != -170) {
             rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
         }
     }
 
     public void safeTrack(double rotPower) {
-        while (isTrig != 170 && isTrig != -170) {
+        if (isTrig != 170 && isTrig != -170) {
             rotationMotor.setControl(new DutyCycleOut(rotPower));
-        } 
+        } else {
+            System.out.println("Cannot turn turret any further!");
+        }
     }
 
     /* ==============================
