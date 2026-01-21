@@ -99,6 +99,10 @@ public class Turret extends SubsystemBase{
         // Apply the configurations for the motors
         configureMotors();
 
+        // Make the motors go to zero
+        rotationMotor.setControl(new PositionDutyCycle(0));
+        pitchMotor.setControl(new PositionDutyCycle(0));
+
         // Create the CANcoder objects
         pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
     }
@@ -117,8 +121,10 @@ public class Turret extends SubsystemBase{
 
     public void roam() {
         if (isTrig != 170) {
+            System.out.println("Roaming positive");
             rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
         } else if (isTrig != -170) {
+            System.out.println("Roaming negative");
             rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
         }
     }
