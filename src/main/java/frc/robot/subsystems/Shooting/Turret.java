@@ -166,7 +166,7 @@ public class Turret extends SubsystemBase{
         tv = LimelightHelpers.getTV("turretLimelight");
 
         // Asign turret rotational values for calculations
-        turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble()) * 360;
+        turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
 
         // STATE LOGIC
         switch (currentState) {
@@ -177,7 +177,7 @@ public class Turret extends SubsystemBase{
                 break;
 
             case roamPos:
-                if (!tv) {
+                if (tv) {
                     currentState = state.Tracking;
                 } else if (turretAngleDeg >= Constants.Turret.turretDegLim) {
                     currentState = state.roamNeg;
@@ -187,13 +187,14 @@ public class Turret extends SubsystemBase{
                 break;
 
             case roamNeg:
-                if (!tv) {
+                if (tv) {
                     currentState = state.Tracking;
                 } else if (turretAngleDeg <= -Constants.Turret.turretDegLim) {
                     currentState = state.roamPos;
                 } else if (turretAngleDeg > -Constants.Turret.turretDegLim) {
                     rotate(-Constants.Turret.roamSpeed);
                 }
+                break;
 
             case Tracking:
                 targetTracking();
