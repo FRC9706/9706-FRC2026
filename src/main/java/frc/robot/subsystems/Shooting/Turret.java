@@ -38,7 +38,7 @@ public class Turret extends SubsystemBase{
     // Initalize turret variables
     private double turretAngleDeg;   // Absolute turret angle
     private double pos; // Current turret position angle
-    private int curDirection;
+    private int curMaxedDirection;
 
     // Face tracking variables
     private int[] currentFace = null;   // {tag1, tag2} of current alliance face
@@ -117,17 +117,17 @@ public class Turret extends SubsystemBase{
     }
 
     public void roam() {
-        if (curDirection != 1) {
+        if (curMaxedDirection != 1) {
             System.out.println("Roaming positive");
             rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
-        } else if (curDirection != -1) {
+        } else if (curMaxedDirection != -1) {
             System.out.println("Roaming negative");
             rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
         }
     }
 
     public void safeTrack(double rotPower) {
-        if (curDirection != 1 && curDirection != -1) {
+        if (curMaxedDirection != 1 && curMaxedDirection != -1) {
             rotationMotor.setControl(new DutyCycleOut(rotPower));
         } else {
             System.out.println("Cannot turn turret any further!");
@@ -226,11 +226,11 @@ public class Turret extends SubsystemBase{
 
         // Safety values for when the turret reaches 360/-360
         if (pos >= 170) {
-            curDirection = 1;
+            curMaxedDirection = 1;
         } else if (pos <= -170) {
-            curDirection = -1;
+            curMaxedDirection = -1;
         } else {
-            curDirection = 0;
+            curMaxedDirection = 0;
         }
 
 
