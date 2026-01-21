@@ -38,6 +38,7 @@ public final class Constants {
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
     public static final double maxRotPower = 0.3;
+    public static final double turretDegLim = 170;
     public static final double[] kRotPID = {
       0.25, // kP
       0, // kI
