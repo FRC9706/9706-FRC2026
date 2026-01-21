@@ -110,6 +110,10 @@ public class Turret extends SubsystemBase{
         pitchMotor.stopMotor();
     }
 
+    public void startAutoTrack() {
+        currentState = state.roamPos;
+    }
+
     public void rotate(double power) {
         power = Math.copySign((Math.min(Math.abs(power), Constants.Turret.maxRotPower)), power);
 

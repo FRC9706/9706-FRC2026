@@ -1,11 +1,16 @@
 package frc.robot.util.Controller;
 
+import java.lang.Thread.State;
+
+import com.ctre.phoenix6.signals.TempSensorRequiredValue;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
+import frc.robot.subsystems.Shooting.Turret;
 import frc.robot.subsystems.Shooting.Turret.state;
 
 public class ControllerConfigurator {
@@ -41,7 +46,7 @@ public class ControllerConfigurator {
     container.getDriverController().x().onTrue(
         Commands.runOnce(() -> {
             if (container.turretInstance.getState() == state.Idle) {
-                container.turretInstance.setState(state.TagFinding);
+                container.turretInstance.startAutoTrack();
             } else {
                 container.turretInstance.setState(state.Idle);
             }
