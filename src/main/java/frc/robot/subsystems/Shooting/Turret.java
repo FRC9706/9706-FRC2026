@@ -116,15 +116,15 @@ public class Turret extends SubsystemBase{
     }
 
     public void roam() {
-        while (isTrig != 360) {
+        while (isTrig != 170) {
             rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
-        } while (isTrig != -360) {
+        } while (isTrig != -170) {
             rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
         }
     }
 
     public void safeTrack(double rotPower) {
-        while (isTrig != 360 && isTrig != -360) {
+        while (isTrig != 170 && isTrig != -170) {
             rotationMotor.setControl(new DutyCycleOut(rotPower));
         } 
     }
@@ -220,10 +220,10 @@ public class Turret extends SubsystemBase{
         pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
 
         // Safety values for when the turret reaches 360/-360
-        if (pos >= 360) {
-            isTrig = 360;
-        } else if (pos <= -360) {
-            isTrig = -360;
+        if (pos >= 170) {
+            isTrig = 170;
+        } else if (pos <= -170) {
+            isTrig = -170;
         } else {
             isTrig = 0;
         }
