@@ -122,10 +122,6 @@ public class Turret extends SubsystemBase{
         rotationMotor.setControl(new DutyCycleOut(power));
     }
 
-    /* ==============================
-       TARGET TRACKING
-       ============================== */
-
     public void targetTracking() {
         // No targets -> back to TagFinding
         if (!tv) {
