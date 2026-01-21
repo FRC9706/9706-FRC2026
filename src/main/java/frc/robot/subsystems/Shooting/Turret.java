@@ -1,5 +1,7 @@
 package frc.robot.subsystems.Shooting;
 
+import java.lang.Thread.State;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
@@ -32,22 +34,14 @@ public class Turret extends SubsystemBase{
     private double tx;
     private double ty;
     private boolean tv;
-    private double tagID;
-    private int[][] targetTags;
 
     // Initalize turret variables
-    private double turretAngleDeg;   // Absolute turret angle
-    private double pos; // Current turret position angle
-    private int curMaxedDirection;
-
-    // Face tracking variables
-    private int[] currentFace = null;   // {tag1, tag2} of current alliance face
-    private double bestFace = 0;         // For future scoring logic
-    private double faceCenterTX = 0;     // PID target (face center)
+    private double turretAngleDeg;   // Current turret angle
 
     public static enum state {
         Idle,
-        TagFinding,
+        roamPos,
+        roamNeg,
         Tracking,
     }
 
@@ -116,54 +110,16 @@ public class Turret extends SubsystemBase{
         pitchMotor.stopMotor();
     }
 
-    public void roam() {
-        if (curMaxedDirection != 1) {
-            System.out.println("Roaming positive");
-            rotationMotor.setControl(new DutyCycleOut(Constants.Turret.roamSpeed));
-        } else if (curMaxedDirection != -1) {
-            System.out.println("Roaming negative");
-            rotationMotor.setControl(new DutyCycleOut(-Constants.Turret.roamSpeed));
+    public void rotate(double power) {
+        power = Math.copySign((Math.min(Math.abs(power), Constants.Turret.maxRotPower)), power);
+
+        if ((turretAngleDeg >= Constants.Turret.turretDegLim) && power > 0 
+                || (turretAngleDeg <= -Constants.Turret.turretDegLim && power < 0)) {
+                    stopRotationMotor();
+                    return;
         }
-    }
-
-    public void safeTrack(double rotPower) {
-        if (curMaxedDirection != 1 && curMaxedDirection != -1) {
-            rotationMotor.setControl(new DutyCycleOut(rotPower));
-        } else {
-            System.out.println("Cannot turn turret any further!");
-        }
-    }
-
-    /* ==============================
-       TAG FINDING (ROAM)
-       ============================== */
-
-    public void targetRoaming() {
-        // Check if the variable actually has things in it, if not print out an error
-        if (targetTags == null || targetTags.length == 0) {
-            stopRotationMotor();  // No alliance = don't move
-            System.out.println("Roaming failed, no april tag ID list! Check Alliance logic");
-            return;
-        }
-
-        // If no target visible, keep roaming
-        if (!tv) {
-            roam();
-            return;
-        }
-
-        // If we see something, check if it's our alliance tag
-        for (int[] face : targetTags) {
-            if ((int) tagID == face[0] || (int) tagID == face[1]) {
-                currentFace = face;
-                setState(state.Tracking);
-                stopRotationMotor();
-                return;
-            }
-        }
-
-        // Wrong tag  -> keep roaming
-        roam();
+    
+        rotationMotor.setControl(new DutyCycleOut(power));
     }
 
     /* ==============================
@@ -172,28 +128,22 @@ public class Turret extends SubsystemBase{
 
     public void targetTracking() {
         // No targets -> back to TagFinding
-        if (!tv || currentFace == null) {
-            setState(state.TagFinding);
-            return;
+        if (!tv) {
+            if (turretAngleDeg >= 0) {
+                currentState = state.roamNeg;
+            } else if (turretAngleDeg < 0) {
+                currentState = state.roamPos;
+            }
         }
-
-        // Validate the currently visible tag still belongs to our face
-        if ((int) tagID != currentFace[0] && (int) tagID != currentFace[1]) {
-            setState(state.TagFinding);
-            return;
-        }
-
-        // For now, use Limelight best target tx directly
-        faceCenterTX = tx;
 
         // Deadband to prevent motor overshoot
-        if (Math.abs(faceCenterTX) < Constants.Turret.txDeadbandDeg) {
+        if (Math.abs(tx) < Constants.Turret.txDeadbandDeg) {
             stopRotationMotor();
             return;
         }
 
         // Simple proportional control
-        double rotationPower = faceCenterTX * Constants.Turret.kRotPID[0];
+        double rotationPower = tx * Constants.Turret.kRotPID[0];
 
         // Clamp output power
         rotationPower = Math.copySign(
@@ -201,41 +151,22 @@ public class Turret extends SubsystemBase{
             rotationPower
         );
 
-        safeTrack(rotationPower);
+        rotate(rotationPower);
     }
 
     public void getDistance() {
         // For future distance calculations
     }
 
-    public double getTargetRotationAngle() {
-        // Gets the angular error of the turret to the tag
-        return faceCenterTX;
-    }
-
+    @Override
     public void periodic() {
         // Asign limelight variables periodically to update continously
         tx = LimelightHelpers.getTX("turretLimelight");
         ty = LimelightHelpers.getTY("turretLimelight");
         tv = LimelightHelpers.getTV("turretLimelight");
-        tagID = LimelightHelpers.getFiducialID("turretLimelight");
 
         // Asign turret rotational values for calculations
         turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble()) * 360;
-        pos = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
-
-        // Safety values for when the turret reaches 360/-360
-        if (pos >= 170) {
-            curMaxedDirection = 1;
-        } else if (pos <= -170) {
-            curMaxedDirection = -1;
-        } else {
-            curMaxedDirection = 0;
-        }
-
-
-        // Get target tag IDs
-        targetTags = Constants.Turret.Limelight.Tags.getAprilTags();
 
         // STATE LOGIC
         switch (currentState) {
@@ -245,9 +176,24 @@ public class Turret extends SubsystemBase{
                 stopTiltMotor();
                 break;
 
-            case TagFinding:
-                targetRoaming();
+            case roamPos:
+                if (!tv) {
+                    currentState = state.Tracking;
+                } else if (turretAngleDeg >= Constants.Turret.turretDegLim) {
+                    currentState = state.roamNeg;
+                } else if (turretAngleDeg < Constants.Turret.turretDegLim) {
+                    rotate(Constants.Turret.roamSpeed);
+                }
                 break;
+
+            case roamNeg:
+                if (!tv) {
+                    currentState = state.Tracking;
+                } else if (turretAngleDeg <= -Constants.Turret.turretDegLim) {
+                    currentState = state.roamPos;
+                } else if (turretAngleDeg > -Constants.Turret.turretDegLim) {
+                    rotate(-Constants.Turret.roamSpeed);
+                }
 
             case Tracking:
                 targetTracking();
