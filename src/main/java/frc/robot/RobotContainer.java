@@ -24,7 +24,7 @@ import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
-import frc.robot.subsystems.Shooting.Turret;
+import frc.robot.subsystems.Shooting.TurretNeo;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 
@@ -45,7 +45,7 @@ public class RobotContainer {
   // Initialize instances for each subsystem for better subsystem management
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
   public final Limelight limelightInstance = Limelight.getInstance();
-  public final Turret turretInstance = Turret.getInstance();
+  public final TurretNeo turretInstanceNeo = TurretNeo.getInstance();
 
   public SwerveSubsystem getDrivebase() {
     return drivebase;

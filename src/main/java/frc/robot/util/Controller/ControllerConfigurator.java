@@ -10,8 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
-import frc.robot.subsystems.Shooting.Turret;
-import frc.robot.subsystems.Shooting.Turret.state;
+import frc.robot.subsystems.Shooting.TurretNeo.state;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern
@@ -45,10 +44,10 @@ public class ControllerConfigurator {
 
     container.getDriverController().x().onTrue(
         Commands.runOnce(() -> {
-            if (container.turretInstance.getState() == state.Idle) {
-                container.turretInstance.startAutoTrack();
+            if (container.turretInstanceNeo.getState() == state.Idle) {
+                container.turretInstanceNeo.startAutoTrack();
             } else {
-                container.turretInstance.setState(state.Idle);
+                container.turretInstanceNeo.setState(state.Idle);
             }
         })
     );
