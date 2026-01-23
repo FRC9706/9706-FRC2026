@@ -5,6 +5,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.util.Alliance.AllianceUtils;
 
 /**
@@ -52,14 +53,13 @@ public final class Constants {
       0, // kD
     };
 
-    // Dead bands
-    public static final double txDeadbandDeg = 0.5;
-
-
     public static class Limelight {
       public static class Tags {
         // This is the Height of the TAGS (target) from the floor
         public static final double targetH = 1;
+
+        // Dead bands
+        public static final double txDeadbandDeg = 0.5;
 
         /* 
           ALL of the following directions are based on as 

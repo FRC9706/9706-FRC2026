@@ -131,7 +131,7 @@ public class TurretNeo extends SubsystemBase {
         }
 
         // Deadband to prevent motor overshoot
-        if (Math.abs(tx) < Constants.Turret.txDeadbandDeg) {
+        if (Math.abs(tx) < Constants.Turret.Limelight.Tags.txDeadbandDeg) {
             stopRotationMotor();
             return;
         }

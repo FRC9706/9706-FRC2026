@@ -112,7 +112,7 @@ public class RobotContainer {
     drivebase.setupPathPlanner();
 
     // Preload any trajectories in Path Planner
-    Preloader.preloadTrajectories();
+    Preloader.preloadPaths();
   }
 
   /**

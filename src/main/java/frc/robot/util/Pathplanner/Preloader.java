@@ -11,36 +11,36 @@ public class Preloader {
     /**
      * A static container class to hold all of the preloaded PathPlanner Commands.
      */
-    public static class preloadedTrajectories {
+    public static class preloadedPaths {
         // Declare the fields as static so they can be initialized in the static preload method.
         // The type should be PathPlannerAuto, which is a Command.
-        public static Command trajectoryOne; 
-        public static Command trajectoryTwo;
+        public static Command pathOne; 
+        public static Command pathTwo;
     }
 
     // Preloads all of the desired trajctories
-    public static void preloadTrajectories() {
+    public static void preloadPaths() {
         // Assign the new PathPlannerAuto commands to the static fields.
-        // NOTE: PathPlannerAuto will load the path file with the given name (e.g., "trajectoryOne.path").
-        preloadedTrajectories.trajectoryOne = new PathPlannerAuto("trajectoryOne");
-        preloadedTrajectories.trajectoryTwo = new PathPlannerAuto("trajectoryTwo");
+        // NOTE: PathPlannerAuto will load the path file with the given name (e.g., "pathOne.path").
+        preloadedPaths.pathOne = new PathPlannerAuto("pathOne");
+        preloadedPaths.pathTwo = new PathPlannerAuto("pathTwo");
         
     
-        System.out.println("PathPlanner trajectories have been preloaded!");
+        System.out.println("PathPlanner paths have been preloaded!");
     }
 
     /**
      * Utility method to retrieve a preloaded command.
-     * @param trajectoryName The name of the trajectory (e.g., "trajectoryOne").
+     * @param pathName The name of the path (e.g., "pathOne").
      * @return The preloaded PathPlannerAuto Command.
      */
-    public static Command getTrajectory(String trajectoryName) {
-        return switch (trajectoryName) {
-            case "trajectoryOne" -> preloadedTrajectories.trajectoryOne;
-            case "trajectoryTwo" -> preloadedTrajectories.trajectoryTwo;
+    public static Command getpath(String pathName) {
+        return switch (pathName) {
+            case "pathOne" -> preloadedPaths.pathOne;
+            case "pathTwo" -> preloadedPaths.pathTwo;
             default -> {
                 // Handle case where path is not found (e.g., return an empty command or throw error)
-                System.err.println("Requested PathPlanner trajectory not preloaded: " + trajectoryName);
+                System.err.println("Requested PathPlanner path not preloaded: " + pathName);
                 yield Commands.none(); // Return no command
             }
         };

@@ -24,5 +24,4 @@ public class Limelight {
       container.getDrivebase().createVisionMeasurement("rightLimelight", timeStamp);
       container.getDrivebase().createVisionMeasurement("leftLimelight", timeStamp);
    }
-
 }
