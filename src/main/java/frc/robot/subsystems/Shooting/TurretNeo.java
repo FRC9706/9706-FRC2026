@@ -1,7 +1,5 @@
 package frc.robot.subsystems.Shooting;
 
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.FeedbackSensor;

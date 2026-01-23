@@ -1,8 +1,6 @@
 package frc.robot.util.Controller;
 
-import java.lang.Thread.State;
-
-import com.ctre.phoenix6.signals.TempSensorRequiredValue;
+// import java.lang.Thread.State;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
