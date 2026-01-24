@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import frc.robot.util.Alliance.AllianceUtils;
 
 /**
@@ -28,7 +30,7 @@ public final class Constants {
   public static class Turret {
     // Motor IDs
     public static final int firingMotor = 1;
-    public static final int rotationMotor = 2;
+    public static final int rotationMotor = 3;
     public static final int pitchMotor = 3;
 
     // CAN coder IDs
@@ -37,10 +39,10 @@ public final class Constants {
 
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
-    public static final double maxRotPower = 0.3;
-    public static final double turretDegLim = 170;
+    public static final double maxRotPower = 0.5;
+    public static final double turretDegLim = 50;
     public static final double[] kRotPID = {
-      0.25, // kP
+      0.05, // kP
       0, // kI
       0 // kD
     };
@@ -117,6 +119,10 @@ public final class Constants {
     public static final double offsetPitch = 1;
     public static final double offsetYaw = 1;
     }
+  }
+
+  public class limelights {
+    public static final String limelightTurretIP = "172.29.0.1";
   }
 
   public static class Drivetrain {

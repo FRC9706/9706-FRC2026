@@ -161,9 +161,9 @@
 //     @Override
 //     public void periodic() {
 //         // Asign limelight variables periodically to update continously
-//         tx = LimelightHelpers.getTX("turretLimelight");
-//         ty = LimelightHelpers.getTY("turretLimelight");
-//         tv = LimelightHelpers.getTV("turretLimelight");
+//         tx = LimelightHelpers.getTX("limelight-turret");
+//         ty = LimelightHelpers.getTY("limelight-turret");
+//         tv = LimelightHelpers.getTV("limelight-turret");
 
 //         // Asign turret rotational values for calculations
 //         turretAngleDeg = Math.toDegrees(rotationMotor.getPosition().getValueAsDouble());
