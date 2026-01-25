@@ -42,14 +42,14 @@ public final class Constants {
     public static final double maxRotPower = 0.5;
     public static final double turretDegLim = 50;
     public static final double[] kRotPID = {
-      0.05, // kP
+      0.04, // kP
       0, // kI
-      0 // kD
+      0.1  // kD
     };
 
     // Pitch motor settings
     public static final double[] kPitchPID = {
-      0.25, // kP
+      0.25, // kP%
       0, // kI
       0, // kD
     };
@@ -61,6 +61,7 @@ public final class Constants {
 
         // Dead bands
         public static final double txDeadbandDeg = 0.5;
+        public static final double tvDebonceTime = 0.2;
 
         /* 
           ALL of the following directions are based on as 

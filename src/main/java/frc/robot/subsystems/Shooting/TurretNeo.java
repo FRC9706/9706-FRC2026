@@ -11,9 +11,12 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Constants.Turret;
 import frc.robot.subsystems.Vision.LimelightHelpers;
+import frc.robot.util.Tuning.LiveTuner;
 
 public class TurretNeo extends SubsystemBase {
     // Create an instance for the TurretNeo
@@ -30,6 +33,10 @@ public class TurretNeo extends SubsystemBase {
         // Intialize stuff for the rotation motor
         private SparkClosedLoopController rotCL;
         private RelativeEncoder rotEN;
+        private SparkMaxConfig rotConfig;
+        private final LiveTuner.TunableNumber trackingP =
+        LiveTuner.number("Turret/TrackingP", 0.04);
+
 
     // Initialize Can Coders for the turret motors
     private CANcoder pitchCC;
@@ -61,7 +68,7 @@ public class TurretNeo extends SubsystemBase {
 
     public void configureMotors() {
         // Rotional motor configs
-        var rotConfig = new SparkMaxConfig();
+        rotConfig = new SparkMaxConfig();
 
         // Configuration for slot 0 configs for the rotational motor
         var rotSlot0Configs = rotConfig;
@@ -71,9 +78,9 @@ public class TurretNeo extends SubsystemBase {
 
         rotSlot0Configs.closedLoop 
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .p(Constants.Turret.kRotPID[0])
-        .i(Constants.Turret.kRotPID[1])
-        .d(Constants.Turret.kRotPID[2])
+        // .p(Constants.Turret.kRotPID[0])
+        // .i(Constants.Turret.kRotPID[1])
+        // .d(Constants.Turret.kRotPID[2])
         .outputRange(-1, 1);
 
         // Apply the configurations to the motor
@@ -92,6 +99,27 @@ public class TurretNeo extends SubsystemBase {
 
         // Apply the configurations for the motors
         configureMotors();
+
+        LiveTuner.pid(
+        "Turret/Rotation",
+        0.04, 0, 0,
+            (p, i, d) -> {
+                SparkMaxConfig tunedConfig = new SparkMaxConfig();
+                tunedConfig.apply(rotConfig);
+
+                tunedConfig.closedLoop
+                    .p(p)
+                    .i(i)
+                    .d(d);
+
+                rotationMotor.configure(
+                    tunedConfig,
+                    ResetMode.kNoResetSafeParameters,
+                    PersistMode.kNoPersistParameters
+                );
+            }
+        );
+        System.out.println("trackingP registered: " + trackingP.get());
 
         // Create the CANcoder objects
         pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
@@ -135,13 +163,8 @@ public class TurretNeo extends SubsystemBase {
         }
 
         // Simple proportional control
-        double rotationPower = tx * Constants.Turret.kRotPID[0];
-
-        // Clamp output power
-        rotationPower = Math.copySign(
-            Math.min(Math.abs(rotationPower), Constants.Turret.maxRotPower),
-            rotationPower
-        );
+        
+        double rotationPower = tx * trackingP.get();
 
         rotate(rotationPower);
     }
