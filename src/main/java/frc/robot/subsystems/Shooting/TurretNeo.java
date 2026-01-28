@@ -7,6 +7,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -29,6 +30,7 @@ public class TurretNeo extends SubsystemBase {
         // Intialize stuff for the rotation motor
         private RelativeEncoder rotEN;
         private SparkMaxConfig rotConfig;
+        private EncoderConfig rotENConfig;
         private final LiveTuner.TunableNumber trackingP;
 
     // Initalize limelight variables
@@ -58,12 +60,17 @@ public class TurretNeo extends SubsystemBase {
     public void configureMotors() {
         // Rotional motor configs
         rotConfig = new SparkMaxConfig();
+            // Encoder config for the rotational motor
+            rotENConfig = new EncoderConfig();
 
         // Configuration for slot 0 configs for the rotational motor
         var rotSlot0Configs = rotConfig;
         rotSlot0Configs.inverted(false);
         rotSlot0Configs.idleMode(IdleMode.kCoast);
         rotSlot0Configs.smartCurrentLimit(10);
+            // Configuration for the internal encoder of the rotational motor
+            rotENConfig
+            .positionConversionFactor(Constants.Turret.gearRatio);
 
         rotSlot0Configs.closedLoop 
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
@@ -91,7 +98,7 @@ public class TurretNeo extends SubsystemBase {
         // Setup live PID tuner for the motor's pid constants
         LiveTuner.pid(
         "Turret/Rotation",
-        0.04, 0, 0,
+        Constants.Turret.kRotPID[0], Constants.Turret.kRotPID[1], Constants.Turret.kRotPID[2],
             (p, i, d) -> {
                 SparkMaxConfig tunedConfig = new SparkMaxConfig();
                 tunedConfig.apply(rotConfig);
@@ -110,7 +117,7 @@ public class TurretNeo extends SubsystemBase {
         );
 
         // Setup live tuner for the tracking PID loop
-        trackingP = LiveTuner.number("Turret/TrackingP", 0.04);
+        trackingP = LiveTuner.number("Turret/TrackingP", Constants.Turret.kRotPID[0]);
 
         System.out.println("trackingP registered: " + trackingP.get());
     }
@@ -169,7 +176,7 @@ public class TurretNeo extends SubsystemBase {
         tv = LimelightHelpers.getTV("limelight-turret");
 
         // Asign turret rotational values for calculations
-        turretAngleDeg = rotEN.getPosition();
+        turretAngleDeg = rotEN.getPosition() * 360;
 
         // STATE LOGIC
         switch (currentState) {
