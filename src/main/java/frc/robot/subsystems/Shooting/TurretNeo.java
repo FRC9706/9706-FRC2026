@@ -1,20 +1,16 @@
 package frc.robot.subsystems.Shooting;
 
-import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
-import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Turret;
 import frc.robot.subsystems.Vision.LimelightHelpers;
 import frc.robot.util.Tuning.LiveTuner;
 
@@ -31,23 +27,16 @@ public class TurretNeo extends SubsystemBase {
     // Initialize the motors for the turret
     private SparkMax rotationMotor;
         // Intialize stuff for the rotation motor
-        private SparkClosedLoopController rotCL;
         private RelativeEncoder rotEN;
         private SparkMaxConfig rotConfig;
-        private final LiveTuner.TunableNumber trackingP =
-        LiveTuner.number("Turret/TrackingP", 0.04);
-
-
-    // Initialize Can Coders for the turret motors
-    private CANcoder pitchCC;
+        private final LiveTuner.TunableNumber trackingP;
 
     // Initalize limelight variables
     private double tx;
-    private double ty;
     private boolean tv;
 
     // Initalize turret variables
-    private double turretAngleDeg;   // Current turret angle
+    private double turretAngleDeg;
 
     public static enum state {
         Idle,
@@ -93,13 +82,13 @@ public class TurretNeo extends SubsystemBase {
         // Create the motor objects
         rotationMotor = new SparkMax(Constants.Turret.rotationMotor, MotorType.kBrushless);
             // Create the objects also needed for the rotation motor
-            rotCL = rotationMotor.getClosedLoopController();
             rotEN = rotationMotor.getEncoder();
         
 
         // Apply the configurations for the motors
         configureMotors();
 
+        // Setup live PID tuner for the motor's pid constants
         LiveTuner.pid(
         "Turret/Rotation",
         0.04, 0, 0,
@@ -119,10 +108,11 @@ public class TurretNeo extends SubsystemBase {
                 );
             }
         );
-        System.out.println("trackingP registered: " + trackingP.get());
 
-        // Create the CANcoder objects
-        pitchCC = new CANcoder(Constants.Turret.pitchCanCoder);
+        // Setup live tuner for the tracking PID loop
+        trackingP = LiveTuner.number("Turret/TrackingP", 0.04);
+
+        System.out.println("trackingP registered: " + trackingP.get());
     }
 
 
@@ -163,7 +153,6 @@ public class TurretNeo extends SubsystemBase {
         }
 
         // Simple proportional control
-        
         double rotationPower = tx * trackingP.get();
 
         rotate(rotationPower);
@@ -177,7 +166,6 @@ public class TurretNeo extends SubsystemBase {
     public void periodic() {
         // Asign limelight variables periodically to update continously
         tx = LimelightHelpers.getTX("limelight-turret");
-        ty = LimelightHelpers.getTY("limelight-turret");
         tv = LimelightHelpers.getTV("limelight-turret");
 
         // Asign turret rotational values for calculations
