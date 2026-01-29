@@ -176,7 +176,7 @@ public class TurretNeo extends SubsystemBase {
         tv = LimelightHelpers.getTV("limelight-turret");
 
         // Asign turret rotational values for calculations
-        turretAngleDeg = rotEN.getPosition() * 360;
+        turretAngleDeg = rotEN.getPosition();
 
         // STATE LOGIC
         switch (currentState) {
