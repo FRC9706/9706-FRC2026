@@ -25,11 +25,13 @@ import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
 import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.subsystems.Shooting.Trajectory;
 import frc.robot.subsystems.Shooting.TurretNeo;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 
 import java.io.File;
+
 import swervelib.SwerveInputStream;
 
 /**
@@ -38,14 +40,18 @@ import swervelib.SwerveInputStream;
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+  private final Trajectory trajectory = new Trajectory(drivebase::getPose);
   // Initialize instances for each subsystem for better subsystem management
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
   public final Limelight limelightInstance = Limelight.getInstance();
   public final TurretNeo turretInstanceNeo = TurretNeo.getInstance();
+
+  public Trajectory getTrajectory() {
+      return trajectory;
+  }
 
   public SwerveSubsystem getDrivebase() {
     return drivebase;
@@ -169,6 +175,7 @@ public class RobotContainer {
   }
 
   public void periodic() {
+
     limelightInstance.createVisionMeasurements(this, Timer.getTimestamp());
     LiveTuner.periodic();
   }
