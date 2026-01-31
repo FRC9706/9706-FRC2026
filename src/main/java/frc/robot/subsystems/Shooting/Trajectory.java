@@ -17,16 +17,6 @@ public class Trajectory {
         // Intialize the interpolating tree maps
         turPitch = new InterpolatingDoubleTreeMap();
         turFly = new InterpolatingDoubleTreeMap();
-            // Add values to the tree maps
-            turPitch.put(null, null);
-            turPitch.put(null, null);
-            turPitch.put(null, null);
-            turPitch.put(null, null);
-
-            turFly.put(null, null);
-            turFly.put(null, null);
-            turFly.put(null, null);
-            turFly.put(null, null);
     }
 
     public Pose2d getPose2d() {

@@ -49,6 +49,8 @@ public final class Constants {
       0.1  // kD
     };
 
+    public static final double kTrackingP = 0.25;
+
     // Pitch motor settings
     public static final double[] kPitchPID = {
       0.25, // kP%
@@ -126,6 +128,9 @@ public final class Constants {
 
   public class limelights {
     public static final String limelightTurretIP = "172.29.0.1";
+    public static final String limelightFrontIP = "172.29.1.1";
+    public static final String limelightRightIP = "172.29.2.1";
+    public static final String limelightLeftIP = "172.29.3.1";
   }
 
   public static class Drivetrain {

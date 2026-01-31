@@ -117,7 +117,7 @@ public class TurretNeo extends SubsystemBase {
         );
 
         // Setup live tuner for the tracking PID loop
-        trackingP = LiveTuner.number("Turret/TrackingP", Constants.Turret.kRotPID[0]);
+        trackingP = LiveTuner.number("Turret/TrackingP", Constants.Turret.kTrackingP);
 
         System.out.println("trackingP registered: " + trackingP.get());
     }
