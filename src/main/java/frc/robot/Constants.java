@@ -190,7 +190,7 @@ public final class Constants {
     //   Telemetry and compensation
     // -------------------------------
     public static final boolean enableTelemetry = true;
-    public static final boolean enableHeadingCorrection = true;  // Should only be used in angle control mode
+    public static final boolean enableHeadingCorrection = false;  // Should only be used in angle control mode
     public static final boolean enableCosineCompensation = false; // Disabled in sim for accuracy
     public static final boolean enableAngularVelocityComp = true; // Skew correction
     public static final double angularVelocityCompCoeff = 0.1;    // Compensation coefficient
