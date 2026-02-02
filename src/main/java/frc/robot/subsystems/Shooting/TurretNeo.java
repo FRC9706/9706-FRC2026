@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Shooting;
 
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -32,6 +33,9 @@ public class TurretNeo extends SubsystemBase {
         private SparkMaxConfig rotConfig;
         private EncoderConfig rotENConfig;
         private final LiveTuner.TunableNumber trackingP;
+    
+    // Initalize external CAN coder
+    
 
     // Initalize limelight variables
     private double tx;
@@ -89,7 +93,7 @@ public class TurretNeo extends SubsystemBase {
         // Create the motor objects
         rotationMotor = new SparkMax(Constants.Turret.rotationMotor, MotorType.kBrushless);
             // Create the objects also needed for the rotation motor
-            rotEN = rotationMotor.getEncoder();
+            rotEN = rotationMotor.getEncoder();;
         
 
         // Apply the configurations for the motors
