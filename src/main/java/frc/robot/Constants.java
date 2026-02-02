@@ -139,8 +139,8 @@ public final class Constants {
     // -------------------------------
     //        Supply limits
     // -------------------------------
-    public static final double kStatorCurrent = 80;
-    public static final double kSupplyCurrent = 40;
+    public static final double kStatorCurrent = 40; // Make sure to update in JSON if changed here
+    public static final double kSupplyCurrent = 20; // Make sure to update in JSON if changed here
     public static final double kStatorDriveCurrent = 170;
 
 
@@ -148,28 +148,28 @@ public final class Constants {
     //        Gear ratios
     // -------------------------------
     public static final double gearRatio = 1;
-    public static final double kDriveGearRatio = 6.48;
-    public static final double kSteerGearRatio = 12.1;
+    public static final double kDriveGearRatio = 6.82; // Make sure to update in JSON if changed here
+    public static final double kSteerGearRatio = 12.1; // Make sure to update in JSON if changed here
     public static final double kCoupleRatio = 54.0 / 12.0;
 
 
     // -------------------------------
     //       Frame dimensions
     // -------------------------------
-    public static final double kFrameLengthInches = 29.0;
-    public static final double kFrameWidthInches = 29.0;
+    public static final double kFrameLengthInches = 27.5;
+    public static final double kFrameWidthInches = 27.5;
 
 
     // -------------------------------
     //       Wheel dimensions
     // -------------------------------
-    public static final double kWheelRadiusInches = 2.167;
+    public static final double kWheelRadiusInches = 4;
 
 
     // -------------------------------
     //          Gyro / IMU
     // -------------------------------
-    public static final int kPigeonID = 13;
+    public static final int kPigeonID = 9;
 
 
     // -------------------------------
@@ -205,15 +205,15 @@ public final class Constants {
 
 
     // Translation PID tuning (meters)
-    public static final double translationP = 20;
-    public static final double translationI = 0.0;
-    public static final double translationD = 0.6;
+    public static final double translationP = 0;
+    public static final double translationI = 0;
+    public static final double translationD = 0;
 
 
     // Rotation PID tuning (radians)
-    public static final double rotationP = 20;
-    public static final double rotationI = 0.0;
-    public static final double rotationD = 0.6;
+    public static final double rotationP = 0;
+    public static final double rotationI = 0;
+    public static final double rotationD = 0;
 
 
     // -------------------------------
@@ -226,9 +226,10 @@ public final class Constants {
     // -------------------------------
     //     Feedforward coefficients
     // -------------------------------
-    public static final double kS = 0.1;  // Static gain
-    public static final double kV = 2.2;  // Velocity gain
-    public static final double kA = 0.3;  // Acceleration gain
+    // public static final double kS = 0.1;  // Static gain
+    // public static final double kV = 2.2;  // Velocity gain
+    // public static final double kA = 0.3;  // Acceleration gain
+    // Unused, most likely uneeded/unimportant
 
 
     // -------------------------------
@@ -265,7 +266,7 @@ public final class Constants {
       // --- CAN IDs ---
       public static final int kDriveMotorID = 7;
       public static final int kSteerMotorID = 8;
-      public static final int kEncoderID = 12;
+      public static final int kEncoderID = 4;
 
 
       // --- Motor/Encoder Inversion ---
@@ -276,7 +277,7 @@ public final class Constants {
       // --- Module Offsets ---
       public static final double kXPos = Drivetrain.kFrontLeftXPos;
       public static final double kYPos = Drivetrain.kFrontLeftYPos;
-      public static final double kEncoderOffsetRotations = -0.321 + 0.25;
+      public static final double kEncoderOffsetRotations = 32.783203125;
     }
 
 
@@ -284,7 +285,7 @@ public final class Constants {
       // --- CAN IDs ---
       public static final int kDriveMotorID = 1;
       public static final int kSteerMotorID = 2;
-      public static final int kEncoderID = 9;
+      public static final int kEncoderID = 1;
 
 
       // --- Motor/Encoder Inversion ---
@@ -295,7 +296,7 @@ public final class Constants {
       // --- Module Offsets ---
       public static final double kXPos = Drivetrain.kFrontRightXPos;
       public static final double kYPos = Drivetrain.kFrontRightYPos;
-      public static final double kEncoderOffsetRotations = -0.242 + (1.0 / 8.0) + 0.5;
+      public static final double kEncoderOffsetRotations = 300.146484375;
     }
 
 
@@ -303,7 +304,7 @@ public final class Constants {
       // --- CAN IDs ---
       public static final int kDriveMotorID = 5;
       public static final int kSteerMotorID = 6;
-      public static final int kEncoderID = 11;
+      public static final int kEncoderID = 3;
 
 
       // --- Motor/Encoder Inversion ---
@@ -314,7 +315,7 @@ public final class Constants {
       // --- Module Offsets ---
       public static final double kXPos = Drivetrain.kBackLeftXPos;
       public static final double kYPos = Drivetrain.kBackLeftYPos;
-      public static final double kEncoderOffsetRotations = -0.500 - (3.0 / 8.0) + 0.5;
+      public static final double kEncoderOffsetRotations = 269.560546875;
     }
 
 
@@ -322,7 +323,7 @@ public final class Constants {
       // --- CAN IDs ---
       public static final int kDriveMotorID = 3;
       public static final int kSteerMotorID = 4;
-      public static final int kEncoderID = 10;
+      public static final int kEncoderID = 2;
 
 
       // --- Motor/Encoder Inversion ---
@@ -333,7 +334,7 @@ public final class Constants {
       // --- Module Offsets ---
       public static final double kXPos = Drivetrain.kBackRightXPos;
       public static final double kYPos = Drivetrain.kBackRightYPos;
-      public static final double kEncoderOffsetRotations = -0.3459 - (1.0 / 8.0) + 0.5;
+      public static final double kEncoderOffsetRotations = 222.539062;
     }
   }
 
@@ -386,7 +387,7 @@ public final class Constants {
 
 
     // --- PID ---
-    public static final double profiledKp = 5;
+    public static final double profiledKp = 0;
     public static final double profiledKi = 0;
     public static final double profiledKd = 0;
 
