@@ -11,7 +11,6 @@ import com.revrobotics.spark.config.EncoderConfig;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.Vision.LimelightHelpers;
 import frc.robot.util.Tuning.LiveTuner;
 
@@ -73,13 +72,13 @@ public class TurretNeo extends SubsystemBase {
         rotSlot0Configs.smartCurrentLimit(10);
             // Configuration for the internal encoder of the rotational motor
             rotENConfig
-            .positionConversionFactor(Constants.Turret.gearRatio);
+            .positionConversionFactor(TurretConstants.gearRatio);
 
         rotSlot0Configs.closedLoop 
         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        // .p(Constants.Turret.kRotPID[0])
-        // .i(Constants.Turret.kRotPID[1])
-        // .d(Constants.Turret.kRotPID[2])
+        // .p(TurretConstants.kRotPID[0])
+        // .i(TurretConstants.kRotPID[1])
+        // .d(TurretConstants.kRotPID[2])
         .outputRange(-1, 1);
 
         // Apply the configurations to the motor
@@ -90,7 +89,7 @@ public class TurretNeo extends SubsystemBase {
 
     public TurretNeo() {
         // Create the motor objects
-        rotationMotor = new SparkMax(Constants.Turret.rotationMotor, MotorType.kBrushless);
+        rotationMotor = new SparkMax(TurretConstants.rotationMotor, MotorType.kBrushless);
             // Create the objects also needed for the rotation motor
             rotEN = rotationMotor.getEncoder();;
         
@@ -101,7 +100,7 @@ public class TurretNeo extends SubsystemBase {
         // Setup live PID tuner for the motor's pid constants
         LiveTuner.pid(
         "Turret/Rotation",
-        Constants.Turret.kRotPID[0], Constants.Turret.kRotPID[1], Constants.Turret.kRotPID[2],
+        TurretConstants.kRotPID[0], TurretConstants.kRotPID[1], TurretConstants.kRotPID[2],
             (p, i, d) -> {
                 SparkMaxConfig tunedConfig = new SparkMaxConfig();
                 tunedConfig.apply(rotConfig);
@@ -120,7 +119,7 @@ public class TurretNeo extends SubsystemBase {
         );
 
         // Setup live tuner for the tracking PID loop
-        trackingP = LiveTuner.number("Turret/TrackingP", Constants.Turret.kTrackingP);
+        trackingP = LiveTuner.number("Turret/TrackingP", TurretConstants.kTrackingP);
 
         System.out.println("trackingP registered: " + trackingP.get());
     }
@@ -135,10 +134,10 @@ public class TurretNeo extends SubsystemBase {
     }
 
     public void rotate(double power) {
-        power = Math.copySign((Math.min(Math.abs(power), Constants.Turret.maxRotPower)), power);
+        power = Math.copySign((Math.min(Math.abs(power), TurretConstants.maxRotPower)), power);
 
-        if ((turretAngleDeg >= Constants.Turret.turretDegLim) && power > 0 
-                || (turretAngleDeg <= -Constants.Turret.turretDegLim && power < 0)) {
+        if ((turretAngleDeg >= TurretConstants.turretDegLim) && power > 0 
+                || (turretAngleDeg <= -TurretConstants.turretDegLim && power < 0)) {
                     stopRotationMotor();
                     return;
         }
@@ -157,7 +156,7 @@ public class TurretNeo extends SubsystemBase {
         }
 
         // Deadband to prevent motor overshoot
-        if (Math.abs(tx) < Constants.Turret.Limelight.Tags.txDeadbandDeg) {
+        if (Math.abs(tx) < TurretConstants.Limelight.Tags.txDeadbandDeg) {
             stopRotationMotor();
             return;
         }
@@ -190,20 +189,20 @@ public class TurretNeo extends SubsystemBase {
             case roamPos:
                 if (tv) {
                     currentState = state.Tracking;
-                } else if (turretAngleDeg >= Constants.Turret.turretDegLim) {
+                } else if (turretAngleDeg >= TurretConstants.turretDegLim) {
                     currentState = state.roamNeg;
-                } else if (turretAngleDeg < Constants.Turret.turretDegLim) {
-                    rotate(Constants.Turret.roamSpeed);
+                } else if (turretAngleDeg < TurretConstants.turretDegLim) {
+                    rotate(TurretConstants.roamSpeed);
                 }
                 break;
 
             case roamNeg:
                 if (tv) {
                     currentState = state.Tracking;
-                } else if (turretAngleDeg <= -Constants.Turret.turretDegLim) {
+                } else if (turretAngleDeg <= -TurretConstants.turretDegLim) {
                     currentState = state.roamPos;
-                } else if (turretAngleDeg > -Constants.Turret.turretDegLim) {
-                    rotate(-Constants.Turret.roamSpeed);
+                } else if (turretAngleDeg > -TurretConstants.turretDegLim) {
+                    rotate(-TurretConstants.roamSpeed);
                 }
                 break;
 

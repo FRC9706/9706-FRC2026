@@ -1,6 +1,6 @@
 package frc.robot.util.Vision;
 import edu.wpi.first.net.PortForwarder;
-import frc.robot.Constants;
+import frc.robot.subsystems.Vision.VisionConstants;
 
 
 public class portForwardUtils {
@@ -25,7 +25,7 @@ public class portForwardUtils {
 
 
     public static void portFoward() {
-        forwardPortRange(Constants.limelights.limelightTurretIP, 
+        forwardPortRange(VisionConstants.limelightTurretIP, 
          5800, 5805, 5800, 5805);
     
         // forwardPortRange(Constants.limelights.limelightFrontIP, 
