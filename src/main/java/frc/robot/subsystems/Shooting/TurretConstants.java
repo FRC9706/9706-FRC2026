@@ -18,7 +18,11 @@ public class TurretConstants {
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
     public static final double maxRotPower = 0.5;
-    public static final double turretDegLim = 50;
+    public static final double turretRotLim = 50;
+
+    // Motion profile constraints
+    public static final double maxVelRadPerSec = 6.0;     // rad/s
+    public static final double maxAccelRadPerSec = 20.0;  // rad/s^2
 
     public static final double[] kRotPID = {
       0.04, // kP
