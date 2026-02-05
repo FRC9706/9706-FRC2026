@@ -8,7 +8,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
-import frc.robot.subsystems.Shooting.TurretNeo.state;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern
@@ -40,14 +39,16 @@ public class ControllerConfigurator {
         Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
     );
 
-    container.getDriverController().x().onTrue(
-        Commands.runOnce(() -> {
-            if (container.turretInstanceNeo.getState() == state.Idle) {
-                container.turretInstanceNeo.startAutoTrack();
-            } else {
-                container.turretInstanceNeo.setState(state.Idle);
-            }
-        })
+    container.getDriverController().x().whileTrue(
+        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(0), 0))
+    );
+
+    container.getDriverController().a().whileTrue(
+        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(90), 0))
+    );
+
+    container.getDriverController().b().whileTrue(
+        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(180), 0))
     );
 
   }
