@@ -30,7 +30,8 @@ public class TurretConstants {
       0.1  // kD
     };
 
-    public static final double kTrackingP = 0.25;
+    public static final double kRotTrackingP = 0.25;
+    public static final double kRotV = 0;
 
     // Pitch motor settings
     public static final double[] kPitchPID = {

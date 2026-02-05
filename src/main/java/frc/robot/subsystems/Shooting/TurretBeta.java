@@ -51,7 +51,7 @@ public class TurretBeta extends SubsystemBase {
 
     // Live tuning
     private final LiveTuner.TunableNumber kP;
-    private final LiveTuner.TunableNumber kD;
+    private final LiveTuner.TunableNumber kV;
 
     public static enum state {
         Idle,
@@ -73,7 +73,7 @@ public class TurretBeta extends SubsystemBase {
         rotENConfig = new EncoderConfig();
 
         rotConfig.inverted(false);
-        rotConfig.idleMode(IdleMode.kCoast);
+        rotConfig.idleMode(IdleMode.kBrake);
         rotConfig.smartCurrentLimit(10);
         
         // Encoder conversion factor (gear ratio)
@@ -108,7 +108,7 @@ public class TurretBeta extends SubsystemBase {
 
         // Setup live tuning
         kP = LiveTuner.number("Turret/kP", TurretConstants.kRotPID[0]);
-        kD = LiveTuner.number("Turret/kD", TurretConstants.kRotPID[2]);
+        kV = LiveTuner.number("Turret/kD", TurretConstants.kRotV);
 
         System.out.println("TurretBeta initialized!");
     }
@@ -193,7 +193,7 @@ public class TurretBeta extends SubsystemBase {
                 // PD control
                 double currentPosRad = Math.toRadians(turretAngRot * 360.0);
                 double error = setpoint.position - currentPosRad;
-                double output = (error * kP.get()) + (setpoint.velocity * kD.get());
+                double output = (error * kP.get()) + (setpoint.velocity * kV.get());
 
                 rotate(output);
                 break;
