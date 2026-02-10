@@ -6,7 +6,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,9 +18,9 @@ import frc.robot.util.Tuning.LiveTuner;
 public class TurretBeta extends SubsystemBase {
     // Singleton instance
     private static TurretBeta mInstance = null;
-    public static TurretBeta getInstance(SwerveSubsystem drivebase) {
+    public static TurretBeta getInstance(SwerveSubsystem drivebase, Trajectory trajectory) {
         if (mInstance == null) {
-            mInstance = new TurretBeta(drivebase);
+            mInstance = new TurretBeta(drivebase, trajectory);
         }
         return mInstance;
     }
@@ -29,13 +28,14 @@ public class TurretBeta extends SubsystemBase {
     // Hardware
     private TalonFX rotMotor;
         private TalonFXConfiguration rotConfig;
-    private AbsoluteEncoder rotEN;
 
     private TalonFX[] shootMotors;
         private TalonFXConfiguration[] fireConfig;
 
     // Drivetrain reference for field-relative control
     private SwerveSubsystem drivebase;
+    // Get trajectory reference for calculating different trajectorial points
+    private Trajectory trajectory;
 
     // Motion profiling
     private TrapezoidProfile profile;
@@ -118,8 +118,9 @@ public class TurretBeta extends SubsystemBase {
         System.out.println("TurretBeta motor configs applied!");
     }
 
-    private TurretBeta(SwerveSubsystem drivebase) {
+    private TurretBeta(SwerveSubsystem drivebase, Trajectory trajectory) {
         this.drivebase = drivebase;
+        this.trajectory = trajectory;
 
         // Create motor and encoder
         rotMotor = new TalonFX(TurretConstants.rotationMotor);
@@ -205,7 +206,10 @@ public class TurretBeta extends SubsystemBase {
     @Override
     public void periodic() {
         // Update encoder position (in rotations)
-        turretAngRot = rotEN.getPosition();
+        turretAngRot = trajectory.calculateAndrewPos(
+            rotMotor.getPosition().getValueAsDouble(), 
+            shootMotors[0].getPosition().getValueAsDouble()
+        );
 
         // State machine
         switch (currentState) {

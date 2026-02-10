@@ -47,7 +47,7 @@ public class RobotContainer {
   // Initialize instances for each subsystem for better subsystem management
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
   public final Limelight limelightInstance = Limelight.getInstance();
-  public final TurretBeta turretBetaInstance = TurretBeta.getInstance(drivebase);
+  public final TurretBeta turretBetaInstance = TurretBeta.getInstance(getDrivebase(), getTrajectory());
 
   public Trajectory getTrajectory() {
       return trajectory;
