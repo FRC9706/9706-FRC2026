@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Shooting;
+package frc.robot.subsystems.Score;
 
 import java.util.function.Supplier;
 

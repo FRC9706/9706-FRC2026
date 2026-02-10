@@ -20,6 +20,7 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -85,6 +86,8 @@ public class SwerveSubsystem extends SubsystemBase {
         .createSwerveDrive(SwerveConstants.Swerve.maxSpeed, startingPose);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
+      // ROTATE PIGEON 180° - ADD THIS LINE:
+      swerveDrive.setGyroOffset(new Rotation3d(0, 0, Math.toRadians(0)));
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -493,9 +496,12 @@ public class SwerveSubsystem extends SubsystemBase {
     if (isRedAlliance()) {
       zeroGyro();
       // Set the pose 180 degrees
-      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(0)));
+      System.out.println("Reset gyro for red alliance");
     } else {
       zeroGyro();
+      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+      System.out.println("Reset gyro for blue alliance");
     }
   }
 

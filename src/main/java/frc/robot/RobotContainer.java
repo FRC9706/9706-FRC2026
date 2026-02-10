@@ -25,8 +25,8 @@ import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
 import frc.robot.util.Tuning.LiveTuner;
-import frc.robot.subsystems.Shooting.Trajectory;
-import frc.robot.subsystems.Shooting.TurretBeta;
+import frc.robot.subsystems.Score.Trajectory;
+import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 
@@ -176,7 +176,8 @@ public class RobotContainer {
 
   public void periodic() {
     // Add limelight instances
-    limelightInstance.createVisionMeasurements(this, Timer.getTimestamp());
+    // limelightInstance.createVisionMeasurements(this, Timer.getTimestamp());
+
     // Update any live variables
     LiveTuner.periodic();
   }

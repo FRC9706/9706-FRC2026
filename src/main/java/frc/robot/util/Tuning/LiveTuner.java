@@ -20,7 +20,7 @@ public final class LiveTuner {
   private final Map<Integer, TunableNumber> tunables = new HashMap<>();
 
   // CRITICAL! Change this value to enable/disable LIVE tuning!
-  private static final boolean tunningEnabled = true;
+  private static final boolean tunningEnabled = false;
 
   private LiveTuner() {}
 

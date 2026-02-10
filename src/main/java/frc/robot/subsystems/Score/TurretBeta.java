@@ -1,14 +1,12 @@
-package frc.robot.subsystems.Shooting;
+package frc.robot.subsystems.Score;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.EncoderConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.AbsoluteEncoder;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,10 +27,12 @@ public class TurretBeta extends SubsystemBase {
     }
 
     // Hardware
-    private SparkMax rotMotor;
-    private RelativeEncoder rotEN;
-    private SparkMaxConfig rotConfig;
-    private EncoderConfig rotENConfig;
+    private TalonFX rotMotor;
+        private TalonFXConfiguration rotConfig;
+    private AbsoluteEncoder rotEN;
+
+    private TalonFX[] shootMotors;
+        private TalonFXConfiguration[] fireConfig;
 
     // Drivetrain reference for field-relative control
     private SwerveSubsystem drivebase;
@@ -68,22 +68,52 @@ public class TurretBeta extends SubsystemBase {
         currentState = newState;
     }
 
+    public void configurePID(double p, double i, double d) {
+        // PID configurator for the rotational motor
+        var rotSlot0Configs = rotConfig.Slot0;
+        rotSlot0Configs.kP = p;
+        rotSlot0Configs.kI = i;
+        rotSlot0Configs.kD = d;
+
+        rotMotor.getConfigurator().apply(rotSlot0Configs);
+    }
+
     public void configureMotors() {
-        rotConfig = new SparkMaxConfig();
-        rotENConfig = new EncoderConfig();
+        rotConfig = new TalonFXConfiguration();
+        // 0 will be the leading motor; 1 will be the follower
+        fireConfig = new TalonFXConfiguration[] {
+            new TalonFXConfiguration(),
+            new TalonFXConfiguration()
+        };
 
-        rotConfig.inverted(false);
-        rotConfig.idleMode(IdleMode.kBrake);
-        rotConfig.smartCurrentLimit(10);
-        
-        // Encoder conversion factor (gear ratio)
-        rotENConfig.positionConversionFactor(TurretConstants.gearRatio);
+        // set state of the rotation motor
+        rotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        rotConfig.closedLoop
-            .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-            .outputRange(-1, 1);
+        // set PID for rotation motor
+        configurePID(
+            TurretConstants.kRotPID[0], 
+            TurretConstants.kRotPID[1], 
+            TurretConstants.kRotPID[2]
+        );
 
-        rotMotor.configure(rotConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        // Set the motors to coast on during idle
+        rotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        for (TalonFXConfiguration config : fireConfig) {
+            config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+        }
+
+        // Apply rotation motor configs
+        rotMotor.getConfigurator().apply(rotConfig);
+
+        // Apply firing motor configs
+        for (int i = 0; i < shootMotors.length; i++) {
+            shootMotors[i].getConfigurator().apply(fireConfig[i]);
+        }
+
+        // Set the second firing motor to follow the first with opposite direction
+        shootMotors[1].setControl(new Follower
+            (TurretConstants.firingMotors[0], MotorAlignmentValue.Opposed)
+        );
 
         System.out.println("TurretBeta motor configs applied!");
     }
@@ -92,8 +122,11 @@ public class TurretBeta extends SubsystemBase {
         this.drivebase = drivebase;
 
         // Create motor and encoder
-        rotMotor = new SparkMax(TurretConstants.rotationMotor, MotorType.kBrushless);
-        rotEN = rotMotor.getEncoder();
+        rotMotor = new TalonFX(TurretConstants.rotationMotor);
+        shootMotors = new TalonFX[] {
+            new TalonFX(TurretConstants.firingMotors[0]),
+            new TalonFX(TurretConstants.firingMotors[1])
+        };
 
         // Apply configs
         configureMotors();
@@ -106,9 +139,17 @@ public class TurretBeta extends SubsystemBase {
             )
         );
 
-        // Setup live tuning
-        kP = LiveTuner.number("Turret/kP", TurretConstants.kRotPID[0]);
-        kV = LiveTuner.number("Turret/kD", TurretConstants.kRotV);
+        // Setup live tuning for PID
+        LiveTuner.pid("Turret/RotationPID", 
+            TurretConstants.kRotPID[0], 
+            TurretConstants.kRotPID[1], 
+            TurretConstants.kRotPID[2], 
+            this::configurePID
+        );
+
+        // Setup live tuning (for rotaional tracking variables)
+        kP = LiveTuner.number("Turret/TrackingPID/kP", TurretConstants.kRotTrackingP);
+        kV = LiveTuner.number("Turret/TrackingPID/kV", TurretConstants.kRotTrackingV);
 
         System.out.println("TurretBeta initialized!");
     }
@@ -190,7 +231,7 @@ public class TurretBeta extends SubsystemBase {
                 State goalState = new State(bestAng, robotRelVel);
                 setpoint = profile.calculate(0.02, setpoint, goalState);
 
-                // PD control
+                // PV control
                 double currentPosRad = Math.toRadians(turretAngRot * 360.0);
                 double error = setpoint.position - currentPosRad;
                 double output = (error * kP.get()) + (setpoint.velocity * kV.get());

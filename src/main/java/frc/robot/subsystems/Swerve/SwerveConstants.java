@@ -7,7 +7,7 @@ public class SwerveConstants {
     // -------------------------------
     public static final double kStatorCurrent = 40; // Make sure to update in JSON if changed here
     public static final double kSupplyCurrent = 20; // Make sure to update in JSON if changed here
-    public static final double kStatorDriveCurrent = 170;
+    // public static final double kStatorDriveCurrent = 170; Unused
 
 
     // -------------------------------
@@ -71,13 +71,13 @@ public class SwerveConstants {
 
 
     // Translation PID tuning (meters)
-    public static final double translationP = 40;
+    public static final double translationP = 0;
     public static final double translationI = 0;
     public static final double translationD = 0;
 
 
     // Rotation PID tuning (radians)
-    public static final double rotationP = 40;
+    public static final double rotationP = 0;
     public static final double rotationI = 0;
     public static final double rotationD = 0;
 
@@ -136,7 +136,7 @@ public class SwerveConstants {
 
 
       // --- Motor/Encoder Inversion ---
-      public static final boolean kSteerMotorInverted = true;
+      public static final boolean kSteerMotorInverted = false;
       public static final boolean kEncoderInverted = false;
 
 
@@ -155,7 +155,7 @@ public class SwerveConstants {
 
 
       // --- Motor/Encoder Inversion ---
-      public static final boolean kSteerMotorInverted = true;
+      public static final boolean kSteerMotorInverted = false;
       public static final boolean kEncoderInverted = false;
 
 
@@ -174,7 +174,7 @@ public class SwerveConstants {
 
 
       // --- Motor/Encoder Inversion ---
-      public static final boolean kSteerMotorInverted = true;
+      public static final boolean kSteerMotorInverted = false;
       public static final boolean kEncoderInverted = false;
 
 
@@ -193,7 +193,7 @@ public class SwerveConstants {
 
 
       // --- Motor/Encoder Inversion ---
-      public static final boolean kSteerMotorInverted = true;
+      public static final boolean kSteerMotorInverted = false;
       public static final boolean kEncoderInverted = false;
 
 
