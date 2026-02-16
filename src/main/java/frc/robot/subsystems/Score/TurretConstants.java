@@ -4,8 +4,8 @@ import frc.robot.util.Alliance.AllianceUtils;
 
 public class TurretConstants {
     // Motor IDs
-    public static final int[] firingMotors = {1, 2};
-    public static final int rotationMotor = 3;
+    public static final int[] firingMotors = {10, 11};
+    public static final int rotationMotor = 9;
     public static final int pitchMotor = 3;
 
     // CAN coder IDs

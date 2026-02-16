@@ -53,6 +53,10 @@ public class RobotContainer {
       return trajectory;
   }
 
+  public TurretBeta getTurretBeta() {
+      return turretBetaInstance;
+  }
+
   public SwerveSubsystem getDrivebase() {
     return drivebase;
   }

@@ -39,16 +39,20 @@ public class ControllerConfigurator {
         Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
     );
 
-    container.getDriverController().x().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(0), 0))
-    );
+    // container.getDriverController().x().whileTrue(
+    //     Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(0), 0))
+    // );
 
-    container.getDriverController().a().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(90), 0))
-    );
+    // container.getDriverController().a().whileTrue(
+    //     Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(90), 0))
+    // );
 
-    container.getDriverController().b().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(180), 0))
+    // container.getDriverController().b().whileTrue(
+    //     Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(180), 0))
+    // );
+
+    container.getDriverController().rightBumper().whileTrue(
+        Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretAngleRot()))
     );
 
   }

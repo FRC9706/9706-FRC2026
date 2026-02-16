@@ -188,6 +188,10 @@ public class TurretBeta extends SubsystemBase {
         rotMotor.stopMotor();
     }
 
+    public double getTurretAngleRot() {
+        return turretAngRot;
+    }
+
     public void rotate(double power) {
         // Clamp power output
         power = MathUtil.clamp(power, -1.0, 1.0);
