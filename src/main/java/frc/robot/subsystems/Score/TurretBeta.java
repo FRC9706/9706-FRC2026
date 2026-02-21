@@ -3,6 +3,7 @@ package frc.robot.subsystems.Score;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -59,9 +60,9 @@ public class TurretBeta extends SubsystemBase {
     private final LiveTuner.TunableNumber kV;
 
     // Temp logging
-    LoggedNetworkNumber loggedTurretAng = new LoggedNetworkNumber("Turret", 0.0);
-    LoggedNetworkNumber loggedKrakenRot = new LoggedNetworkNumber("Turret", 0.0);
-    LoggedNetworkNumber loggedRotEN = new LoggedNetworkNumber("Turret", 0.0);
+    LoggedNetworkNumber loggedTurretAng = new LoggedNetworkNumber("Turret/loggedTurretAng", 0.0);
+    LoggedNetworkNumber loggedKrakenRot = new LoggedNetworkNumber("Turret/loggedKrakenRot", 0.0);
+    LoggedNetworkNumber loggedRotEN = new LoggedNetworkNumber("Turret/loggedRotEN", 0.0);
 
     public static enum state {
         Idle,
@@ -95,6 +96,8 @@ public class TurretBeta extends SubsystemBase {
             slot0Configs.kP = p;
             slot0Configs.kI = i;
             slot0Configs.kD = d;
+            slot0Configs.kV = 0.12;
+            slot0Configs.kS = 0.25;
         }
 
         for (int n = 0; n < shootMotors.length; n++) {
@@ -109,6 +112,23 @@ public class TurretBeta extends SubsystemBase {
             new TalonFXConfiguration(),
             new TalonFXConfiguration()
         };
+
+        // Set current limits for all motors
+        rotConfig.CurrentLimits.SupplyCurrentLimit = 40;
+        rotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+
+        for (TalonFXConfiguration config : fireConfig) {
+            config.CurrentLimits.SupplyCurrentLimit = 40;
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+        }
+
+        rotConfig.Voltage.PeakForwardVoltage = TurretConstants.maxVoltage;
+        rotConfig.Voltage.PeakReverseVoltage = -TurretConstants.maxVoltage;
+    
+        for (TalonFXConfiguration config : fireConfig) {
+            config.Voltage.PeakForwardVoltage = TurretConstants.maxVoltage;
+            config.Voltage.PeakReverseVoltage = -TurretConstants.maxVoltage;
+        }
 
         // set state of the rotation motor
         rotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -139,6 +159,10 @@ public class TurretBeta extends SubsystemBase {
         for (int i = 0; i < shootMotors.length; i++) {
             shootMotors[i].getConfigurator().apply(fireConfig[i]);
         }
+
+        // Set status update frequency to 10ms for shoot motors motors
+        shootMotors[0].getMotorVoltage().setUpdateFrequency(100);
+        shootMotors[1].getMotorVoltage().setUpdateFrequency(100);
 
         // Set the second firing motor to follow the first with opposite direction
         shootMotors[1].setControl(new Follower
@@ -239,9 +263,7 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public void stopShootMotors() {
-        for (TalonFX motor : shootMotors) {
-            motor.stopMotor();
-        }
+        shootMotors[0].stopMotor();
     }
 
     public void rotate(double power) {
@@ -260,8 +282,17 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public void shoot(double vel) {
-    final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
-    shootMotors[0].setControl(m_request.withVelocity(vel));
+        final VelocityVoltage m_request = new VelocityVoltage(vel).withSlot(0);
+        shootMotors[0].setControl(m_request);
+    
+        // Log BOTH motors + follower status
+        System.out.println("Master: " + shootMotors[0].getVelocity().getValueAsDouble() + 
+                      "Follower: " + shootMotors[1].getVelocity().getValueAsDouble());
+    }
+
+    public void shootRPM(double rpm) {
+        double vel = rpm/60;
+        shoot(vel);
     }
 
     @Override
