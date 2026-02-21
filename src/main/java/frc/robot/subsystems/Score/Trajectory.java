@@ -41,22 +41,35 @@ public class Trajectory {
      * @return The calculated turret position as a double.
      */
     public double calculateAndrewPos(double encoderPos1, double encoderPos2) {
-        double r1 = 6, r2 = 7;
-        double e1 = encoderPos1 % 1.0;
-        double e2 = encoderPos2 % 1.0;
+        double encoder1Ratio = 9;
+        double encoder2Ratio = 10;
+
+        double enc1Rot = encoderPos1;
+        double enc2Rot = encoderPos2;
+
+        double[] pos1 = new double[(int) encoder1Ratio];
+        for (int i = 0; i < encoder1Ratio; i++) {
+            pos1[i] = (enc1Rot + i) / encoder1Ratio;
+        }
+
+        double[] pos2 = new double[(int) encoder2Ratio];
+        for (int i = 0; i < encoder2Ratio; i++) {
+            pos2[i] = (enc2Rot + i) / encoder2Ratio;
+        }
 
         int counter = 0;
 
-        for (int i = 0; i < r1; i++) {
-            double p1 = (e1 + i) / r1;
-            double expected_e2 = (p1 * r2) % 1.0;
-            counter++;
-
-            if (Math.abs(expected_e2 - e2) < 0.01) {
-                return p1 % 1.0;
+        for (double p1 : pos1) {
+            for (double p2 : pos2) {
+                counter++;
+                if (Math.abs(p1 - p2) < 0.001) {
+                    // Return the turret position in [0,1) just like your original method
+                    return p1 % 1.0;
+                }
             }
         }
 
-        throw new RuntimeException("No match found after " + counter + " cycles");
+        // throw new RuntimeException("No match found after " + counter + " cycles");
+        return 100;
     }
 }
