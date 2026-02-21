@@ -15,7 +15,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.Timer;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -26,6 +26,7 @@ import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
 import frc.robot.util.Tuning.LiveTuner;
 import frc.robot.subsystems.Score.Trajectory;
+import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -33,6 +34,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import java.io.File;
 
 import swervelib.SwerveInputStream;
+import swervelib.parser.PIDFConfig;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -123,6 +125,36 @@ public class RobotContainer {
 
     // Preload any trajectories in Path Planner
     Preloader.preloadPaths();
+
+  // After swerveDrive is fully created, attach live tuning:
+  // var modules = drivebase.getSwerveDrive().getModules();
+
+  // tune drive PID on all modules together
+  // LiveTuner.pid(
+  //     "Swerve/DrivePID",
+  //     SwerveConstants.Swerve.translationP,
+  //     SwerveConstants.Swerve.translationI,
+  //     SwerveConstants.Swerve.translationD,
+  //     (p, i, d) -> {
+  //       for (var module : modules) {
+  //         System.out.println("Live drive PID: " + p + ", " + i + ", " + d);
+  //         PIDFConfig config = new PIDFConfig(p, i, d, 0);
+  //         module.setDrivePIDF(config);
+  //       }
+  //     });
+
+  //     LiveTuner.pid(
+  //     "Swerve/AnglePID",
+  //     SwerveConstants.Swerve.rotationP,
+  //     SwerveConstants.Swerve.rotationI,
+  //     SwerveConstants.Swerve.rotationD,
+  //     (p, i, d) -> {
+  //       for (var module : modules) {
+  //         System.out.println("Live Angle PID: " + p + ", " + i + ", " + d);
+  //         PIDFConfig config = new PIDFConfig(p, i, d, 0);
+  //         module.setAnglePIDF(config);
+  //       }
+  //     });
   }
 
   /**
@@ -184,5 +216,7 @@ public class RobotContainer {
 
     // Update any live variables
     LiveTuner.periodic();
+
+    // 
   }
 }
