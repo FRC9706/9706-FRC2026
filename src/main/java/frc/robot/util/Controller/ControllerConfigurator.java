@@ -8,6 +8,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
+import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.util.Tuning.LiveTuner.TunableNumber;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern
@@ -18,6 +20,9 @@ public class ControllerConfigurator {
         }
         return instance;
     }
+
+    // Temp tunnable num for RPM
+    TunableNumber motorRPM;
 
     public void configureControllerTL(RobotContainer container) {
 
@@ -55,14 +60,11 @@ public class ControllerConfigurator {
         Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretAngleRot()))
     );
 
+    motorRPM = LiveTuner.number("Turret/ShootRPM", 3400);
+
     container.getDriverController().leftBumper().onTrue(
-      Commands.sequence(
-      Commands.runOnce(() -> container.getTurretBeta().shoot(3400/60))
-      )).onFalse(
-        Commands.sequence(
-          Commands.runOnce(() -> container.getTurretBeta().stopShootMotors())
-        )
-      );
+        Commands.runOnce(() -> container.getTurretBeta().shootRPM(motorRPM.get())))
+         .onFalse(Commands.runOnce(() -> container.getTurretBeta().stopShootMotors()));
 
   }
 
