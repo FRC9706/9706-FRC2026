@@ -14,6 +14,7 @@ public class TurretConstants {
 
     // Rotational motor variables
     public static final double gearRatio = 1/135;
+    public static final int maxVoltage = 10;
 
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
@@ -31,9 +32,9 @@ public class TurretConstants {
     };
 
     public static final double[] kFirePID = {
-      1.0, // kP
-      0, // kI
-      0.1  // kD
+      0.5, // kP
+      0.5, // kI
+      0  // kD
     };
 
     public static final double kRotTrackingP = 0.25;
@@ -41,7 +42,7 @@ public class TurretConstants {
 
     // Pitch motor settings
     public static final double[] kPitchPID = {
-      0.25, // kP%
+      0.25, // kP
       0, // kI
       0, // kD
     };
