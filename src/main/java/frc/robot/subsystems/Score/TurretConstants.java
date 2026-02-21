@@ -9,8 +9,8 @@ public class TurretConstants {
     public static final int pitchMotor = 3;
 
     // CAN coder IDs
-    public static final int rotationCanCoder = 1;
-    public static final int pitchCanCoder = 2;
+    public static final int rotationCanCoder = 5;
+    public static final int pitchCanCoder = 6;
 
     // Rotational motor variables
     public static final double gearRatio = 1/135;
@@ -26,6 +26,12 @@ public class TurretConstants {
 
     public static final double[] kRotPID = {
       0.04, // kP
+      0, // kI
+      0.1  // kD
+    };
+
+    public static final double[] kFirePID = {
+      1.0, // kP
       0, // kI
       0.1  // kD
     };
