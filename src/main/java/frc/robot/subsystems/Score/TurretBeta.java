@@ -1,7 +1,11 @@
 package frc.robot.subsystems.Score;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
@@ -27,6 +31,7 @@ public class TurretBeta extends SubsystemBase {
 
     // Hardware
     private TalonFX rotMotor;
+    private CANcoder rotEN;
         private TalonFXConfiguration rotConfig;
 
     private TalonFX[] shootMotors;
@@ -53,6 +58,11 @@ public class TurretBeta extends SubsystemBase {
     private final LiveTuner.TunableNumber kP;
     private final LiveTuner.TunableNumber kV;
 
+    // Temp logging
+    LoggedNetworkNumber loggedTurretAng = new LoggedNetworkNumber("Turret", 0.0);
+    LoggedNetworkNumber loggedKrakenRot = new LoggedNetworkNumber("Turret", 0.0);
+    LoggedNetworkNumber loggedRotEN = new LoggedNetworkNumber("Turret", 0.0);
+
     public static enum state {
         Idle,
         FieldTracking
@@ -68,7 +78,7 @@ public class TurretBeta extends SubsystemBase {
         currentState = newState;
     }
 
-    public void configurePID(double p, double i, double d) {
+    public void configureRotPID(double p, double i, double d) {
         // PID configurator for the rotational motor
         var rotSlot0Configs = rotConfig.Slot0;
         rotSlot0Configs.kP = p;
@@ -76,6 +86,20 @@ public class TurretBeta extends SubsystemBase {
         rotSlot0Configs.kD = d;
 
         rotMotor.getConfigurator().apply(rotSlot0Configs);
+    }
+
+    public void configureFirePID(double p, double i, double d) {
+        // PID configurator for the firing motors (assumes both have same PID)
+        for (TalonFXConfiguration config : fireConfig) {
+            var slot0Configs = config.Slot0;
+            slot0Configs.kP = p;
+            slot0Configs.kI = i;
+            slot0Configs.kD = d;
+        }
+
+        for (int n = 0; n < shootMotors.length; n++) {
+            shootMotors[n].getConfigurator().apply(fireConfig[n]);
+        }
     }
 
     public void configureMotors() {
@@ -90,10 +114,16 @@ public class TurretBeta extends SubsystemBase {
         rotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
         // set PID for rotation motor
-        configurePID(
+        configureRotPID(
             TurretConstants.kRotPID[0], 
             TurretConstants.kRotPID[1], 
             TurretConstants.kRotPID[2]
+        );
+
+        configureFirePID(
+            TurretConstants.kFirePID[0], 
+            TurretConstants.kFirePID[1], 
+            TurretConstants.kFirePID[2]
         );
 
         // Set the motors to coast on during idle
@@ -112,8 +142,12 @@ public class TurretBeta extends SubsystemBase {
 
         // Set the second firing motor to follow the first with opposite direction
         shootMotors[1].setControl(new Follower
-            (TurretConstants.firingMotors[0], MotorAlignmentValue.Opposed)
+            (shootMotors[0].getDeviceID(), MotorAlignmentValue.Opposed)
         );
+
+        System.out.println("Shooter master ID: " + shootMotors[0].getDeviceID());
+        System.out.println("Shooter follower ID: " + shootMotors[1].getDeviceID());
+
 
         System.out.println("TurretBeta motor configs applied!");
     }
@@ -124,6 +158,7 @@ public class TurretBeta extends SubsystemBase {
 
         // Create motor and encoder
         rotMotor = new TalonFX(TurretConstants.rotationMotor);
+            rotEN = new CANcoder(TurretConstants.rotationCanCoder);
         shootMotors = new TalonFX[] {
             new TalonFX(TurretConstants.firingMotors[0]),
             new TalonFX(TurretConstants.firingMotors[1])
@@ -145,7 +180,14 @@ public class TurretBeta extends SubsystemBase {
             TurretConstants.kRotPID[0], 
             TurretConstants.kRotPID[1], 
             TurretConstants.kRotPID[2], 
-            this::configurePID
+            this::configureRotPID
+        );
+
+        LiveTuner.pid("Turret/FirePID", 
+            TurretConstants.kFirePID[0], 
+            TurretConstants.kFirePID[1], 
+            TurretConstants.kFirePID[2], 
+            this::configureFirePID
         );
 
         // Setup live tuning (for rotaional tracking variables)
@@ -153,6 +195,14 @@ public class TurretBeta extends SubsystemBase {
         kV = LiveTuner.number("Turret/TrackingPID/kV", TurretConstants.kRotTrackingV);
 
         System.out.println("TurretBeta initialized!");
+    }
+
+    public double getKrakenRot() {
+        return (rotMotor.getPosition().getValueAsDouble() + 0.279785) % 1.0;
+    }
+
+    public double getTurretAngleRot() {
+        return turretAngRot;
     }
 
     public void setFieldTarget(Rotation2d fieldAng, double fieldVel) {
@@ -188,8 +238,10 @@ public class TurretBeta extends SubsystemBase {
         rotMotor.stopMotor();
     }
 
-    public double getTurretAngleRot() {
-        return turretAngRot;
+    public void stopShootMotors() {
+        for (TalonFX motor : shootMotors) {
+            motor.stopMotor();
+        }
     }
 
     public void rotate(double power) {
@@ -207,13 +259,23 @@ public class TurretBeta extends SubsystemBase {
         rotMotor.set(power);
     }
 
+    public void shoot(double vel) {
+    final VelocityVoltage m_request = new VelocityVoltage(0).withSlot(0);
+    shootMotors[0].setControl(m_request.withVelocity(vel));
+    }
+
     @Override
     public void periodic() {
         // Update encoder position (in rotations)
         turretAngRot = trajectory.calculateAndrewPos(
-            rotMotor.getPosition().getValueAsDouble(), 
-            shootMotors[0].getPosition().getValueAsDouble()
+            getKrakenRot(), 
+            rotEN.getPosition().getValueAsDouble()
         );
+
+        // Temp logging
+        loggedTurretAng.set(turretAngRot);
+        loggedKrakenRot.set(getKrakenRot());
+        loggedRotEN.set(rotEN.getPosition().getValueAsDouble());
 
         // State machine
         switch (currentState) {
