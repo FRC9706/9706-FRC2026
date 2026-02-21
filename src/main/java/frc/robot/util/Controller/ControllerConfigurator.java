@@ -55,6 +55,15 @@ public class ControllerConfigurator {
         Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretAngleRot()))
     );
 
+    container.getDriverController().leftBumper().onTrue(
+      Commands.sequence(
+      Commands.runOnce(() -> container.getTurretBeta().shoot(3400/60))
+      )).onFalse(
+        Commands.sequence(
+          Commands.runOnce(() -> container.getTurretBeta().stopShootMotors())
+        )
+      );
+
   }
 
     public static void configureControllerSim(RobotContainer container) {
