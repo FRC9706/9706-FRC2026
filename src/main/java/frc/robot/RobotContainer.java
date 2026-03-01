@@ -24,9 +24,8 @@ import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
-import frc.robot.util.Tuning.LiveTuner;
-import frc.robot.subsystems.Score.Trajectory;
-import frc.robot.subsystems.Swerve.SwerveConstants;
+import frc.robot.subsystems.Score.TurretModules.Trajectory;
+// import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -34,7 +33,7 @@ import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import java.io.File;
 
 import swervelib.SwerveInputStream;
-import swervelib.parser.PIDFConfig;
+// import swervelib.parser.PIDFConfig;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -208,15 +207,5 @@ public class RobotContainer {
 
   public void setMotorBrake(boolean brake) {
     drivebase.setMotorBrake(brake);
-  }
-
-  public void periodic() {
-    // Add limelight instances
-    // limelightInstance.createVisionMeasurements(this, Timer.getTimestamp());
-
-    // Update any live variables
-    LiveTuner.periodic();
-
-    // 
   }
 }
