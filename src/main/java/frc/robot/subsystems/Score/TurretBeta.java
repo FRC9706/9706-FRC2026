@@ -2,15 +2,9 @@ package frc.robot.subsystems.Score;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.VoltageConfigs;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,6 +13,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.subsystems.Score.TurretModules.Trajectory;
+import frc.robot.subsystems.Score.TurretModules.MotorConfigs;
 
 public class TurretBeta extends SubsystemBase {
     // Singleton instance
@@ -33,10 +29,8 @@ public class TurretBeta extends SubsystemBase {
     // Hardware
     private TalonFX rotMotor;
     private CANcoder rotEN;
-        private TalonFXConfiguration rotConfig;
 
     private TalonFX[] shootMotors;
-        private TalonFXConfiguration[] fireConfig;
 
     // Drivetrain reference for field-relative control
     private SwerveSubsystem drivebase;
@@ -49,7 +43,7 @@ public class TurretBeta extends SubsystemBase {
 
     // Field tracking goals
     private Rotation2d goalFieldAng = Rotation2d.kZero;
-    private double goalFieldVel = 0.0;
+    private double goalFieldVelRotPerSec = 0.0;
     private double lastGoalAng = 0.0;
 
     // Current turret position (rotations from encoder)
@@ -60,9 +54,14 @@ public class TurretBeta extends SubsystemBase {
     private final LiveTuner.TunableNumber kV;
 
     // Temp logging
-    LoggedNetworkNumber loggedTurretAng = new LoggedNetworkNumber("Turret/loggedTurretAng", 0.0);
-    LoggedNetworkNumber loggedKrakenRot = new LoggedNetworkNumber("Turret/loggedKrakenRot", 0.0);
-    LoggedNetworkNumber loggedRotEN = new LoggedNetworkNumber("Turret/loggedRotEN", 0.0);
+    LoggedNetworkNumber loggedTurretAng = 
+    new LoggedNetworkNumber("Turret/loggedTurretAng", 0.0);
+
+    LoggedNetworkNumber loggedKrakenRot = 
+    new LoggedNetworkNumber("Turret/loggedKrakenRot", 0.0);
+
+    LoggedNetworkNumber loggedRotEN = 
+    new LoggedNetworkNumber("Turret/loggedRotEN", 0.0);
 
     public static enum state {
         Idle,
@@ -80,100 +79,11 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public void configureRotPID(double p, double i, double d) {
-        // PID configurator for the rotational motor
-        var rotSlot0Configs = rotConfig.Slot0;
-        rotSlot0Configs.kP = p;
-        rotSlot0Configs.kI = i;
-        rotSlot0Configs.kD = d;
-
-        rotMotor.getConfigurator().apply(rotSlot0Configs);
+        MotorConfigs.configureRotPID(rotMotor, p, i, d);
     }
 
     public void configureFirePID(double p, double i, double d) {
-        // PID configurator for the firing motors (assumes both have same PID)
-        for (TalonFXConfiguration config : fireConfig) {
-            var slot0Configs = config.Slot0;
-            slot0Configs.kP = p;
-            slot0Configs.kI = i;
-            slot0Configs.kD = d;
-            slot0Configs.kV = 0.12;
-            slot0Configs.kS = 0.25;
-        }
-
-        for (int n = 0; n < shootMotors.length; n++) {
-            shootMotors[n].getConfigurator().apply(fireConfig[n]);
-        }
-    }
-
-    public void configureMotors() {
-        rotConfig = new TalonFXConfiguration();
-        // 0 will be the leading motor; 1 will be the follower
-        fireConfig = new TalonFXConfiguration[] {
-            new TalonFXConfiguration(),
-            new TalonFXConfiguration()
-        };
-
-        // Set current limits for all motors
-        rotConfig.CurrentLimits.SupplyCurrentLimit = 40;
-        rotConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-
-        for (TalonFXConfiguration config : fireConfig) {
-            config.CurrentLimits.SupplyCurrentLimit = 40;
-            config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        }
-
-        rotConfig.Voltage.PeakForwardVoltage = TurretConstants.maxVoltage;
-        rotConfig.Voltage.PeakReverseVoltage = -TurretConstants.maxVoltage;
-    
-        for (TalonFXConfiguration config : fireConfig) {
-            config.Voltage.PeakForwardVoltage = TurretConstants.maxVoltage;
-            config.Voltage.PeakReverseVoltage = -TurretConstants.maxVoltage;
-        }
-
-        // set state of the rotation motor
-        rotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-
-        // set PID for rotation motor
-        configureRotPID(
-            TurretConstants.kRotPID[0], 
-            TurretConstants.kRotPID[1], 
-            TurretConstants.kRotPID[2]
-        );
-
-        configureFirePID(
-            TurretConstants.kFirePID[0], 
-            TurretConstants.kFirePID[1], 
-            TurretConstants.kFirePID[2]
-        );
-
-        // Set the motors to coast on during idle
-        rotConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-        for (TalonFXConfiguration config : fireConfig) {
-            config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-        }
-
-        // Apply rotation motor configs
-        rotMotor.getConfigurator().apply(rotConfig);
-
-        // Apply firing motor configs
-        for (int i = 0; i < shootMotors.length; i++) {
-            shootMotors[i].getConfigurator().apply(fireConfig[i]);
-        }
-
-        // Set status update frequency to 10ms for shoot motors motors
-        shootMotors[0].getMotorVoltage().setUpdateFrequency(100);
-        shootMotors[1].getMotorVoltage().setUpdateFrequency(100);
-
-        // Set the second firing motor to follow the first with opposite direction
-        shootMotors[1].setControl(new Follower
-            (shootMotors[0].getDeviceID(), MotorAlignmentValue.Opposed)
-        );
-
-        System.out.println("Shooter master ID: " + shootMotors[0].getDeviceID());
-        System.out.println("Shooter follower ID: " + shootMotors[1].getDeviceID());
-
-
-        System.out.println("TurretBeta motor configs applied!");
+        MotorConfigs.configureFirePID(shootMotors, p, i, d);
     }
 
     private TurretBeta(SwerveSubsystem drivebase, Trajectory trajectory) {
@@ -189,13 +99,13 @@ public class TurretBeta extends SubsystemBase {
         };
 
         // Apply configs
-        configureMotors();
+        MotorConfigs.configureMotors(rotMotor, shootMotors);
 
         // Initialize motion profile
         profile = new TrapezoidProfile(
             new TrapezoidProfile.Constraints(
-                TurretConstants.maxVelRadPerSec,
-                TurretConstants.maxAccelRadPerSec
+                TurretConstants.maxVelRotPerSec,
+                TurretConstants.maxAccelRotPerSec
             )
         );
 
@@ -229,41 +139,26 @@ public class TurretBeta extends SubsystemBase {
         return turretAngRot;
     }
 
-    public void setFieldTarget(Rotation2d fieldAng, double fieldVel) {
-        this.goalFieldAng = fieldAng;
-        this.goalFieldVel = fieldVel;
-        
-        // Auto-switch to tracking when target is set
-        if (currentState == state.Idle) {
-            currentState = state.FieldTracking;
-        }
-    }
-
-    private double findBestAng(double targetAngRad) {
-        double bestAng = targetAngRad;
-        double minLim = TurretConstants.turretRotLim * -1.0;
-        double maxLim = TurretConstants.turretRotLim;
-
-        // Try wrapping +/- 2 pi to find shortest path
-        for (int i = -1; i <= 1; i++) {
-            double candidate = targetAngRad + (Math.PI * 2.0 * i);
-            if (candidate >= minLim && candidate <= maxLim) {
-                if (Math.abs(candidate - lastGoalAng) < Math.abs(bestAng - lastGoalAng)) {
-                    bestAng = candidate;
-                }
-            }
-        }
-
-        lastGoalAng = MathUtil.clamp(bestAng, minLim, maxLim);
-        return lastGoalAng;
-    }
-
     public void stopRotMotor() {
         rotMotor.stopMotor();
     }
 
     public void stopShootMotors() {
         shootMotors[0].stopMotor();
+    }
+
+    public void shootRPM(double rpm) {
+        double vel = rpm/60;
+        shoot(vel);
+    }
+
+    public void shoot(double vel) {
+        final VelocityVoltage m_request = new VelocityVoltage(vel).withSlot(0);
+        shootMotors[0].setControl(m_request);
+    
+        // Log BOTH motors + follower status
+        System.out.println("Master: " + shootMotors[0].getVelocity().getValueAsDouble() + 
+                      "Follower: " + shootMotors[1].getVelocity().getValueAsDouble());
     }
 
     public void rotate(double power) {
@@ -281,23 +176,38 @@ public class TurretBeta extends SubsystemBase {
         rotMotor.set(power);
     }
 
-    public void shoot(double vel) {
-        final VelocityVoltage m_request = new VelocityVoltage(vel).withSlot(0);
-        shootMotors[0].setControl(m_request);
-    
-        // Log BOTH motors + follower status
-        System.out.println("Master: " + shootMotors[0].getVelocity().getValueAsDouble() + 
-                      "Follower: " + shootMotors[1].getVelocity().getValueAsDouble());
+    public void setFieldTarget(Rotation2d fieldAng, double fieldVelRotPerSec) {
+        this.goalFieldAng = fieldAng;
+        this.goalFieldVelRotPerSec = fieldVelRotPerSec;
+        
+        // Auto-switch to tracking when target is set
+        if (currentState == state.Idle) {
+            currentState = state.FieldTracking;
+        }
     }
 
-    public void shootRPM(double rpm) {
-        double vel = rpm/60;
-        shoot(vel);
+    private double findBestAngRot(double targetAngRot) {
+        double bestAng = targetAngRot;
+        double minLim = -TurretConstants.turretRotLim;
+        double maxLim = TurretConstants.turretRotLim;
+
+        // Try wrapping ±1.0 rotation
+        for (int i = -1; i <= 1; i++) {
+            double candidate = targetAngRot + (1.0 * i);  // ±1 full rotation
+            if (candidate >= minLim && candidate <= maxLim) {
+                if (Math.abs(candidate - lastGoalAng) < Math.abs(bestAng - lastGoalAng)) {
+                    bestAng = candidate;
+                }
+            }
+        }
+
+        lastGoalAng = MathUtil.clamp(bestAng, minLim, maxLim);
+        return lastGoalAng;
     }
 
     @Override
     public void periodic() {
-        // Update encoder position (in rotations)
+        // Update encoder position (in ROTATIONS from Andrew CRT)
         turretAngRot = trajectory.calculateAndrewPos(
             getKrakenRot(), 
             rotEN.getPosition().getValueAsDouble()
@@ -312,30 +222,36 @@ public class TurretBeta extends SubsystemBase {
         switch (currentState) {
             case Idle:
                 stopRotMotor();
-                // Hold current position in setpoint
-                setpoint = new State(Math.toRadians(turretAngRot * 360.0), 0.0);
+                // Hold current position in setpoint (ROTATIONS)
+                setpoint = new State(turretAngRot, 0.0);
                 break;
 
             case FieldTracking:
                 // Get robot state from drivetrain
                 Rotation2d robotHeading = drivebase.getPose().getRotation();
-                double robotAngVel = drivebase.getFieldVelocity().omegaRadiansPerSecond;
+                double robotAngVelRad = drivebase.getFieldVelocity().omegaRadiansPerSecond;
 
-                // Convert field goal to robot-relative goal
-                Rotation2d robotRelGoal = goalFieldAng.minus(robotHeading);
-                double robotRelVel = goalFieldVel - robotAngVel;
+                // Convert robot heading and velocity to ROTATIONS
+                double robotHeadingRot = robotHeading.getRotations();
+                double robotAngVelRot = robotAngVelRad / (2.0 * Math.PI);  // rad/s → rot/s
 
-                // Find best angle (wrap-around logic)
-                double bestAng = findBestAng(robotRelGoal.getRadians());
+                // Get goal in ROTATIONS
+                double goalFieldRot = goalFieldAng.getRotations();
 
-                // Calculate trapezoidal profile setpoint
-                State goalState = new State(bestAng, robotRelVel);
+                // Convert field goal to robot-relative goal (ROTATIONS)
+                double robotRelGoalRot = goalFieldRot - robotHeadingRot;
+                double robotRelVelRot = goalFieldVelRotPerSec - robotAngVelRot;
+
+                // Find best angle (wrap-around logic in ROTATIONS)
+                double bestAngRot = findBestAngRot(robotRelGoalRot);
+
+                // Calculate trapezoidal profile setpoint (ROTATIONS)
+                State goalState = new State(bestAngRot, robotRelVelRot);
                 setpoint = profile.calculate(0.02, setpoint, goalState);
 
-                // PV control
-                double currentPosRad = Math.toRadians(turretAngRot * 360.0);
-                double error = setpoint.position - currentPosRad;
-                double output = (error * kP.get()) + (setpoint.velocity * kV.get());
+                // PV control (ROTATIONS)
+                double posError = setpoint.position - turretAngRot;
+                double output = (posError * kP.get()) + (setpoint.velocity * kV.get());
 
                 rotate(output);
                 break;
