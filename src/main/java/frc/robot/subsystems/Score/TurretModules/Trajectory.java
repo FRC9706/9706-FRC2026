@@ -65,8 +65,8 @@ public class Trajectory {
      * @return The calculated turret position as a double.
      */
     public double calculateAndrewPos(double encoderPos1, double encoderPos2) {
-        double encoder1Ratio = 9;
-        double encoder2Ratio = 10;
+        double encoder1Ratio = 143/13;
+        double encoder2Ratio = 143/11;
 
         double enc1Rot = encoderPos1;
         double enc2Rot = encoderPos2;
