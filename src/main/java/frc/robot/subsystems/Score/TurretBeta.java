@@ -165,10 +165,8 @@ public class TurretBeta extends SubsystemBase {
         // Clamp power output
         power = MathUtil.clamp(power, -1.0, 1.0);
 
-        // Safety limits
-        double turretAngRad = Math.toRadians(turretAngRot * 360.0); // Convert rotations to radians
-        if ((turretAngRad >= TurretConstants.turretRotLim && power > 0) 
-            || (turretAngRad <= -TurretConstants.turretRotLim && power < 0)) {
+        if ((turretAngRot >= TurretConstants.turretRotLim && power > 0) 
+            || (turretAngRot <= -TurretConstants.turretRotLim && power < 0)) {
             stopRotMotor();
             return;
         }
@@ -212,6 +210,14 @@ public class TurretBeta extends SubsystemBase {
             getKrakenRot(), 
             rotEN.getPosition().getValueAsDouble()
         );
+
+        // Add safety againt invalid return on ART (Andrew Remainder Theorem)
+        if (turretAngRot >= 99) {
+            System.out.println("Turret: Andrew remainder theorm FAILED!");
+            stopRotMotor();
+            currentState = state.Idle;
+            return;
+        }
 
         // Temp logging
         loggedTurretAng.set(turretAngRot);

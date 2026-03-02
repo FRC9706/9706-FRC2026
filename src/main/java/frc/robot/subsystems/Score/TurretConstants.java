@@ -13,7 +13,7 @@ public class TurretConstants {
     public static final int pitchCanCoder = 6;
 
     // Rotational motor variables
-    public static final double gearRatio = 1/135;
+    public static final double gearRatio = 143/13; // old ratio was 1/135
     public static final int maxVoltage = 10;
 
     // Rotational motor settings
