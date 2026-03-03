@@ -14,7 +14,7 @@ public class SwerveConstants {
     //        Gear ratios
     // -------------------------------
     public static final double gearRatio = 1;
-    public static final double kDriveGearRatio = 6.82; // Make sure to update in JSON if changed here
+    public static final double kDriveGearRatio = 7.67; // Make sure to update in JSON if changed here
     public static final double kSteerGearRatio = 12.1; // Make sure to update in JSON if changed here
     public static final double kCoupleRatio = 54.0 / 12.0;
 
