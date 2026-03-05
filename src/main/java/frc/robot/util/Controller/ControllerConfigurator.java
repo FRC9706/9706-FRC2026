@@ -45,15 +45,15 @@ public class ControllerConfigurator {
     );
 
     container.getDriverController().x().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(0), 0))
+        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(0), 0))
     );
 
     container.getDriverController().a().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(90), 0))
+        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(90), 0))
     );
 
     container.getDriverController().b().whileTrue(
-        Commands.run(() -> container.turretBetaInstance.setFieldTarget(Rotation2d.fromDegrees(180), 0))
+        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(180), 0))
     );
 
     container.getDriverController().rightBumper().whileTrue(
