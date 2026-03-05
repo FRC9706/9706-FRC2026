@@ -60,25 +60,22 @@ public class Trajectory {
      * Calculates turret position based on two encoder readings.
      * Logic identical to getTurretPosition() (minus print statements).
      *
-     * @param encoderPos1 The first encoder position.
-     * @param encoderPos2 The second encoder position.
+     * @param motorPosRot The motor's position in rotations.
+     * @param extEncoderPosRot An external encoder's position in rotations.
      * @return The calculated turret position as a double.
      */
-    public double calculateAndrewPos(double encoderPos1, double encoderPos2) {
-        double encoder1Ratio = 143/13;
-        double encoder2Ratio = 143/11;
+    public double calculateAndrewPos(double motorPosRot, double extEncoderPosRot) {
+        double motorRatio = 143/13;
+        double extEncoderRatio = 143/11;
 
-        double enc1Rot = encoderPos1;
-        double enc2Rot = encoderPos2;
-
-        double[] pos1 = new double[(int) encoder1Ratio];
-        for (int i = 0; i < encoder1Ratio; i++) {
-            pos1[i] = (enc1Rot + i) / encoder1Ratio;
+        double[] pos1 = new double[(int) motorRatio];
+        for (int i = 0; i < motorRatio; i++) {
+            pos1[i] = (motorPosRot + i) * extEncoderPosRot/motorRatio;
         }
 
-        double[] pos2 = new double[(int) encoder2Ratio];
-        for (int i = 0; i < encoder2Ratio; i++) {
-            pos2[i] = (enc2Rot + i) / encoder2Ratio;
+        double[] pos2 = new double[(int) extEncoderRatio];
+        for (int i = 0; i < extEncoderRatio; i++) {
+            pos2[i] = (extEncoderPosRot + i) * motorPosRot/extEncoderRatio;
         }
 
         int counter = 0;
