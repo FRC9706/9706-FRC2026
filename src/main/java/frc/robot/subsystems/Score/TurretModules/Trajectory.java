@@ -92,7 +92,6 @@ public class Trajectory {
             }
         }
 
-        // throw new RuntimeException("No match found after " + counter + " cycles");
-        return 100;
+        return 404;
     }
 }
