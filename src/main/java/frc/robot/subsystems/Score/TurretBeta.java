@@ -1,5 +1,6 @@
 package frc.robot.subsystems.Score;
 
+import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import com.ctre.phoenix6.controls.VelocityVoltage;
@@ -62,6 +63,9 @@ public class TurretBeta extends SubsystemBase {
 
     LoggedNetworkNumber loggedRotEN = 
     new LoggedNetworkNumber("Turret/loggedRotEN", 0.0);
+
+    LoggedNetworkBoolean hasARTFailed = 
+    new LoggedNetworkBoolean("Turret/hasARTFailed", false);
 
     public static enum state {
         Idle,
@@ -208,21 +212,24 @@ public class TurretBeta extends SubsystemBase {
         // Update encoder position (in ROTATIONS from Andrew CRT)
         turretAngRot = trajectory.calculateAndrewPos(
             getKrakenRot(), 
-            rotEN.getPosition().getValueAsDouble()
+            rotEN.getAbsolutePosition().getValueAsDouble()
         );
-
-        // Add safety againt invalid return on ART (Andrew Remainder Theorem)
-        if (turretAngRot >= 99) {
-            System.out.println("Turret: Andrew remainder theorm FAILED!");
-            stopRotMotor();
-            currentState = state.Idle;
-            return;
-        }
 
         // Temp logging
         loggedTurretAng.set(turretAngRot);
         loggedKrakenRot.set(getKrakenRot());
-        loggedRotEN.set(rotEN.getPosition().getValueAsDouble());
+        loggedRotEN.set(rotEN.getAbsolutePosition().getValueAsDouble());
+
+        // Add safety againt invalid return on ART (Andrew Remainder Theorem)
+        if (turretAngRot >= 400) {
+            System.out.println("Turret: Andrew remainder theorm FAILED!");
+            hasARTFailed.set(true);
+            stopRotMotor();
+            currentState = state.Idle;
+            return;
+        } else {
+            hasARTFailed.set(false);
+        }
 
         // State machine
         switch (currentState) {
@@ -239,7 +246,7 @@ public class TurretBeta extends SubsystemBase {
 
                 // Convert robot heading and velocity to ROTATIONS
                 double robotHeadingRot = robotHeading.getRotations();
-                double robotAngVelRot = robotAngVelRad / (2.0 * Math.PI);  // rad/s → rot/s
+                double robotAngVelRot = robotAngVelRad / (2.0 * Math.PI);  // rad/s -> rot/s
 
                 // Get goal in ROTATIONS
                 double goalFieldRot = goalFieldAng.getRotations();
