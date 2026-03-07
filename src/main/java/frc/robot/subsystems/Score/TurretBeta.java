@@ -136,7 +136,7 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public double getKrakenRot() {
-        return (rotMotor.getPosition().getValueAsDouble() + 0.279785) % 1.0;
+        return (rotMotor.getPosition().getValueAsDouble() + 11.0922585);
     }
 
     public double getTurretAngleRot() {
@@ -217,7 +217,7 @@ public class TurretBeta extends SubsystemBase {
 
         // Temp logging
         loggedTurretAng.set(turretAngRot);
-        loggedKrakenRot.set(getKrakenRot());
+        loggedKrakenRot.set(trajectory.wrap(getKrakenRot()));
         loggedRotEN.set(rotEN.getAbsolutePosition().getValueAsDouble());
 
         // Add safety againt invalid return on ART (Andrew Remainder Theorem)
