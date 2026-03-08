@@ -13,23 +13,37 @@ public class TurretConstants {
     public static final int pitchCanCoder = 6;
 
     // Rotational motor variables
-    public static final double gearRatio = 143/13; // old ratio was 1/135
     public static final int maxVoltage = 10;
+
+    // Rotional Gear variables
+    public static final int rotMotorTeeth = 13;
+    public static final int extEncoderTeeth = 11;
+    public static final int centerGearTeeth = (rotMotorTeeth*extEncoderTeeth);
+
+    public static final double rotMotorGearRatio = (double)centerGearTeeth / (double)rotMotorTeeth;
+    public static final double extEncoderGearRatio = (double)centerGearTeeth / (double)extEncoderTeeth;
 
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
     public static final double maxRotPower = 0.5;
-    public static final double turretRotLim = 0.25; // in rotations, +/- 90
+    public static final double turretRotLim = 0.58; // in rotations, +/- 90
 
     // Motion profile constraints
     public static final double maxVelRotPerSec = 1.0;     // rot/s
     public static final double maxAccelRotPerSec = 2.0;  // rot/s^2
 
     public static final double[] kRotPID = {
-      0.04, // kP
+      0.5, // kP
       0, // kI
-      0.1  // kD
+      0,  // kD
+      0.25, // kS
+      0.10, // kV
+      0.01, // kA
+      5.5, // Motion Magic cruise velocity
+      2.75, // Motion Magic acceleration
+      1600 // Motion Magic jerk
     };
+
 
     public static final double[] kFirePID = {
       0.5, // kP
