@@ -4,7 +4,6 @@ package frc.robot.util.Controller;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
@@ -31,6 +30,19 @@ public class ControllerConfigurator {
     // Button bindings
     // ====================
 
+    // Move foward for one second
+    // container.getDriverController().y().whileTrue(
+    //     Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
+    // );
+
+    container.getDriverController().y().whileTrue(
+        Commands.run(() -> container.getTurretBeta().resetRotEncoderPositons())
+    );
+
+    container.getDriverController().x().whileTrue(
+        Commands.run(() -> container.getTurretBeta().smartMoveTurretToPos(190.0/360.0))
+    );
+
     // Reset Gyro/Oreint robot to current facing position
     container.getDriverController().a().onTrue(
         Commands.sequence(
@@ -39,31 +51,18 @@ public class ControllerConfigurator {
         )
     );
 
-    // Move foward for one second
-    container.getDriverController().y().whileTrue(
-        Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
-    );
-
-    container.getDriverController().x().whileTrue(
-        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(0), 0))
-    );
-
-    container.getDriverController().a().whileTrue(
-        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(90), 0))
-    );
-
     container.getDriverController().b().whileTrue(
-        Commands.run(() -> container.getTurretBeta().setFieldTarget(Rotation2d.fromDegrees(180), 0))
+        Commands.run(() -> container.getTurretBeta().smartMoveTurretToPos(-190.0/360.0))
     );
 
     container.getDriverController().rightBumper().whileTrue(
-        Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretAngleRot()))
+        Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretPos()))
     );
 
     motorRPM = LiveTuner.number("Turret/ShootRPM", 3400);
 
     container.getDriverController().leftBumper().onTrue(
-        Commands.runOnce(() -> container.getTurretBeta().shootRPM(motorRPM.get())))
+        Commands.runOnce(() -> container.getTurretBeta().shoot(motorRPM.get())))
          .onFalse(Commands.runOnce(() -> container.getTurretBeta().stopShootMotors()));
 
    }
