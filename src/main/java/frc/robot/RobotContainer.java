@@ -24,7 +24,7 @@ import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
-import frc.robot.subsystems.Score.TurretModules.Trajectory;
+import frc.robot.subsystems.Score.TurretModules.TurretMath;
 // import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -44,14 +44,14 @@ public class RobotContainer {
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
   // The robot's subsystems and commands are defined here...
   private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final Trajectory trajectory = new Trajectory(drivebase::getPose);
+  private final TurretMath turretMath = new TurretMath(drivebase::getPose);
   // Initialize instances for each subsystem for better subsystem management
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
   public final Limelight limelightInstance = Limelight.getInstance();
-  public final TurretBeta turretBetaInstance = TurretBeta.getInstance(getDrivebase(), getTrajectory());
+  public final TurretBeta turretBetaInstance = TurretBeta.getInstance(getDrivebase(), getTurretMath());
 
-  public Trajectory getTrajectory() {
-      return trajectory;
+  public TurretMath getTurretMath() {
+      return turretMath;
   }
 
   public TurretBeta getTurretBeta() {
