@@ -12,7 +12,12 @@ import frc.robot.subsystems.Score.TurretConstants;
 public class MotorConfigs {
     // Static utility class for configuring turret motors
 
-    public static void configureRotPID(TalonFX rotMotor, double p, double i, double d) {
+
+    public static void configureRotPID(
+        TalonFX rotMotor, 
+        double p, double i, double d,
+        double s, double v, double a,
+        double cruiseVel, double accel, double jerk) {
         // PID configurator for the rotational motor
         var rotConfig = new TalonFXConfiguration();
         rotMotor.getConfigurator().refresh(rotConfig);
@@ -20,8 +25,18 @@ public class MotorConfigs {
         rotSlot0Configs.kP = p;
         rotSlot0Configs.kI = i;
         rotSlot0Configs.kD = d;
+        rotSlot0Configs.kS = s;
+        rotSlot0Configs.kV = v;
+        rotSlot0Configs.kA = a;
 
-        rotMotor.getConfigurator().apply(rotSlot0Configs);
+        // set Motion Magic settings
+        var motionMagicConfigs = rotConfig.MotionMagic;
+        motionMagicConfigs.MotionMagicCruiseVelocity = cruiseVel; // Target cruise velocity
+        motionMagicConfigs.MotionMagicAcceleration = accel; // Target acceleration
+        motionMagicConfigs.MotionMagicJerk = jerk; // Target jerk for smooth S-Curve
+
+        // Apply entire config INCLUDING Motion Magic settings
+        rotMotor.getConfigurator().apply(rotConfig);
     }
 
     public static void configureFirePID(TalonFX[] shootMotors, double p, double i, double d) {
@@ -35,12 +50,14 @@ public class MotorConfigs {
             slot0Configs.kD = d;
             slot0Configs.kV = 0.12;
             slot0Configs.kS = 0.25;
+
             shootMotors[n].getConfigurator().apply(fireConfig);
         }
     }
 
     public static void configureMotors(TalonFX rotMotor, TalonFX[] shootMotors) {
         TalonFXConfiguration rotConfig = new TalonFXConfiguration();
+        
         // 0 will be the leading motor; 1 will be the follower
         TalonFXConfiguration[] fireConfig = new TalonFXConfiguration[] {
             new TalonFXConfiguration(),
@@ -67,12 +84,18 @@ public class MotorConfigs {
         // set state of the rotation motor
         rotConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 
-        // set PID for rotation motor
+        // set MagicMotion PID for rotation motor
         configureRotPID(
             rotMotor,
-            TurretConstants.kRotPID[0], 
-            TurretConstants.kRotPID[1], 
-            TurretConstants.kRotPID[2]
+            TurretConstants.kRotPID[0], // Kp
+            TurretConstants.kRotPID[1], // kI
+            TurretConstants.kRotPID[2], // kD
+            TurretConstants.kRotPID[3], // kS
+            TurretConstants.kRotPID[4], // kV
+            TurretConstants.kRotPID[5], // kA
+            TurretConstants.kRotPID[6], // Motion Magic cruise velocity
+            TurretConstants.kRotPID[7], // Motion Magic acceleration
+            TurretConstants.kRotPID[8]  // Motion Magic jerk
         );
 
         configureFirePID(
