@@ -52,7 +52,7 @@ public final class LiveTuner {
     kD.onChange(v -> apply.run());
   }
 
-    // Create a tunable PID set
+    // Create a tunable PIDSVA + magic motion parameters set
   public static void pidMagicMotion (
       String name,
       double defaultP,
