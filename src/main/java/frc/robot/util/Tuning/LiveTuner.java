@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public final class LiveTuner {
 
@@ -24,7 +26,7 @@ public final class LiveTuner {
 
   private LiveTuner() {}
 
-  // Call once per loop (robotPeriodic is ideal)
+  // Call once per loop (Robot's periodic is ideal)
   public static void periodic() {
     instance.update();
   }
@@ -52,7 +54,7 @@ public final class LiveTuner {
     kD.onChange(v -> apply.run());
   }
 
-    // Create a tunable PIDSVA + magic motion parameters set
+  // Create a tunable PIDSVA + magic motion parameters set
   public static void pidMagicMotion (
       String name,
       double defaultP,
@@ -92,6 +94,32 @@ public final class LiveTuner {
     jerk.onChange(v -> apply.run());
   }
 
+  /**
+   * Create a tunable dropdown/choice selector in Shuffleboard.
+   * When the selection changes, the corresponding option's callback is executed.
+   * 
+   * @param name Name of the choice widget in Shuffleboard (e.g., "PortForwarder/LL")
+   * @param defaultChoice Index of the default selected option (0-based)
+   * @param options Array of option names to display in dropdown (use a new String[])
+   * @param consumer Callback that receives the index of selected option
+   */
+  
+  public static void choice(
+      String name,
+      int defaultChoice,
+      String[] options,
+      Consumer<Integer> consumer) {
+    TunableChoice choice = new TunableChoice(name, defaultChoice, options, consumer);
+    instance.registerChoice(choice);
+  }
+
+  private final Map<Integer, TunableChoice> choices = new HashMap<>();
+
+  private void registerChoice(TunableChoice choice) {
+    int id = idGenerator.incrementAndGet();
+    choices.put(id, choice);
+  }
+
   private TunableNumber createNumber(String key, double defaultValue) {
     int id = idGenerator.incrementAndGet(); // kept only for map keys
     TunableNumber number = new TunableNumber(key, defaultValue);
@@ -101,6 +129,7 @@ public final class LiveTuner {
 
   private void update() {
     tunables.values().forEach(TunableNumber::update);
+    choices.values().forEach(TunableChoice::update);
   }
 
   // ---------------------------------------------------------------------------
@@ -158,6 +187,56 @@ public final class LiveTuner {
     @Override
     public double getAsDouble() {
       return get();
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Tunable Choice
+  // ---------------------------------------------------------------------------
+
+  public static final class TunableChoice {
+
+    private final String[] options;
+    private final LoggedDashboardChooser<Integer> chooser;
+    private int lastIndex;
+
+    private TunableChoice(String key, int defaultChoice, String[] options, Consumer<Integer> consumer) {
+      this.options = options;
+      this.lastIndex = defaultChoice;
+
+      if (tunningEnabled) {
+        // Create LoggedDashboardChooser with Integer values
+        chooser = new LoggedDashboardChooser<>(key);
+        
+        // Add default option
+        chooser.addDefaultOption(options[defaultChoice], defaultChoice);
+        
+        // Add remaining options
+        for (int i = 0; i < options.length; i++) {
+          if (i != defaultChoice) {
+            chooser.addOption(options[i], i);
+          }
+        }
+
+        // Set callback for when selection changes
+        chooser.onChange(selectedIndex -> {
+          lastIndex = selectedIndex;
+          consumer.accept(selectedIndex);
+        });
+      }
+    }
+
+    private void update() {
+      // LoggedDashboardChooser handles its own updates via periodic()
+      // which is called by AdvantageKit's Logger
+    }
+
+    public int get() {
+      return lastIndex;
+    }
+
+    public String getSelected() {
+      return options[lastIndex];
     }
   }
 
