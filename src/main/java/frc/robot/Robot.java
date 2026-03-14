@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.Timer;
 // import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Vision.LimelightHelpers;
 import frc.robot.util.Tuning.LiveTuner;
 import frc.robot.util.Vision.portForwardUtils;
 import swervelib.simulation.ironmaple.simulation.SimulatedArena;
@@ -57,13 +58,12 @@ public class Robot extends LoggedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
-
-    // create limelight instances
-    m_robotContainer.limelightInstance.createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
-
     // Live tuner updates
     LiveTuner.periodic();
-  }
+
+    // Use limelight vision measurements to estimate robot position
+    m_robotContainer.limelightInstance.createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
+    }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -147,8 +147,5 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
       }
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-
-    // Port foward limelight ports
-    portForwardUtils.portFoward();
   }
 }
