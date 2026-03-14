@@ -46,6 +46,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 import org.json.simple.parser.ParseException;
+import org.littletonrobotics.junction.Logger;
+
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -57,7 +59,6 @@ import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 // import edu.wpi.first.math.geometry.Pose2d;
 // import org.littletonrobotics.junction.AutoLogOutput;
-import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
 
@@ -120,7 +121,14 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Record the drivetrain's position into a folder called drivetrain and a variable called Pose
     Logger.recordOutput("Drivetrain/Pose", swerveDrive.getPose());
+
+    // testing
+    Logger.recordOutput("Limelight/Pose-FR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontri").pose);
+    Logger.recordOutput("Limelight/Pose-FL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontle").pose);
+    Logger.recordOutput("Limelight/Pose-BR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backri").pose);
+    Logger.recordOutput("Limelight/Pose-BL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backle").pose);
   }
 
   @Override
@@ -632,7 +640,8 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void createVisionMeasurement(String llName, double timeStamp) {
-    swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(llName), timeStamp);
+    swerveDrive.addVisionMeasurement(
+      LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose, timeStamp);
   }
 
   /**
