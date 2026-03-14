@@ -40,7 +40,7 @@ public class ControllerConfigurator {
     );
 
     container.getDriverController().x().whileTrue(
-        Commands.run(() -> container.getTurretBeta().smartMoveTurretToPos(190.0/360.0))
+        Commands.run(() -> container.getTurretBeta().smartMoveTurretToPos(0/360.0))
     );
 
     // Reset Gyro/Oreint robot to current facing position
