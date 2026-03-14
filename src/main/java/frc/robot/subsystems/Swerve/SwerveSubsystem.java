@@ -18,6 +18,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 // import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
@@ -36,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
+import frc.robot.subsystems.Swerve.SwerveConstants.FrontLeftModule;
 import frc.robot.subsystems.Vision.LimelightHelpers;
 
 import java.io.File;
@@ -121,6 +124,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
+    // Update odometry with swerve modules positions
+    swerveDrive.updateOdometry();
+    
     // Record the drivetrain's position into a folder called drivetrain and a variable called Pose
     Logger.recordOutput("Drivetrain/Pose", swerveDrive.getPose());
 
@@ -640,8 +646,10 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void createVisionMeasurement(String llName, double timeStamp) {
+    if (LimelightHelpers.getTargetCount(llName) >= 1) {
     swerveDrive.addVisionMeasurement(
       LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose, timeStamp);
+    }
   }
 
   /**
