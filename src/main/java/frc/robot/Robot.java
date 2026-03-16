@@ -38,8 +38,6 @@ public class Robot extends LoggedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    // Disable signal logger by default, so roborio wont have a heart attack at startup
-    SignalLogger.stop();
   }
 
   /**
@@ -61,7 +59,7 @@ public class Robot extends LoggedRobot {
 
     // Use limelight vision measurements to estimate robot position
     m_robotContainer.limelightInstance.createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
-    }
+  }
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
@@ -136,7 +134,7 @@ public class Robot extends LoggedRobot {
     Logger.recordMetadata("akitLogger", "LoggerStopLogging"); // Set a metadata value
 
     if (isReal()) {
-        Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+        // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
       } else {
         setUseTiming(false); // Run as fast as possible
@@ -145,5 +143,8 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
       }
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+
+    // Disable signal logger by default, so roborio wont have a heart attack at startup
+    SignalLogger.stop();
   }
 }
