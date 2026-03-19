@@ -2,8 +2,8 @@ package frc.robot.util.Networking;
 import edu.wpi.first.net.PortForwarder;
 
 
-public class portForwardUtils {
-    portForwardUtils() {} // Static utility; don't load constructor
+public class PortForwardUtils {
+    PortForwardUtils() {} // Static utility; don't load constructor
     /**
      * Forwards all ports in [startPort, endPort] from the roboRIO
      * to the given remote host using the same remote port number.
