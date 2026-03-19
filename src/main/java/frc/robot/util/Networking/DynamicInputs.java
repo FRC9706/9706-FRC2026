@@ -1,4 +1,4 @@
-package frc.robot.util.Tuning;
+package frc.robot.util.Networking;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,26 +12,26 @@ import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
-public final class LiveTuner {
+public final class DynamicInputs {
 
   private static final String rootTableString = "/Tuning";
 
-  private static final LiveTuner instance = new LiveTuner();
+  private static final DynamicInputs instance = new DynamicInputs();
   private static final AtomicInteger idGenerator = new AtomicInteger();
 
-  private final Map<Integer, TunableNumber> tunables = new HashMap<>();
+  private final Map<Integer, dynamicNum> tunables = new HashMap<>();
 
   // CRITICAL! Change this value to enable/disable LIVE tuning!
-  private static final boolean tunningEnabled = true;
+  private static final boolean inputsEnabled = true;
 
-  private LiveTuner() {}
+  private DynamicInputs() {}
 
   // Call once per loop (Robot's periodic is ideal)
   public static void periodic() {
     instance.update();
   }
 
-  public static TunableNumber number(String key, double defaultValue) {
+  public static dynamicNum number(String key, double defaultValue) {
     return instance.createNumber(key, defaultValue);
   }
 
@@ -43,9 +43,9 @@ public final class LiveTuner {
       double defaultD,
       PIDConsumer consumer
   ) {
-    TunableNumber kP = number(name + "/kP", defaultP);
-    TunableNumber kI = number(name + "/kI", defaultI);
-    TunableNumber kD = number(name + "/kD", defaultD);
+    dynamicNum kP = number(name + "/kP", defaultP);
+    dynamicNum kI = number(name + "/kI", defaultI);
+    dynamicNum kD = number(name + "/kD", defaultD);
 
     Runnable apply = () -> consumer.accept(kP.get(), kI.get(), kD.get());
 
@@ -66,17 +66,17 @@ public final class LiveTuner {
       double defaultCruiseVel,
       double defaultAccel,
       double defaultJerk,
-      PIDMagicMotionConsumer consumer
-  ) {
-    TunableNumber kP = number(name + "/kP", defaultP);
-    TunableNumber kI = number(name + "/kI", defaultI);
-    TunableNumber kD = number(name + "/kD", defaultD);
-    TunableNumber kS = number(name + "/kS", defaultS);
-    TunableNumber kV = number(name + "/kV", defaultV);
-    TunableNumber kA = number(name + "/kA", defaultA);
-    TunableNumber cruiseVel = number(name + "/MotionMagicCruiseVel", defaultCruiseVel);
-    TunableNumber accel = number(name + "/MotionMagicAccel", defaultAccel);
-    TunableNumber jerk = number(name + "/MotionMagicJerk", defaultJerk);
+      PIDMagicMotionConsumer consumer) {
+
+    dynamicNum kP = number(name + "/kP", defaultP);
+    dynamicNum kI = number(name + "/kI", defaultI);
+    dynamicNum kD = number(name + "/kD", defaultD);
+    dynamicNum kS = number(name + "/kS", defaultS);
+    dynamicNum kV = number(name + "/kV", defaultV);
+    dynamicNum kA = number(name + "/kA", defaultA);
+    dynamicNum cruiseVel = number(name + "/MotionMagicCruiseVel", defaultCruiseVel);
+    dynamicNum accel = number(name + "/MotionMagicAccel", defaultAccel);
+    dynamicNum jerk = number(name + "/MotionMagicJerk", defaultJerk);
 
     Runnable apply = () -> consumer.accept(
     kP.get(), kI.get(), kD.get(), 
@@ -95,7 +95,7 @@ public final class LiveTuner {
   }
 
   /**
-   * Create a tunable dropdown/choice selector in Shuffleboard.
+   * Create a dynamic dropdown/choice selector in Shuffleboard.
    * When the selection changes, the corresponding option's callback is executed.
    * 
    * @param name Name of the choice widget in Shuffleboard (e.g., "PortForwarder/LL")
@@ -104,39 +104,40 @@ public final class LiveTuner {
    * @param consumer Callback that receives the index of selected option
    */
   
-  public static void choice(
+  public static DynamicChoice choice (
       String name,
       int defaultChoice,
       String[] options,
       Consumer<Integer> consumer) {
-    TunableChoice choice = new TunableChoice(name, defaultChoice, options, consumer);
+    DynamicChoice choice = new DynamicChoice(name, defaultChoice, options, consumer);
     instance.registerChoice(choice);
+    return choice;
   }
 
-  private final Map<Integer, TunableChoice> choices = new HashMap<>();
+  private final Map<Integer, DynamicChoice> choices = new HashMap<>();
 
-  private void registerChoice(TunableChoice choice) {
+  private void registerChoice(DynamicChoice choice) {
     int id = idGenerator.incrementAndGet();
     choices.put(id, choice);
   }
 
-  private TunableNumber createNumber(String key, double defaultValue) {
+  private dynamicNum createNumber(String key, double defaultValue) {
     int id = idGenerator.incrementAndGet(); // kept only for map keys
-    TunableNumber number = new TunableNumber(key, defaultValue);
+    dynamicNum number = new dynamicNum(key, defaultValue);
     tunables.put(id, number);
     return number;
   }
 
   private void update() {
-    tunables.values().forEach(TunableNumber::update);
-    choices.values().forEach(TunableChoice::update);
+    tunables.values().forEach(dynamicNum::update);
+    choices.values().forEach(DynamicChoice::update);
   }
 
   // ---------------------------------------------------------------------------
   // Tunable Number
   // ---------------------------------------------------------------------------
 
-  public static final class TunableNumber implements DoubleSupplier {
+  public static final class dynamicNum implements DoubleSupplier {
 
     private final String fullKey;
     private final double defaultValue;
@@ -147,11 +148,11 @@ public final class LiveTuner {
     private double currentValue;
     private boolean firstUpdate = true;
 
-    private TunableNumber(String key, double defaultValue) {
+    private dynamicNum(String key, double defaultValue) {
       this.fullKey = rootTableString + "/" + key;
       this.defaultValue = defaultValue;
 
-      if (tunningEnabled) {
+      if (inputsEnabled) {
         networkNumber = new LoggedNetworkNumber(fullKey, defaultValue);
       }
 
@@ -159,7 +160,7 @@ public final class LiveTuner {
     }
 
     private void update() {
-      double newValue = tunningEnabled
+      double newValue = inputsEnabled
           ? networkNumber.get()
           : defaultValue;
 
@@ -174,7 +175,7 @@ public final class LiveTuner {
     }
 
     // Run something automatically when the value changes
-    public TunableNumber onChange(DoubleConsumer consumer) {
+    public dynamicNum onChange(DoubleConsumer consumer) {
       changeCallbacks.add(consumer);
       consumer.accept(currentValue);
       return this;
@@ -194,17 +195,17 @@ public final class LiveTuner {
   // Tunable Choice
   // ---------------------------------------------------------------------------
 
-  public static final class TunableChoice {
+  public static final class DynamicChoice {
 
     private final String[] options;
     private final LoggedDashboardChooser<Integer> chooser;
     private int lastIndex;
 
-    private TunableChoice(String key, int defaultChoice, String[] options, Consumer<Integer> consumer) {
+    private DynamicChoice(String key, int defaultChoice, String[] options, Consumer<Integer> consumer) {
       this.options = options;
       this.lastIndex = defaultChoice;
 
-      if (tunningEnabled) {
+      if (inputsEnabled) {
         // Create LoggedDashboardChooser with Integer values
         chooser = new LoggedDashboardChooser<>(key);
         
@@ -234,7 +235,7 @@ public final class LiveTuner {
     public int get() {
       return lastIndex;
     }
-
+    
     public String getSelected() {
       return options[lastIndex];
     }
