@@ -30,10 +30,6 @@ public class TurretConstants {
     public static final double turretRotLim = rotOfFreedom / 2;
     public static final double safeTurretRotLim = turretRotLim -0.1;
 
-    // Motion profile constraints
-    public static final double maxVelRotPerSec = 1.0;     // rot/s
-    public static final double maxAccelRotPerSec = 2.0;  // rot/s^2
-
     public static final double[] kRotPID = {
       0, // kP
       0, // kI
@@ -53,9 +49,6 @@ public class TurretConstants {
       0  // kD
     };
 
-    public static final double kRotTrackingP = 0.25;
-    public static final double kRotTrackingV = 0;
-
     // Pitch motor settings
     public static final double[] kPitchPID = {
       0.25, // kP
@@ -67,10 +60,6 @@ public class TurretConstants {
       public static class Tags {
         // This is the Height of the TAGS (target) from the floor
         public static final double targetH = 1;
-
-        // Dead bands
-        public static final double txDeadbandDeg = 0.5;
-        public static final double tvDebonceTime = 0.2;
 
         /* 
           ALL of the following directions are based on as 
