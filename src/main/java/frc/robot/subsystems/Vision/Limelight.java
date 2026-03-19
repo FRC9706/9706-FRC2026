@@ -1,7 +1,7 @@
 package frc.robot.subsystems.Vision;
 import frc.robot.RobotContainer;
-import frc.robot.util.Networking.portForwardUtils;
-import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.util.Networking.DynamicInputs;
+import frc.robot.util.Networking.PortForwardUtils;
 
 public class Limelight {
    public static Limelight mInstance = null;
@@ -23,28 +23,28 @@ public class Limelight {
 
     public void portFowardLL(String LL) {
         if (LL == "FR") {
-        portForwardUtils.forwardPortRange(VisionConstants.limelightFrontRightIP, 
+        PortForwardUtils.forwardPortRange(VisionConstants.limelightFrontRightIP, 
          5800, 5805, 5800, 5805);
         } else if (LL == "FL") {
-        portForwardUtils.forwardPortRange(VisionConstants.limelightFrontLeftIP, 
+        PortForwardUtils.forwardPortRange(VisionConstants.limelightFrontLeftIP, 
          5800, 5805, 5800, 5805); 
         }
 
         if (LL == "BR") {
-        portForwardUtils.forwardPortRange(VisionConstants.limelightBackRightIP, 
+        PortForwardUtils.forwardPortRange(VisionConstants.limelightBackRightIP, 
          5800, 5805, 5800, 5805); 
         } else if (LL == "BL") {
-        portForwardUtils.forwardPortRange(VisionConstants.limelightBackLeftIP, 
+        PortForwardUtils.forwardPortRange(VisionConstants.limelightBackLeftIP, 
          5800, 5805, 5800, 5805); 
         }
     }
 
     public void removeFowardedLL() {
-        portForwardUtils.removeForwardedPorts(5800, 5805); 
+        PortForwardUtils.removeForwardedPorts(5800, 5805); 
     }
 
     public void createPortFowardSlider() {
-            LiveTuner.choice(
+            DynamicInputs.choice(
             "PortForwarder/LL", 
             0, 
             new String[]{"FrontRight", "FrontLeft", "BackRight", "BackLeft"}, 
