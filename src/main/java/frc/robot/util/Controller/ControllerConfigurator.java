@@ -7,8 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
-import frc.robot.util.Tuning.LiveTuner;
-import frc.robot.util.Tuning.LiveTuner.TunableNumber;
+import frc.robot.util.Networking.DynamicInputs;
+import frc.robot.util.Networking.DynamicInputs.dynamicNum;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern
@@ -21,7 +21,7 @@ public class ControllerConfigurator {
     }
 
     // Temp tunnable num for RPM
-    TunableNumber motorRPM;
+    dynamicNum motorRPM;
 
     public void configureControllerTL(RobotContainer container) {
 
@@ -36,11 +36,11 @@ public class ControllerConfigurator {
     // );
 
     container.getDriverController().y().whileTrue(
-        Commands.run(() -> container.getTurretBeta().resetRotEncoderPositons())
+        Commands.run(() -> container.getTurretBetaInst().resetRotEncoderPositons())
     );
 
     container.getDriverController().x().whileTrue(
-        Commands.run(() -> container.getTurretBeta().smartMoveToHub())
+        Commands.run(() -> container.getTurretBetaInst().smartMoveToHub())
     );
 
     // Reset Gyro/Oreint robot to current facing position
@@ -52,18 +52,14 @@ public class ControllerConfigurator {
     );
 
     container.getDriverController().b().whileTrue(
-        Commands.run(() -> container.getTurretBeta().smartMoveTurretToPos(-190.0/360.0))
+        Commands.run(() -> container.getTurretBetaInst().smartMoveTurretToPos(-190.0/360.0))
     );
 
-    container.getDriverController().rightBumper().whileTrue(
-        Commands.run(() -> System.out.println("TURRET ROT IS: " + container.getTurretBeta().getTurretPos()))
-    );
-
-    motorRPM = LiveTuner.number("Turret/ShootRPM", 3400);
+    motorRPM = DynamicInputs.number("Turret/ShootRPM", 3400);
 
     container.getDriverController().leftBumper().onTrue(
-        Commands.runOnce(() -> container.getTurretBeta().shoot(motorRPM.get())))
-         .onFalse(Commands.runOnce(() -> container.getTurretBeta().stopShootMotors()));
+        Commands.runOnce(() -> container.getTurretBetaInst().shoot(motorRPM.get())))
+         .onFalse(Commands.runOnce(() -> container.getTurretBetaInst().stopShootMotors()));
 
    }
 
