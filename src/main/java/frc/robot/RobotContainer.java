@@ -22,9 +22,14 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Controller.ControllerConfigurator;
+import frc.robot.util.Networking.DynamicInputs;
+import frc.robot.util.Networking.DynamicInputs.DynamicChoice;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
+import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Intake.Intake;
 // import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -41,30 +46,91 @@ import swervelib.SwerveInputStream;
  * Instead, the structure of the robot (including subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  // Define our controller on port 0
   private final CommandXboxController m_driverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
-  // The robot's subsystems and commands are defined here...
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-  private final TurretMath turretMath = new TurretMath(drivebase::getPose);
-
-  // Initialize instances for each subsystem for better subsystem management
+  // Create an instance for our Controller configurator
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
-  public final Limelight limelightInstance = Limelight.getInstance();
-  public final TurretBeta turretBetaInstance = TurretBeta.getInstance(getDrivebase(), getTurretMath());
 
-  public TurretMath getTurretMath() {
-      return turretMath;
+  // Create a drivebase
+  private final SwerveSubsystem drivebase = new SwerveSubsystem(
+    new File(Filesystem.getDeployDirectory(), "swerve")
+  );
+
+  // Init limelight subsystem
+  private final Limelight limelightInst = Limelight.getInstance();
+
+  // Init the Turret subsysem
+  private final TurretBeta turretBetaInst = TurretBeta.getInstance(
+    getDrivebase(), getTurretMathInst()
+  );
+  private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
+
+  // Init spindexer subsystem
+  private final Spindexer spindexerInst = Spindexer.getInstance();
+
+  // Init hopper subsystem
+  private final Hopper hopperInst = Hopper.getInstance();
+  
+  // init intake subsystem
+  private final Intake intakeInst = Intake.getInstance();
+
+  // ----------------------------------------
+  // Initalize Variables
+  // ----------------------------------------
+  private DynamicChoice autoChoice;
+
+  private String[] autosList;
+
+  // ----------------------------------------
+  // Get Variables
+  // ----------------------------------------
+
+  // Get controller
+  public CommandXboxController getDriverController() {
+    return m_driverController;
   }
 
-  public TurretBeta getTurretBeta() {
-      return turretBetaInstance;
-  }
-
+  // Get drivebase
   public SwerveSubsystem getDrivebase() {
     return drivebase;
   }
 
-  public CommandXboxController getDriverController() {
-    return m_driverController;
+  // Get the name of the chosen auto choice
+  public String getAutoChoice() {
+    return autoChoice.getSelected();
+  }
+
+  // ----------------------------------------
+  // Get Instances
+  // ----------------------------------------
+
+  // Get limelight
+  public Limelight getLimelightInst() {
+    return limelightInst;
+  }
+
+  // Get Turret subsystem objects
+  public TurretBeta getTurretBetaInst() {
+      return turretBetaInst;
+  }
+
+  public TurretMath getTurretMathInst() {
+      return turretMathInst;
+  }
+
+  // Get spindexer
+  public Spindexer getSpindexerInst() {
+    return spindexerInst;
+  }
+
+  // Get hopper
+  public Hopper getHopperInst() {
+    return hopperInst;
+  }
+
+  // Get intake
+  public Intake getIntakeInst() {
+    return intakeInst;
   }
 
   // Enums for the swerve input streams
@@ -123,17 +189,46 @@ public class RobotContainer {
     // Configure path planner & Load Trajectories
     drivebase.setupPathPlanner();
 
-    // Preload any trajectories in Path Planner
-    Preloader.preloadPaths();
+    // Preload any trajectories for Path Planner
+    Preloader.preloadsAutos();
 
     // Load Port Fowarder
-    limelightInstance.createPortFowardSlider();
+    limelightInst.createPortFowardSlider();
+
+    // List of autos for auto choice
+    autosList = new String[] {
+      "rightAuto",
+      "centerAuto",
+      "leftAuto"
+    };
+    // Setup an auto coser
+    autoChoice = DynamicInputs.choice(
+      "Auto/chosenPath", 
+      0, 
+      autosList,
+      autoIndex -> {
+        switch (autoIndex) {
+          case 0:
+            System.out.println("Auto choice updated! Index: " + 0);
+            Preloader.registerNamedCmds(autosList[autoIndex]);
+          break;
+          case 1:
+            System.out.println("Auto choice updated! Index: " + 1);
+            Preloader.registerNamedCmds(autosList[autoIndex]);
+          break;
+          case 2:
+            System.out.println("Auto choice updated! Index: " + 2);
+            Preloader.registerNamedCmds(autosList[autoIndex]);
+          break;
+        }
+      }
+    );
 
   // After swerveDrive is fully created, attach live tuning:
   // var modules = drivebase.getSwerveDrive().getModules();
 
   // tune drive PID on all modules together
-  // LiveTuner.pid(
+  // DynamicInputs.pid(
   //     "Swerve/DrivePID",
   //     SwerveConstants.Swerve.translationP,
   //     SwerveConstants.Swerve.translationI,
@@ -146,7 +241,7 @@ public class RobotContainer {
   //       }
   //     });
 
-  //     LiveTuner.pid(
+  // DynamicInputs.pid(
   //     "Swerve/AnglePID",
   //     SwerveConstants.Swerve.rotationP,
   //     SwerveConstants.Swerve.rotationI,
@@ -161,7 +256,7 @@ public class RobotContainer {
   }
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
+   * Use this method to define your trigger -> command mappings. Triggers can be created via the
    * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary predicate, or via the
    * named factories in {@link edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for
    * {@link CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller PS4}
@@ -205,8 +300,8 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return drivebase.getAutonomousCommand("New Auto");
+    System.out.println("Request autonmous command: " + getAutoChoice());
+    return Preloader.getpath(getAutoChoice());
   }
 
   public void setMotorBrake(boolean brake) {
