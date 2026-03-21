@@ -4,6 +4,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.util.Networking.DynamicInputs;
+import lombok.Getter;
 
 public class Hopper extends SubsystemBase {
     // Singleton instance
@@ -15,12 +16,34 @@ public class Hopper extends SubsystemBase {
         return mInstance;
     }
 
+    // State machine
+    @Getter private hopperState currHopperState = hopperState.IDLE;
+
+    public enum hopperState {
+        IDLE,
+        EXTENDED,
+        RETRACTED
+    }
+
+    public void findState() {
+        double pos = hopperMotors[0].getPosition().getValueAsDouble();
+
+        if (Math.abs(pos - HopperConstants.retractedPos) > HopperConstants.posTolerance) {
+            currHopperState = hopperState.RETRACTED;
+        } else if (Math.abs(pos - HopperConstants.extendedPos) > HopperConstants.posTolerance) {
+            currHopperState = hopperState.EXTENDED;
+        } else {
+            currHopperState = hopperState.IDLE;
+        }
+    }
+    
+
     // initalize hardware variables
     TalonFX[] hopperMotors;
 
     // initalize motion profile variable
     private MotionMagicVoltage m_request;
-    
+
     public Hopper() {
         // intialize hopper motors
         hopperMotors = new TalonFX[] {
@@ -65,8 +88,17 @@ public class Hopper extends SubsystemBase {
         hopperMotors[0].setControl(m_request);
     }
 
+    public void retractMotors() {
+        moveHopperToPos(HopperConstants.retractedPos);
+    }
+
+    public void extendMotors() {
+        moveHopperToPos(HopperConstants.extendedPos);
+    }
+
     @Override
     public void periodic() {
-        // Nothing needed here yet
+        // find the motor's state and set them to their respective state
+        findState();
     }
 }
