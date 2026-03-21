@@ -26,6 +26,7 @@ import frc.robot.util.Networking.DynamicInputs;
 import frc.robot.util.Networking.DynamicInputs.DynamicChoice;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
+import lombok.Getter;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Indexer.Spindexer;
@@ -57,22 +58,22 @@ public class RobotContainer {
   );
 
   // Init limelight subsystem
-  private final Limelight limelightInst = Limelight.getInstance();
+  @Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
-  private final TurretBeta turretBetaInst = TurretBeta.getInstance(
+  @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
     getDrivebase(), getTurretMathInst()
   );
-  private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
+  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
 
   // Init spindexer subsystem
-  private final Spindexer spindexerInst = Spindexer.getInstance();
+  @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
 
   // Init hopper subsystem
-  private final Hopper hopperInst = Hopper.getInstance();
+  @Getter private final Hopper hopperInst = Hopper.getInstance();
   
   // init intake subsystem
-  private final Intake intakeInst = Intake.getInstance();
+  @Getter private final Intake intakeInst = Intake.getInstance();
 
   // ----------------------------------------
   // Initalize Variables
@@ -100,38 +101,6 @@ public class RobotContainer {
     return autoChoice.getSelected();
   }
 
-  // ----------------------------------------
-  // Get Instances
-  // ----------------------------------------
-
-  // Get limelight
-  public Limelight getLimelightInst() {
-    return limelightInst;
-  }
-
-  // Get Turret subsystem objects
-  public TurretBeta getTurretBetaInst() {
-      return turretBetaInst;
-  }
-
-  public TurretMath getTurretMathInst() {
-      return turretMathInst;
-  }
-
-  // Get spindexer
-  public Spindexer getSpindexerInst() {
-    return spindexerInst;
-  }
-
-  // Get hopper
-  public Hopper getHopperInst() {
-    return hopperInst;
-  }
-
-  // Get intake
-  public Intake getIntakeInst() {
-    return intakeInst;
-  }
 
   // Enums for the swerve input streams
   public enum SwerveStreamType {
