@@ -1,36 +1,38 @@
 package frc.robot.subsystems.Score;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkBoolean;
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Score.TurretModules.MotorConfigs;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.util.Geometry.Translation2d;
+import frc.robot.util.Networking.DynamicInputs;
 
 public class TurretBeta extends SubsystemBase {
     // Singleton instance
     private static TurretBeta mInstance = null;
-    public static TurretBeta getInstance(SwerveSubsystem drivebase, TurretMath turretMath) {
+    public static synchronized TurretBeta getInstance(SwerveSubsystem drivebase, TurretMath turretMath) {
         if (mInstance == null) {
             mInstance = new TurretBeta(drivebase, turretMath);
         }
         return mInstance;
     }
 
-    // Hardware
+    // initalize hardware variables
     private TalonFX rotMotor;
     private CANcoder rotEN;
 
     private TalonFX[] shootMotors;
 
     // Drivetrain reference for field-relative control
+    @SuppressWarnings({ "drivebase", "unused", "stfu" })
     private SwerveSubsystem drivebase;
 
     // Get turretMath reference for calculating different trajectorial points
@@ -38,28 +40,15 @@ public class TurretBeta extends SubsystemBase {
 
     // Current turret position (rotations from encoder)
     private double turretPos = 404.0;
+    // private boolean isTurretInitialized = false;
 
     // Motion profiling
-    private final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-
-    // Temp logging
-    LoggedNetworkNumber loggedTurretPos = 
-    new LoggedNetworkNumber("Turret/loggedTurretAng", 0.0);
-
-    LoggedNetworkNumber loggedKrakenRot = 
-    new LoggedNetworkNumber("Turret/loggedKrakenRot", 0.0);
-
-    LoggedNetworkNumber loggedRotEN = 
-    new LoggedNetworkNumber("Turret/loggedRotEN", 0.0);
-
-    LoggedNetworkBoolean ARTStatus = 
-    new LoggedNetworkBoolean("Turret/ARTStatus", false);
+    private MotionMagicVoltage m_request = new MotionMagicVoltage(0);
 
     public void configureRotPID (
         double p, double i, double d,
         double s, double v, double a, 
-        double cruiseVel, double accel, double jerk
-    ) {
+        double cruiseVel, double accel, double jerk) {
         MotorConfigs.configureRotPID(
             rotMotor, p, i, d, 
             s, v, a, 
@@ -70,7 +59,7 @@ public class TurretBeta extends SubsystemBase {
         MotorConfigs.configureFirePID(shootMotors, p, i, d);
     }
 
-    private TurretBeta(SwerveSubsystem drivebase, TurretMath turretMath) {
+    public TurretBeta(SwerveSubsystem drivebase, TurretMath turretMath) {
         this.drivebase = drivebase;
         this.turretMath = turretMath;
         
@@ -86,7 +75,7 @@ public class TurretBeta extends SubsystemBase {
         MotorConfigs.configureMotors(rotMotor, shootMotors);
 
         // Setup live tuning for PID
-        LiveTuner.pidMagicMotion("Turret/RotationPID", 
+        DynamicInputs.pidMagicMotion("Turret/RotationPID", 
             TurretConstants.kRotPID[0], 
             TurretConstants.kRotPID[1], 
             TurretConstants.kRotPID[2], 
@@ -99,7 +88,7 @@ public class TurretBeta extends SubsystemBase {
             this::configureRotPID
         );
 
-        LiveTuner.pid("Turret/FirePID", 
+        DynamicInputs.pid("Turret/FirePID", 
             TurretConstants.kFirePID[0], 
             TurretConstants.kFirePID[1], 
             TurretConstants.kFirePID[2], 
@@ -135,29 +124,54 @@ public class TurretBeta extends SubsystemBase {
     // --------------------------------------------------------------
     // Position utilities
     // --------------------------------------------------------------
-    
+    @SuppressWarnings("unused")
     public void resetRotEncoderPositons() {
+        if ((TurretConstants.extEncoderTeeth % 2) == 0) {
         rotMotor.setPosition(0);
+        } else {
+        rotMotor.setPosition(0.5);
+        }
+
+        if ((TurretConstants.rotMotorTeeth % 2) == 0) {
         rotEN.setPosition(0);
+        } else {
+        rotEN.setPosition(0.5);
+        }
 
         System.out.println("TurretBeta encoders reset!");
         System.out.println("Motor Pos: " + rotMotor.getPosition().getValueAsDouble());
         System.out.println("Encoder Pos: " + rotEN.getAbsolutePosition().getValueAsDouble());
+        updateTurretPos();
+        initTurret(true);
     }
 
     public void updateTurretPos() {
         double tempTurretPos =
-            turretMath.calculateAndrewPos(
+            turretMath.newNewBRT(
             getKrakenRot(), 
             rotEN.getPosition().getValueAsDouble());
 
-        if (tempTurretPos >= 0.5) {
-            tempTurretPos -= 1.0;
-        }
+        // tempTurretPos -= TurretConstants.turretRotLim;
 
-        tempTurretPos += Math.floor((getKrakenRot() / TurretConstants.rotMotorGearRatio) + 0.5);
+        Logger.recordOutput("Turret/Math/ART/turretAngRot", tempTurretPos);
 
         turretPos = tempTurretPos;
+    }
+
+    public void initTurret(boolean override) {
+        // if (!isTurretInitialized || override){
+            rotMotor.setPosition(0);
+            rotEN.setPosition(0);
+            //     isTurretInitialized = true;
+            // }
+        //     if (!(isTurretInitialized) || override) {
+        //     if (turretPos < 400) {
+        //         rotMotor.setPosition((turretPos + 0.5)*TurretConstants.rotMotorGearRatio);
+        //         rotEN.setPosition((turretPos + 0.5)*TurretConstants.extEncoderGearRatio);
+        //         isTurretInitialized = true;
+        //         System.out.println("Turret has been initialized!");
+        //     }
+        // }
     }
 
     // --------------------------------------------------------------
@@ -178,12 +192,35 @@ public class TurretBeta extends SubsystemBase {
                       "Follower: " + shootMotors[1].getVelocity().getValueAsDouble());
     }
 
+    public void rotate(double power) {
+        // Clamp power output
+        power = MathUtil.clamp(power, -1.0, 1.0);
+        rotMotor.set(power);
+    }
+
     public void moveTurretToPos(double desiredPos) {
-        double neededMotorRotations = (desiredPos - turretPos) * TurretConstants.rotMotorGearRatio;
-        System.out.println("Moving turret to " + desiredPos + ". Need Kraken rotations: " + neededMotorRotations + " (Kraken target: " + (getKrakenRot() + neededMotorRotations) + " rotations)");
+        double neededTurretRotations = desiredPos - turretPos;
+        double neededMotorRotations = neededTurretRotations * TurretConstants.rotMotorGearRatio;
+
         double targetMotorPos = getKrakenRot() + neededMotorRotations;
 
-        
+        Logger.recordOutput("Turret/Movement/desiredPos", desiredPos);
+        Logger.recordOutput("Turret/Movement/turretPos", turretPos);
+        Logger.recordOutput("Turret/Movement/neededTurretRot", neededTurretRotations);
+        Logger.recordOutput("Turret/Movement/neededMotorRot", neededMotorRotations);
+        Logger.recordOutput("Turret/Movement/krakenTarget", targetMotorPos);
+
+        Logger.recordOutput(
+            "Turret/Movement/targetOutOfBounds",
+            targetMotorPos < 0 || targetMotorPos > (TurretConstants.rotOfFreedom * TurretConstants.rotMotorGearRatio)
+        );
+
+        if (targetMotorPos < 0 || targetMotorPos > (TurretConstants.rotOfFreedom * TurretConstants.rotMotorGearRatio)) {
+            System.out.println("Turret trying to move out of bounds!");
+            stopRotMotor();
+            return;
+        }
+
         rotMotor.setControl(m_request.withPosition(targetMotorPos));
     }
 
@@ -191,28 +228,42 @@ public class TurretBeta extends SubsystemBase {
         moveTurretToPos(turretMath.findFastestPos(
             desiredPos,
             turretPos,
-            TurretConstants.turretRotLim
+            TurretConstants.safeTurretRotLim
         ));
+    }
+
+    public void smartMoveToTranslation(Translation2d target) {
+        smartMoveTurretToPos(turretMath.getTurretOffsetToTranslation(target));
+    }
+
+    public void smartMoveToHub() {
+        smartMoveTurretToPos(turretMath.getTurretOffsetRot());
     }
 
     @Override
     public void periodic() {
+        // intialized encoders for turret
+        // initTurret(false);
+        
         // Update encoder position (in ROTATIONS from Andrew CRT)
         updateTurretPos();
 
         // Temp logging
-        loggedTurretPos.set(turretPos);
-        loggedKrakenRot.set(getKrakenRot());
-        loggedRotEN.set(rotEN.getPosition().getValueAsDouble());
+        Logger.recordOutput("Turret/Math/ART/krakenRot", getKrakenRot());
+
+        Logger.recordOutput(
+            "Turret/Math/ART/extEncoderRot", 
+            rotEN.getPosition().getValueAsDouble()
+        );
 
         // Add safety againt invalid return on ART (Andrew Remainder Theorem)
         if (turretPos <= 400) {
-            ARTStatus.set(true);
+            Logger.recordOutput("Turret/Math/ART/status", true);
             return;
         } if (turretPos >= 400) {
             System.out.println("Turret: Andrew remainder theorm FAILED!");
             stopRotMotor();
-            ARTStatus.set(false);
+            Logger.recordOutput("Turret/Math/ART/status", false);
         }
     }
 }
