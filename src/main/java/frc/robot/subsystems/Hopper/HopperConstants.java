@@ -11,6 +11,7 @@ public class HopperConstants {
     public static double retractedPos = 9;
     public static double extendedPos = -9;
     public static double posTolerance = 1;
+    public static double[] wiggleRange = {9,8};
 
     public static final double[] kPID = {
       0, // kP
