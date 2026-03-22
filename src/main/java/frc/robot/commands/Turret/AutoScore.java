@@ -33,9 +33,9 @@ public class AutoScore extends Command {
    * @param hopperCommand Needs access to the hopper command in order to extend, wiggle, or retract the hopper.
    * @param runIntakeInput Chose whether or not you want to run the intake.
    * @param runWiggleInput Chose whether or not you want to wiggle the hopper
-   * @throws IllegalArgumentException Will literally blow up the entire code if you fail to provide it's resources in order to avoid a worse blowing up of the code due to a NPE.
+   * @throws IllegalArgumentException Will literally blow up the entire code if you don't read the this and mess somethign up to avoid a worse blowing up of the code due to a NPE.
    * @implNote if you would like run the intake, intialization will automanically extend the hopper.
-   * @implNote DO NOT USE {@code runWiggleInput} IF {@code runIntakeInput} IS TRUE; and VICE VERSA. This WILL cuase conflicts.
+   * @implNote DO NOT USE {@code runWiggleInput} IF {@code runIntakeInput} IS TRUE and VICE VERSA; This WILL cuase an {@code IllegalArgumentException}.
    * @implNote Do NOT pass {@code null} in for {@code hopperCommand}
    */
   public AutoScore(
@@ -54,7 +54,15 @@ public class AutoScore extends Command {
 
     // Use the hopper control factory to create hopper commands
     if (hopperControlFac == null) {
-      throw new IllegalArgumentException("Are we serious bro read the damn documentation why did you not pass in a hopper command?");
+      throw new IllegalArgumentException(
+        "AutoScore: Are we serious bro read the documentation I spent like 30 mins on why did you not pass in a hopper command?"
+      );
+    }
+    
+    if (runIntakeInput && runWiggleInput) {
+      throw new IllegalArgumentException(
+        "AutoScore: It literally tells you not to have runIntake and runWiggle both be true???"
+      );
     }
 
     extHopper = hopperControlFac.apply(hopperState.EXTENDED);
@@ -70,7 +78,7 @@ public class AutoScore extends Command {
   @Override
   public void initialize() {
     if (runIntake && (extHopper != null)) {
-        System.out.println("AutoScore initalization: extenidng hopper becuase runIntake: " + runIntake);
+        System.out.println("AutoScore initalization: extending hopper becuase runIntake is: " + runIntake);
         CommandScheduler.getInstance().schedule(
           extHopper
         );
