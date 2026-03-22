@@ -1,55 +1,91 @@
 package frc.robot.subsystems.Score.TurretModules;
 
-import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.subsystems.Field.FieldConstants;
 import frc.robot.subsystems.Score.TurretConstants;
-import frc.robot.util.Tuning.LiveTuner;
+import frc.robot.util.Alliance.AllianceUtils;
+import frc.robot.util.Geometry.Translation2d;
 
 public class TurretMath {
+    // Singleton instance
+    private static TurretMath mInstance = null;
+    public static synchronized TurretMath getInstance(Pose2d robotPose) {
+        if (mInstance == null) {
+            mInstance = new TurretMath(robotPose);
+        }
+        return mInstance;
+    }
+
     // Intialize Pose variables
-    private final Supplier<Pose2d> poseSupplier;
+    private final Pose2d robotPose;
 
-    // Temp tuning
-    private final LiveTuner.TunableNumber toleranceART;
-
-    public TurretMath(Supplier<Pose2d> poseSupplier) {
+    public TurretMath(Pose2d robotPose) {
         // map the pose supplier to the passed in pose supplier
-        this.poseSupplier = poseSupplier;
+        this.robotPose = robotPose;
+    }
 
-        // temp tuning
-        toleranceART = LiveTuner.number("Turret/toleranceART", 0.02);
+    public Pose2d getPose2d() {
+        return robotPose;
+    }
+
+    public Translation2d getHubPos() {
+        switch (AllianceUtils.getCurrentAlliance()) {
+            case Blue:
+                return FieldConstants.Hub.hubCenterPoint2d;
+            case Red:
+                return FieldConstants.Hub.hubCenterPoint2d.mirrorAboutX(FieldConstants.LinesVertical.center);
+            default:
+                return FieldConstants.Hub.hubCenterPoint2d;
+        }
     }
     
-    public Pose2d getPose2d() {
-        return poseSupplier.get();
-    }
-
-    public Pose2d getHubPos() {
-        // PLACE HOLDER
-        return new Pose2d(0, 0, new Rotation2d(0));
-    }
-
-    public double getTurretOffsetAng() {
-        Pose2d hub = getHubPos();
+    public double getTurretOffsetToTranslation(Translation2d target) {
         Pose2d robot = getPose2d();
 
-        double relHubPosX = hub.getX() - robot.getX();
-        double relHubPosY = hub.getY() - robot.getY();
+        double relTargetPosX = target.x() - robot.getX();
+        double relTargetPosY = target.y() - robot.getY();
 
         // Angle from robot to hub in FIELD coordinates (radians)
-        double fieldAngle = Math.atan2(relHubPosY, relHubPosX);
+        double fieldAngle =  Math.atan2(relTargetPosY, relTargetPosX);
+
         // Robot heading in radians
         double robotHeading = robot.getRotation().getRadians();
 
         // Convert to ROBOT-relative angle
         double turretOffset = fieldAngle - robotHeading;
 
-        return turretOffset;
+        return turretOffset / (2 * Math.PI);
     }
+    
+    public double getTurretOffsetRot() {
+        Translation2d hub = getHubPos();
+        Pose2d robot = getPose2d();
+        
+        double relHubPosX = hub.x() - robot.getX();
+        double relHubPosY = hub.y() - robot.getY();
 
+        Logger.recordOutput("Turret/Math/HubOffsetCalculations/relHubX", (relHubPosX));
+        Logger.recordOutput("Turret/Math/HubOffsetCalculations/relHubY", (relHubPosY));
+        
+        // Angle from robot to hub in FIELD coordinates (radians)
+        double fieldAngle = Math.atan2(relHubPosY, relHubPosX);
+        
+        // Robot heading in radians
+        double robotHeading = robot.getRotation().getRadians();
+        
+        // Convert to ROBOT-relative angle
+        double turretOffset = fieldAngle - robotHeading;
+        Logger.recordOutput(
+            "Turret/Math/HubOffsetCalculations/turretOffset", 
+            (turretOffset / (2 * Math.PI))
+        );
+        
+        return turretOffset / (2 * Math.PI);
+    }
+    
     /**
      * Find the best position within turret rotation limits.
      * Tries wrapping by +/- 2π to find the shortest path.
@@ -93,38 +129,58 @@ public class TurretMath {
      */
 
     public double wrap(double x) {
-        return (x % 1.0 + 1.0) % 1.0;
+        return (((x % 1) + 1) % 1);
     }
 
-    public double calculateAndrewPos(double motorPosRot, double extEncoderPosRot) {
-        // input filtering
-        // motorPosRot = wrap(motorPosRot);
-        // extEncoderPosRot = wrap(extEncoderPosRot);
+    public double newNewBRT(double encoder1Pos, double encoder2Pos) {
+        encoder1Pos = wrap(encoder1Pos);
+        encoder2Pos = wrap(encoder2Pos);
 
-        double motorRatio = TurretConstants.rotMotorGearRatio;
-        double extEncoderRatio = TurretConstants.extEncoderGearRatio;
+        double predictedPos = 404;
+        double smallestEncoder2PosError = Double.POSITIVE_INFINITY;
+        
+        int encoder1Teeth = TurretConstants.rotMotorTeeth;
+        int encoder2Teeth = TurretConstants.extEncoderTeeth;
+        int centerGearTeeth = TurretConstants.centerGearTeeth;
 
-        int motorTeeth = TurretConstants.rotMotorTeeth;
-        int extTeeth = TurretConstants.extEncoderTeeth;
+        double encoder1ToCenterRatio = (double)encoder1Teeth/(double)centerGearTeeth;
+        double encoder2ToCenterRatio = (double)encoder2Teeth/(double)centerGearTeeth;
 
-        double[] pos1 = new double[motorTeeth];
-        for (int i = 0; i < motorTeeth; i++) {
-            pos1[i] = wrap((motorPosRot + i) / motorRatio);
+        // generate list of possible positions of center gear where encoder1Pos = encoder1Pos
+        double[] possiblePos1 = new double[encoder2Teeth];
+        for (int i = 0; i < encoder2Teeth; i++) {
+            possiblePos1[i] = (encoder1Pos * encoder1ToCenterRatio) + (encoder1ToCenterRatio * i);
         }
+        Logger.recordOutput("Turret/Math/ART/Calculations/KrakenPossibilities", possiblePos1);
 
-        double[] pos2 = new double[extTeeth];
-        for (int i = 0; i < extTeeth; i++) {
-            pos2[i] = wrap((extEncoderPosRot + i) / extEncoderRatio);
+        // generate list of possible positions of encoder2Pos for possilbe center gear positions
+        double[] possiblePos2 = new double[encoder1Teeth];
+        for (int i = 0; i < encoder1Teeth; i++) {
+            possiblePos2[i] = (encoder2Pos * encoder2ToCenterRatio) + (encoder2ToCenterRatio * i);
         }
+        Logger.recordOutput("Turret/Math/ART/Calculations/ExtEncoderPossibilities", possiblePos2);
 
-        for (double p1 : pos1) {
-            for (double p2 : pos2) {
+        //find possible encoder2Pos that produces the least error with the actual, then use the possiblePos of the center gear it is associated with
+        for (int i = 0; i < possiblePos1.length; i++) {
+            for (int j = 0; j < possiblePos2.length; j++) {
+                // double error = Math.abs(possiblePos1[i] - possiblePos2[j]);
+                // remember that cuz circle: 0.1 is closer to 0.9 than 0.6
+                // if (error > (1 - error)) {
+                // error = 1 - error;
+                // }
 
-                if (Math.abs(p1 - p2) < (toleranceART.get())) {
-                    return p1;
+                // 10 billion iq?
+                double diff = Math.abs(possiblePos1[i] - possiblePos2[j]);
+                double error = Math.min(diff, 1 - diff);
+                
+                if (error < smallestEncoder2PosError) {
+                predictedPos = possiblePos1[i];
+                smallestEncoder2PosError = error;
                 }
-            }
+           }
         }
-        return 404;
+
+        
+        return predictedPos;
     }
 }
