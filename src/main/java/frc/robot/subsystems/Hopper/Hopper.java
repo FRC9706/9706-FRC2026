@@ -22,18 +22,21 @@ public class Hopper extends SubsystemBase {
     public enum hopperState {
         IDLE,
         EXTENDED,
-        RETRACTED
+        RETRACTED,
+        WIGGLE
     }
 
-    public void findState() {
-        double pos = hopperMotors[0].getPosition().getValueAsDouble();
+    public void setHopperState(hopperState state) {
+        currHopperState = state;
+    } 
 
-        if (Math.abs(pos - HopperConstants.retractedPos) > HopperConstants.posTolerance) {
-            currHopperState = hopperState.RETRACTED;
-        } else if (Math.abs(pos - HopperConstants.extendedPos) > HopperConstants.posTolerance) {
-            currHopperState = hopperState.EXTENDED;
+    public void findState() {
+        if (hasReachedPos(HopperConstants.retractedPos)) {
+            setHopperState(hopperState.RETRACTED);
+        } else if (hasReachedPos(HopperConstants.extendedPos)) {
+            setHopperState(hopperState.EXTENDED);
         } else {
-            currHopperState = hopperState.IDLE;
+            setHopperState(hopperState.IDLE);
         }
     }
     
@@ -75,7 +78,7 @@ public class Hopper extends SubsystemBase {
         );
     }
 
-    public double getPosition() {
+    public double getHopperPos() {
         return hopperMotors[0].getPosition().getValueAsDouble();
     }
 
@@ -86,6 +89,11 @@ public class Hopper extends SubsystemBase {
     public void moveHopperToPos(double pos) {
         m_request = new MotionMagicVoltage(0).withPosition(pos);
         hopperMotors[0].setControl(m_request);
+    }
+
+    public boolean hasReachedPos(double pos) {
+        boolean hasReachedPos = (Math.abs(getHopperPos() - pos) <= HopperConstants.posTolerance);
+        return hasReachedPos;
     }
 
     public void retractMotors() {
