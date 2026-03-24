@@ -1,9 +1,15 @@
 package frc.robot.util.Pathplanner;
 
+import java.util.function.Function;
+
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command; // Import the Command class
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
+import frc.robot.commands.Hopper.HopperControl;
+import frc.robot.commands.Score.AutoScore;
+import frc.robot.subsystems.Hopper.Hopper.hopperState;
 
 public class Preloader {
     // Private constructor to prevent instantiation (since this is a utility)
@@ -42,11 +48,16 @@ public class Preloader {
      * @param auto The auto whose named commands to register.
      * @implNote Assure that the auto you are passing in is handled in the function
      */
-    public static void registerNamedCmds(String auto) {
+    public static void registerNamedCmds(String auto, RobotContainer container) {
+        Function<hopperState, Command> hopperCommand = state -> new HopperControl(container.getHopperInst(), state);
         switch(auto) {
             case "rightAuto":
                 NamedCommands.clearAll();
-                NamedCommands.registerCommand("ben", null);
+                NamedCommands.registerCommand("autoScoreNoIntake", 
+                    new AutoScore(container.getTurretBetaInst(), container.getSpindexerInst(), container.getIntakeInst(), 
+                    hopperCommand, 
+                    true, false)
+                );
             break;
 
             case "centerAuto":
