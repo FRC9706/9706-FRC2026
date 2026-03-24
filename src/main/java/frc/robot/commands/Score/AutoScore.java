@@ -1,4 +1,4 @@
-package frc.robot.commands.Turret;
+package frc.robot.commands.Score;
 
 import java.util.function.Function;
 
