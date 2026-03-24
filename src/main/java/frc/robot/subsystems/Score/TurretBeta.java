@@ -256,7 +256,7 @@ public class TurretBeta extends SubsystemBase {
             rotEN.getPosition().getValueAsDouble()
         );
 
-        // Add safety againt invalid return on ART (Andrew Remainder Theorem)
+        // Add safety againt invalid return on IDK_RT (??? Remainder Theorem)
         if (turretPos <= 400) {
             Logger.recordOutput("Turret/Math/ART/status", true);
             return;
