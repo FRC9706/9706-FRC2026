@@ -29,7 +29,10 @@ public class HopperControl extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-
+    if (desiredState == hopperState.WIGGLE) {
+      System.out.println("The desired state is wiggle; setting hopper state to wiggle");
+      mHopper.setHopperState(hopperState.WIGGLE);
+    }
   }
 
   // Construct wiggle class
