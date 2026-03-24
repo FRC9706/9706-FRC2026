@@ -26,9 +26,9 @@ public class SwerveConfigurator {
    */
         stream.driveAngularVelocity = SwerveInputStream.of(
             container.getDrivebase().getSwerveDrive(),
-            () -> container.getDriverController().getLeftY() * -1,
-            () -> container.getDriverController().getLeftX() * -1)
-            .withControllerRotationAxis(container.getDriverController()::getRightX).scaleRotation(Constants.Controller.scaleRotation)
+            () -> container.getMDriverController().getLeftY() * -1,
+            () -> container.getMDriverController().getLeftX() * -1)
+            .withControllerRotationAxis(container.getMDriverController()::getRightX).scaleRotation(Constants.Controller.scaleRotation)
             .deadband(Constants.Controller.deadband)
             .scaleTranslation(Constants.Controller.scaleTranslation)
             .allianceRelativeControl(true);
@@ -37,7 +37,7 @@ public class SwerveConfigurator {
    * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
    */
         stream.driveDirectAngle = stream.driveAngularVelocity.copy()
-            .withControllerHeadingAxis(container.getDriverController()::getRightX, container.getDriverController()::getRightY)
+            .withControllerHeadingAxis(container.getMDriverController()::getRightX, container.getMDriverController()::getRightY)
             .headingWhile(true);
 
  /**
@@ -52,9 +52,9 @@ public class SwerveConfigurator {
    */
         stream.driveAngularVelocityKeyboard = SwerveInputStream.of(
                 container.getDrivebase().getSwerveDrive(),
-                () -> -container.getDriverController().getLeftY(),
-                () -> -container.getDriverController().getLeftX())
-                .withControllerRotationAxis(() -> container.getDriverController().getRawAxis(2)).scaleRotation(Constants.Controller.scaleRotation)
+                () -> -container.getMDriverController().getLeftY(),
+                () -> -container.getMDriverController().getLeftX())
+                .withControllerRotationAxis(() -> container.getMDriverController().getRawAxis(2)).scaleRotation(Constants.Controller.scaleRotation)
                 .deadband(Constants.Controller.deadband)
                 .scaleTranslation(Constants.Controller.scaleTranslation)
                 .allianceRelativeControl(true);
@@ -65,10 +65,10 @@ public class SwerveConfigurator {
         stream.driveDirectAngleKeyboard = stream.driveAngularVelocityKeyboard.copy()
                 .withControllerHeadingAxis(() ->
                   Math.sin(
-                    container.getDriverController().getRawAxis(2) * Math.PI) * (Math.PI * 2),
+                    container.getMDriverController().getRawAxis(2) * Math.PI) * (Math.PI * 2),
                     () ->
                       Math.cos(
-                        container.getDriverController().getRawAxis(2) * Math.PI) * (Math.PI * 2))
+                        container.getMDriverController().getRawAxis(2) * Math.PI) * (Math.PI * 2))
                        .headingWhile(true)
                        .translationHeadingOffset(true)
                        .translationHeadingOffset(Rotation2d.fromDegrees(0));
