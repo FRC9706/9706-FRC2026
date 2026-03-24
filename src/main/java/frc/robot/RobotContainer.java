@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,7 +16,6 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Vision.Limelight;
@@ -48,14 +46,19 @@ import swervelib.SwerveInputStream;
  */
 public class RobotContainer {
   // Define our controller on port 0
-  private final CommandXboxController m_driverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
-  // Create an instance for our Controller configurator
-  public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
+  @Getter private final CommandXboxController mDriverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
 
   // Create a drivebase
   private final SwerveSubsystem drivebase = new SwerveSubsystem(
     new File(Filesystem.getDeployDirectory(), "swerve")
   );
+
+  // ----------------------------------------
+  // Init instance based subsystems
+  // ----------------------------------------
+
+  // Init Controller configurator
+  public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
 
   // Init limelight subsystem
   @Getter private final Limelight limelightInst = Limelight.getInstance();
@@ -85,11 +88,6 @@ public class RobotContainer {
   // ----------------------------------------
   // Get Variables
   // ----------------------------------------
-
-  // Get controller
-  public CommandXboxController getDriverController() {
-    return m_driverController;
-  }
 
   // Get drivebase
   public SwerveSubsystem getDrivebase() {
@@ -153,7 +151,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     setupBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-    NamedCommands.registerCommand("test", Commands.print("I EXIST"));
 
     // Configure path planner & Load Trajectories
     drivebase.setupPathPlanner();
@@ -170,6 +167,7 @@ public class RobotContainer {
       "centerAuto",
       "leftAuto"
     };
+
     // Setup an auto coser
     autoChoice = DynamicInputs.choice(
       "Auto/chosenPath", 
@@ -179,15 +177,15 @@ public class RobotContainer {
         switch (autoIndex) {
           case 0:
             System.out.println("Auto choice updated! Index: " + 0);
-            Preloader.registerNamedCmds(autosList[autoIndex]);
+            Preloader.registerNamedCmds(autosList[autoIndex], this);
           break;
           case 1:
             System.out.println("Auto choice updated! Index: " + 1);
-            Preloader.registerNamedCmds(autosList[autoIndex]);
+            Preloader.registerNamedCmds(autosList[autoIndex], this);
           break;
           case 2:
             System.out.println("Auto choice updated! Index: " + 2);
-            Preloader.registerNamedCmds(autosList[autoIndex]);
+            Preloader.registerNamedCmds(autosList[autoIndex], this);
           break;
         }
       }
