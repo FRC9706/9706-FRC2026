@@ -7,6 +7,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.RobotContainer.SwerveStreamType;
+import frc.robot.commands.Hopper.HopperControl;
+import frc.robot.subsystems.Hopper.Hopper.hopperState;
 import frc.robot.util.Networking.DynamicInputs;
 import frc.robot.util.Networking.DynamicInputs.dynamicNum;
 
@@ -35,41 +37,49 @@ public class ControllerConfigurator {
     //     Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
     // );
 
-    container.getDriverController().y().whileTrue(
+    container.getMDriverController().y().whileTrue(
         Commands.run(() -> container.getTurretBetaInst().resetRotEncoderPositons())
     );
 
-    container.getDriverController().x().whileTrue(
+    container.getMDriverController().x().whileTrue(
         Commands.run(() -> container.getTurretBetaInst().smartMoveToHub())
     );
 
     // Reset Gyro/Oreint robot to current facing position
-    container.getDriverController().a().onTrue(
+    container.getMDriverController().a().onTrue(
         Commands.sequence(
             Commands.runOnce(container.getDrivebase()::zeroGyroAndSyncHeading),
             Commands.runOnce(container.getDrivebase()::zeroGyroWithAlliance)
         )
     );
 
-    container.getDriverController().b().whileTrue(
+    container.getMDriverController().b().whileTrue(
         Commands.run(() -> container.getTurretBetaInst().smartMoveTurretToPos(-190.0/360.0))
     );
 
     motorRPM = DynamicInputs.number("Turret/ShootRPM", 3400);
 
-    container.getDriverController().leftBumper().onTrue(
+    container.getMDriverController().leftBumper().onTrue(
         Commands.runOnce(() -> container.getTurretBetaInst().shoot(motorRPM.get())))
          .onFalse(Commands.runOnce(() -> container.getTurretBetaInst().stopShootMotors()));
+
+    container.getMDriverController().povUp().onTrue(
+        new HopperControl(container.getHopperInst(), hopperState.EXTENDED)
+    );
+
+    container.getMDriverController().povUp().onTrue(
+        new HopperControl(container.getHopperInst(), hopperState.RETRACTED)
+    );
 
    }
 
     public static void configureControllerSim(RobotContainer container) {
 
-      container.getDriverController().start().onTrue(Commands.runOnce(() -> container.getDrivebase().resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+      container.getMDriverController().start().onTrue(Commands.runOnce(() -> container.getDrivebase().resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
 
-      container.getDriverController().button(1).whileTrue(container.getDrivebase().sysIdDriveMotorCommand());
+      container.getMDriverController().button(1).whileTrue(container.getDrivebase().sysIdDriveMotorCommand());
 
-      container.getDriverController().button(2).whileTrue(Commands.runEnd(() -> container.getSwerveInputStream(SwerveStreamType.DirectAngleKeyboard).driveToPoseEnabled(true),
+      container.getMDriverController().button(2).whileTrue(Commands.runEnd(() -> container.getSwerveInputStream(SwerveStreamType.DirectAngleKeyboard).driveToPoseEnabled(true),
       () -> container.getSwerveInputStream(SwerveStreamType.DirectAngleKeyboard).driveToPoseEnabled(false)));
       //  driverXbox.b().whileTrue(
       //      drivebase.driveToPose(
