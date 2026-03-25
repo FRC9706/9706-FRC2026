@@ -2,7 +2,7 @@ package frc.robot.subsystems.Hopper;
 
 public class HopperConstants {
     // Motor IDs
-    public static int[] hopperMotors = {1, 2};
+    public static int[] hopperMotors = {13, 14};
 
     // Motor Variables
     public static int maxVoltage = 10;

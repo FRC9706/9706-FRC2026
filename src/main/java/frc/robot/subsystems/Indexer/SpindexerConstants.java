@@ -2,7 +2,7 @@ package frc.robot.subsystems.Indexer;
 
 public class SpindexerConstants {
     // Motor IDs
-    public static int motorID = 1;
+    public static int motorID = 12;
 
     // Motor variables
     public static int maxVoltage = 10;
