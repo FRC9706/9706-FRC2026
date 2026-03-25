@@ -7,7 +7,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "New Path"
+            "pathName": "Top left to ball supply"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score with intake"
           }
         }
       ]
