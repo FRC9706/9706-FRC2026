@@ -16,7 +16,7 @@ public class HopperControl extends Command {
   /**
    * This command will set the hopper to the given ENUM state
    * @param subsystem Requires access to the hopper subsystem
-   * @implNote There is literally no purpose to pass an idle state into this.
+   * @implNote Don't pass in an IDLE state, there is literally no purpose to pass an idle state into this.
    */
   public HopperControl(Hopper hopper, hopperState desiredStateInput) {
     mHopper = hopper;
@@ -57,16 +57,22 @@ public class HopperControl extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-      if (desiredState == hopperState.RETRACTED) {
-        mHopper.retractMotors();
-      } else if (desiredState == hopperState.EXTENDED) {
-        mHopper.extendMotors();
-      } else if (desiredState == hopperState.IDLE) {
-        System.out.println(
-          "Why would you give me an idle state you bafoon just use stopMotors(); if that is what you are looking for"
-        );
-      } else if (desiredState == hopperState.WIGGLE) {
-    new Wiggle().wiggle();
+    if (desiredState == hopperState.EXTENDED) {
+      mHopper.extendMotors();
+    } 
+      
+    if (desiredState == hopperState.RETRACTED) {
+      mHopper.retractMotors();
+    }
+      
+    if (desiredState == hopperState.IDLE) {
+      System.out.println(
+        "Why would you give me an idle state you bafoon just use stopMotors(); if that is what you are looking for"
+      );
+    }
+
+    if (desiredState == hopperState.WIGGLE) {
+      new Wiggle().wiggle();
     }
   }
 
