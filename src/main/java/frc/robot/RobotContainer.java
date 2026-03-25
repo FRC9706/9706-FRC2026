@@ -49,7 +49,7 @@ public class RobotContainer {
   @Getter private final CommandXboxController mDriverController = new CommandXboxController(Constants.Controller.kDriverControllerPort);
 
   // Create a drivebase
-  private final SwerveSubsystem drivebase = new SwerveSubsystem(
+  @Getter private final SwerveSubsystem drivebase = new SwerveSubsystem(
     new File(Filesystem.getDeployDirectory(), "swerve")
   );
 
@@ -64,10 +64,11 @@ public class RobotContainer {
   @Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
+  // MAKE SURE TO LOAD TURRET MATH FIRST
+  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
   @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
     getDrivebase(), getTurretMathInst()
   );
-  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
 
   // Init spindexer subsystem
   @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
@@ -88,11 +89,6 @@ public class RobotContainer {
   // ----------------------------------------
   // Get Variables
   // ----------------------------------------
-
-  // Get drivebase
-  public SwerveSubsystem getDrivebase() {
-    return drivebase;
-  }
 
   // Get the name of the chosen auto choice
   public String getAutoChoice() {
@@ -151,9 +147,6 @@ public class RobotContainer {
     // Configure the trigger bindings
     setupBindings();
     DriverStation.silenceJoystickConnectionWarning(true);
-
-    // Configure path planner & Load Trajectories
-    drivebase.setupPathPlanner();
 
     // Preload any trajectories for Path Planner
     Preloader.preloadsAutos();
