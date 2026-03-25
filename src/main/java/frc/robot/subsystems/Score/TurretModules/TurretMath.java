@@ -22,9 +22,9 @@ public class TurretMath {
     // Intialize Pose variables
     private final Pose2d robotPose;
 
-    public TurretMath(Pose2d robotPose) {
+    public TurretMath(Pose2d robotPoseInput) {
         // map the pose supplier to the passed in pose supplier
-        this.robotPose = robotPose;
+        robotPose = robotPoseInput;
     }
 
     public Pose2d getPose2d() {
