@@ -29,7 +29,7 @@ public class Preloader {
     /**
      * Preloads autos; preventing delays when automous is activated.
      * @implNote Assure that your autos are configured in the {@code preloadedAutos} class & in the function
-     * @implNote PathPlannerAuto will load the path file with the given name (e.g., "autohOne.auto")
+     * @implNote PathPlannerAuto will load the path file with the given name (e.g., "autoOne.auto")
      * @implNote Make sure named commands are setup for said path.
      */
     public static void preloadsAutos() {
@@ -37,7 +37,7 @@ public class Preloader {
         // NOTE: PathPlannerAuto will load the path file with the given name (e.g., "autohOne.auto")
         // It will also automatically load ALL referenced .path files inside the auto.
         preloadedAutos.rigthAuto = new PathPlannerAuto("rightAuto");
-        preloadedAutos.middleAuto = new PathPlannerAuto("middleAuto");
+        // preloadedAutos.middleAuto = new PathPlannerAuto("middleAuto");
         preloadedAutos.leftAuto = new PathPlannerAuto("leftAuto");
         
     
@@ -53,7 +53,7 @@ public class Preloader {
         switch(auto) {
             case "rightAuto":
                 NamedCommands.clearAll();
-                NamedCommands.registerCommand("autoScoreNoIntake", 
+                NamedCommands.registerCommand("Score with no intake", 
                     new AutoScore(container.getTurretBetaInst(), container.getSpindexerInst(), container.getIntakeInst(), 
                     hopperCommand, 
                     true, false)
