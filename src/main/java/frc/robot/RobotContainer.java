@@ -20,10 +20,10 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Vision.Limelight;
 import frc.robot.util.Controller.ControllerConfigurator;
-import frc.robot.util.Networking.DynamicInputs;
-import frc.robot.util.Networking.DynamicInputs.DynamicChoice;
 import frc.robot.util.Pathplanner.Preloader;
 import frc.robot.util.Swerve.SwerveConfigurator;
+import lib.Networking.DynamicInputs;
+import lib.Networking.DynamicInputs.DynamicChoice;
 import lombok.Getter;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Hopper.Hopper;
@@ -32,7 +32,6 @@ import frc.robot.subsystems.Intake.Intake;
 // import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-
 
 import java.io.File;
 
@@ -251,7 +250,6 @@ public class RobotContainer {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity); // Overrides drive command above!
       ControllerConfigurator.configureControllerTest(this);
     }
-
   }
 
   /**
