@@ -100,8 +100,8 @@ public class FieldConstants {
             fieldWidth / 2.0,
             innerHeight);
             
-    public static final frc.robot.util.Geometry.Translation2d hubCenterPoint2d =
-    new frc.robot.util.Geometry.Translation2d(
+    public static final lib.Geometry.Translation2d hubCenterPoint2d =
+    new lib.Geometry.Translation2d(
         AprilTagLayoutType.OFFICIAL.getLayout().getTagPose(26).get().getX() + width / 2.0,
         fieldWidth / 2.0
     );

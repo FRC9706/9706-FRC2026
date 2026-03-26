@@ -4,7 +4,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.Networking.DynamicInputs;
+import lib.Networking.DynamicInputs;
 
 public class Spindexer extends SubsystemBase{
     // Singleton instance

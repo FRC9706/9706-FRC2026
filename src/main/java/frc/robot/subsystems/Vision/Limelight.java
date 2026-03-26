@@ -1,7 +1,7 @@
 package frc.robot.subsystems.Vision;
 import frc.robot.RobotContainer;
-import frc.robot.util.Networking.DynamicInputs;
-import frc.robot.util.Networking.PortForwardUtils;
+import lib.Networking.DynamicInputs;
+import lib.Networking.PortForwardUtils;
 
 public class Limelight {
    public static Limelight mInstance = null;

@@ -1,6 +1,6 @@
 package frc.robot.subsystems.Score;
 
-import frc.robot.util.Alliance.AllianceUtils;
+import lib.Alliance.AllianceUtils;
 
 public class TurretConstants {
     // Motor IDs
@@ -16,17 +16,17 @@ public class TurretConstants {
     public static final int maxVoltage = 10;
 
     // Rotional Gear variables
-    public static final int rotMotorTeeth = 13;
-    public static final int extEncoderTeeth = 11;
-    public static final int centerGearTeeth = (rotMotorTeeth * extEncoderTeeth);
+    public static final int rotMotorTeeth = 36;
+    public static final int extEncoderTeeth = 42;
+    public static final int centerGearTeeth = 170; // Its going to be okay
 
-    public static final double rotMotorGearRatio = (double)centerGearTeeth / (double)rotMotorTeeth;
-    public static final double extEncoderGearRatio = (double)centerGearTeeth / (double)extEncoderTeeth;
+    public static final double rotMotorGearRatio = 6;
+    public static final double extEncoderGearRatio = 7;
 
     // Rotational motor settings
     public static final double roamSpeed = 0.15;
     public static final double maxRotPower = 0.5;
-    public static final double rotOfFreedom = (double)rotMotorTeeth * (double)extEncoderTeeth /(double)centerGearTeeth; // Encoders and Center Gear can NEVER be Allowed to Rotate Freely Outside of This Range
+    public static final double rotOfFreedom = (double)252/(double)170; // Encoders and Center Gear can NEVER be Allowed to Rotate Freely Outside of This Range
     public static final double turretRotLim = rotOfFreedom / 2;
     public static final double safeTurretRotLim = turretRotLim -0.1;
 

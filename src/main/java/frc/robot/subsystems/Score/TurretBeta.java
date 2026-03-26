@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Score.TurretModules.MotorConfigs;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
-import frc.robot.util.Geometry.Translation2d;
-import frc.robot.util.Networking.DynamicInputs;
+import lib.Geometry.Translation2d;
+import lib.Networking.DynamicInputs;
 
 public class TurretBeta extends SubsystemBase {
     // Singleton instance
@@ -32,11 +32,10 @@ public class TurretBeta extends SubsystemBase {
     private TalonFX[] shootMotors;
 
     // Drivetrain reference for field-relative control
-    @SuppressWarnings({ "drivebase", "unused", "stfu" })
-    private SwerveSubsystem drivebase;
+    private final SwerveSubsystem mDrivebase;
 
     // Get turretMath reference for calculating different trajectorial points
-    private TurretMath turretMath;
+    private final TurretMath mTurretMath;
 
     // Current turret position (rotations from encoder)
     private double turretPos = 404.0;
@@ -59,9 +58,9 @@ public class TurretBeta extends SubsystemBase {
         MotorConfigs.configureFirePID(shootMotors, p, i, d);
     }
 
-    public TurretBeta(SwerveSubsystem drivebase, TurretMath turretMath) {
-        this.drivebase = drivebase;
-        this.turretMath = turretMath;
+    public TurretBeta(SwerveSubsystem drivebaseInst, TurretMath turretMathInst) {
+        mDrivebase = drivebaseInst;
+        mTurretMath = turretMathInst;
         
         // Create motor and encoder
         rotMotor = new TalonFX(TurretConstants.rotationMotor);
@@ -147,7 +146,7 @@ public class TurretBeta extends SubsystemBase {
 
     public void updateTurretPos() {
         double tempTurretPos =
-            turretMath.newNewBRT(
+            mTurretMath.newNewBRT(
             getKrakenRot(), 
             rotEN.getPosition().getValueAsDouble());
 
@@ -225,7 +224,7 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public void smartMoveTurretToPos(double desiredPos) {
-        moveTurretToPos(turretMath.findFastestPos(
+        moveTurretToPos(mTurretMath.findFastestPos(
             desiredPos,
             turretPos,
             TurretConstants.safeTurretRotLim
@@ -233,11 +232,11 @@ public class TurretBeta extends SubsystemBase {
     }
 
     public void smartMoveToTranslation(Translation2d target) {
-        smartMoveTurretToPos(turretMath.getTurretOffsetToTranslation(target));
+        smartMoveTurretToPos(mTurretMath.getTurretOffsetToTranslation(target));
     }
 
     public void smartMoveToHub() {
-        smartMoveTurretToPos(turretMath.getTurretOffsetRot());
+        smartMoveTurretToPos(mTurretMath.getTurretOffsetRot());
     }
 
     @Override

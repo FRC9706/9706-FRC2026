@@ -3,7 +3,7 @@ package frc.robot.subsystems.Hopper;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.Networking.DynamicInputs;
+import lib.Networking.DynamicInputs;
 import lombok.Getter;
 
 public class Hopper extends SubsystemBase {

@@ -4,13 +4,12 @@ package frc.robot.util.Controller;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
 import frc.robot.commands.Hopper.HopperControl;
 import frc.robot.subsystems.Hopper.Hopper.hopperState;
-import frc.robot.util.Networking.DynamicInputs;
-import frc.robot.util.Networking.DynamicInputs.dynamicNum;
+import lib.Networking.DynamicInputs;
+import lib.Networking.DynamicInputs.dynamicNum;
 
 public class ControllerConfigurator {
     private static ControllerConfigurator instance;  // Singleton pattern

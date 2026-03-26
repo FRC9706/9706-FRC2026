@@ -6,8 +6,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.robot.subsystems.Field.FieldConstants;
 import frc.robot.subsystems.Score.TurretConstants;
-import frc.robot.util.Alliance.AllianceUtils;
-import frc.robot.util.Geometry.Translation2d;
+import lib.Alliance.AllianceUtils;
+import lib.Geometry.Translation2d;
 
 public class TurretMath {
     // Singleton instance
