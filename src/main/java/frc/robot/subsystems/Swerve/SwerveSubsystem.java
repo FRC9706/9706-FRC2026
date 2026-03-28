@@ -135,7 +135,16 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    if (swerveDrive.getSimulationDriveTrainPose().isPresent()) {
+      // Log simulation pose
+      Logger.recordOutput("fieldSimulation/simPose", swerveDrive.getSimulationDriveTrainPose().get());
+      Logger.recordOutput("fieldSimulation/isSimPosePresent", true);
+    } else if (!(swerveDrive.getSimulationDriveTrainPose().isPresent())) {
+      System.out.println("Simulated position is null!");
+      Logger.recordOutput("fieldSimulation/isSimPosePresent", false);
+    }
+  }
 
   /**
    * Setup AutoBuilder for PathPlanner.
