@@ -254,6 +254,8 @@ public class TurretBeta extends SubsystemBase {
             "Turret/Math/ART/extEncoderRot", 
             rotEN.getPosition().getValueAsDouble()
         );
+        
+        Logger.recordOutput("Turret/hubDistance", mTurretMath.getRobotDistHub());
 
         // Add safety againt invalid return on IDK_RT (??? Remainder Theorem)
         if (turretPos <= 400) {
