@@ -14,7 +14,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public final class DynamicInputs {
 
-  private static final String rootTableString = "/Tuning";
+  private static final String rootTableString = "/DynamicInputs";
 
   private static final DynamicInputs instance = new DynamicInputs();
   private static final AtomicInteger idGenerator = new AtomicInteger();
