@@ -4,10 +4,12 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.subsystems.Field.FieldConstants;
 import frc.robot.subsystems.Score.TurretConstants;
 import lib.Alliance.AllianceUtils;
 import lib.Geometry.Translation2d;
+import lombok.Getter;
 
 public class TurretMath {
     // Singleton instance
@@ -19,19 +21,28 @@ public class TurretMath {
         return mInstance;
     }
 
-    // Intialize Pose variables
-    private final Pose2d robotPose;
+    // Intialize variables
+    @Getter private Pose2d robotPose;
+    @Getter private Translation2d robotPoseTranslation;
+
+    @Getter private InterpolatingDoubleTreeMap treeMapTurretRPM;
+    @Getter private InterpolatingDoubleTreeMap treeMapHoodPos;
+
 
     public TurretMath(Pose2d robotPoseInput) {
         // map the pose supplier to the passed in pose supplier
         robotPose = robotPoseInput;
+        robotPoseTranslation = new Translation2d(robotPose.getX(), robotPose.getY());
+
+        // Initalize interpolating tree maps with points
+        treeMapTurretRPM = new InterpolatingDoubleTreeMap();
+            treeMapTurretRPM.put(null, null);
+
+        treeMapHoodPos = new InterpolatingDoubleTreeMap();
+            treeMapHoodPos.put(null, null);
     }
 
-    public Pose2d getPose2d() {
-        return robotPose;
-    }
-
-    public Translation2d getHubPos() {
+    public Translation2d getHubTranslation() {
         switch (AllianceUtils.getCurrentAlliance()) {
             case Blue:
                 return FieldConstants.Hub.hubCenterPoint2d;
@@ -41,18 +52,21 @@ public class TurretMath {
                 return FieldConstants.Hub.hubCenterPoint2d;
         }
     }
+
+    public double getRobotDistHub() {
+        return robotPoseTranslation.distance(getHubTranslation());
+    }
     
     public double getTurretOffsetToTranslation(Translation2d target) {
-        Pose2d robot = getPose2d();
 
-        double relTargetPosX = target.x() - robot.getX();
-        double relTargetPosY = target.y() - robot.getY();
+        double relTargetPosX = robotPose.getX() - target.x();
+        double relTargetPosY = robotPose.getY() - target.y();
 
         // Angle from robot to hub in FIELD coordinates (radians)
         double fieldAngle =  Math.atan2(relTargetPosY, relTargetPosX);
 
         // Robot heading in radians
-        double robotHeading = robot.getRotation().getRadians();
+        double robotHeading = robotPose.getRotation().getRadians();
 
         // Convert to ROBOT-relative angle
         double turretOffset = fieldAngle - robotHeading;
@@ -61,11 +75,10 @@ public class TurretMath {
     }
     
     public double getTurretOffsetRot() {
-        Translation2d hub = getHubPos();
-        Pose2d robot = getPose2d();
-        
-        double relHubPosX = hub.x() - robot.getX();
-        double relHubPosY = hub.y() - robot.getY();
+        Translation2d hub = getHubTranslation();
+
+        double relHubPosX = hub.x() - robotPose.getX();
+        double relHubPosY = hub.y() - robotPose.getY();
 
         Logger.recordOutput("Turret/Math/HubOffsetCalculations/relHubX", (relHubPosX));
         Logger.recordOutput("Turret/Math/HubOffsetCalculations/relHubY", (relHubPosY));
@@ -74,7 +87,7 @@ public class TurretMath {
         double fieldAngle = Math.atan2(relHubPosY, relHubPosX);
         
         // Robot heading in radians
-        double robotHeading = robot.getRotation().getRadians();
+        double robotHeading = robotPose.getRotation().getRadians();
         
         // Convert to ROBOT-relative angle
         double turretOffset = fieldAngle - robotHeading;
