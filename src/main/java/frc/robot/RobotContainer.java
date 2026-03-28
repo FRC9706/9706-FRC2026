@@ -4,13 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-// import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -29,14 +22,13 @@ import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.Intake;
-// import frc.robot.subsystems.Swerve.SwerveConstants;
 import frc.robot.subsystems.Score.TurretBeta;
+import frc.robot.subsystems.Score.Hood.Hood;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import java.io.File;
 
 import swervelib.SwerveInputStream;
-// import swervelib.parser.PIDFConfig;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a "declarative" paradigm, very
@@ -63,7 +55,8 @@ public class RobotContainer {
   @Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
-  // MAKE SURE TO LOAD TURRET MATH FIRST
+  // MAKE SURE TO LOAD TURRET MATH FIRST\
+  @Getter private final Hood hoodInst = Hood.getInstance();
   @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
   @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
     getDrivebase(), getTurretMathInst()
@@ -227,22 +220,13 @@ public class RobotContainer {
 
     // Set the driving method depending on mode (Real or Simulation)
     if (RobotBase.isSimulation()) {
-      drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+      drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
     } else {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
       controllerConfiguratorInstance.configureControllerTL(this);
     }
 
     if (Robot.isSimulation()) {
-      Pose2d target = new Pose2d(new Translation2d(1, 4), Rotation2d.fromDegrees(90));
-      //drivebase.getSwerveDrive().field.getObject("targetPose").setPose(target);
-      driveDirectAngleKeyboard.driveToPose(() -> target,
-        new ProfiledPIDController(Constants.simulation.profiledKd, Constants.simulation.profiledKi, Constants.simulation.profiledKd,
-        new Constraints(Constants.simulation.maxVel, Constants.simulation.maxAccel)),
-        new ProfiledPIDController(Constants.simulation.profiledKd, Constants.simulation.profiledKi, Constants.simulation.profiledKd,
-        new Constraints(Units.degreesToRadians(360),
-        Units.degreesToRadians(180))
-      ));
       ControllerConfigurator.configureControllerSim(this);
     }
 
