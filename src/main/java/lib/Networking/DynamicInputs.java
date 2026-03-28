@@ -134,7 +134,7 @@ public final class DynamicInputs {
   }
 
   // ---------------------------------------------------------------------------
-  // Tunable Number
+  // Dynamic Number
   // ---------------------------------------------------------------------------
 
   public static final class dynamicNum implements DoubleSupplier {
