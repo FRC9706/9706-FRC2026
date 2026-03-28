@@ -2,7 +2,7 @@ package frc.robot.subsystems.Score.Hood;
 
 public class HoodConstants {
     // Motor ID
-    public static final int hoodMotorID = 1;
+    public static final int hoodMotorID = 12;
 
     // Motor Variables
     public static final int maxVoltage = 10;
