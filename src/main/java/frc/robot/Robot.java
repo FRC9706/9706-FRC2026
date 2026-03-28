@@ -29,6 +29,14 @@ public class Robot extends LoggedRobot {
 
   private final RobotContainer m_robotContainer;
 
+  private enum akitMode {
+    REGULAR,
+    REPLAY
+  };
+  // ****** ADVANTAGE KIT'S MODE CONFIGURATION ******
+  private akitMode chosenAkitMode = akitMode.REGULAR;
+  
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -126,7 +134,6 @@ public class Robot extends LoggedRobot {
   @Override
   public void simulationPeriodic() {
     SimulatedArena.getInstance().simulationPeriodic();
-    
   }
 
   @Override
@@ -136,13 +143,16 @@ public class Robot extends LoggedRobot {
     if (isReal()) {
         // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-      } 
-      // else {
-      //   setUseTiming(false); // Run as fast as possible
-      //   String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-      //   Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-      //   Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
-      // }
+      } else {
+        setUseTiming(false); // Run as fast as possible
+        if (chosenAkitMode == akitMode.REGULAR) {
+          Logger.addDataReceiver(new NT4Publisher());
+        } else if (chosenAkitMode == akitMode.REPLAY) {
+          String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+          Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
+          Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+        }
+      }
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
     // Disable signal logger by default, so roborio wont have a heart attack at startup
