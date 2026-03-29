@@ -102,7 +102,6 @@ public class SwerveSubsystem extends SubsystemBase {
                                                 SwerveConstants.Swerve.encoderAutoSyncInterval);
     // swerveDrive.pushOffsetsToEncoders(); // Set the absolute encoder to be used over the internal encoder and push the offsets onto it. Throws warning if not possible
     setupPathPlanner();
-    RobotModeTriggers.autonomous().onTrue(Commands.runOnce(this::zeroGyroWithAlliance));
   }
 
   /**
@@ -122,7 +121,7 @@ public class SwerveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // Update odometry with swerve modules positions
-    swerveDrive.updateOdometry();
+    //swerveDrive.updateOdometry();
     
     // Record the drivetrain's position into a folder called drivetrain and a variable called Pose
     Logger.recordOutput("Drivetrain/Pose", swerveDrive.getPose());
@@ -514,26 +513,24 @@ public class SwerveSubsystem extends SubsystemBase {
    * If red alliance rotate the robot 180 after the drviebase zero command
    */
   public void zeroGyroWithAlliance() {
+    swerveDrive.setHeadingCorrection(false); // temporarily disable heading correction
     if (isRedAlliance()) {
-      zeroGyro();
       // Set the pose 180 degrees
-      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180)));
+      swerveDrive.resetOdometry(
+        new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(180))
+      );
       System.out.println("Reset gyro for red alliance");
     } else {
-      zeroGyro();
-      resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(0)));
+      swerveDrive.resetOdometry(
+        new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(0))
+      );
       System.out.println("Reset gyro for blue alliance");
     }
-  }
 
-  public void zeroGyroAndSyncHeading() {
-    swerveDrive.setHeadingCorrection(false); // temporarily disable heading correction
-    swerveDrive.zeroGyro();
-    swerveDrive.resetOdometry(new Pose2d(getPose().getTranslation(), Rotation2d.fromDegrees(0)));
     if (SwerveConstants.enableHeadingCorrection) {
     swerveDrive.setHeadingCorrection(true); // re-enable heading correction if it was on
     }
-}
+  }
 
   /**
    * Sets the drive motors to brake/coast mode.
