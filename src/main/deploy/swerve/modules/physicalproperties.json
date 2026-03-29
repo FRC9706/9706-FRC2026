@@ -3,6 +3,7 @@
     "robotMass": 60,
     "wheelGripCoefficientOfFriction": 1.19,
     "currentLimit": {
+      "comment": "this is a supply limit for swerve krakens",
       "drive": 40,
       "angle": 20
     },
