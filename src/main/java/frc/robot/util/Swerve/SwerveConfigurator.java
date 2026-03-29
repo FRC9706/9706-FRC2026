@@ -34,7 +34,7 @@ public class SwerveConfigurator {
             .allianceRelativeControl(true);
 
  /**
-   * Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
+   * Clone's the angular velocity input stream and co5nverts it to a fieldRelative input stream.
    */
         stream.driveDirectAngle = stream.driveAngularVelocity.copy()
             .withControllerHeadingAxis(container.getMDriverController()::getRightX, container.getMDriverController()::getRightY)
