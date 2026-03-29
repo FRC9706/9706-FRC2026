@@ -140,7 +140,8 @@ public class Robot extends LoggedRobot {
   public void robotInit() {
     // Set a metadata value
     Logger.recordMetadata("akitLogger", "LoggerStopLogging");
-
+    Logger.recordOutput("Auto/Current Auto", m_robotContainer.getAutoChoice());
+    
     // Disable signal logger by default, so roborio wont have a heart attack at startup
     SignalLogger.stop();
 
