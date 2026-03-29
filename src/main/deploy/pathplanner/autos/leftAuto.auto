@@ -9,12 +9,6 @@
           "data": {
             "pathName": "Top left to ball supply"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Score with intake"
-          }
         }
       ]
     }
