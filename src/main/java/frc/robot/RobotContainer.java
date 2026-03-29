@@ -131,6 +131,27 @@ public class RobotContainer {
     driveAngularVelocityKeyboard = streams.driveAngularVelocityKeyboard;
     driveDirectAngleKeyboard = streams.driveDirectAngleKeyboard;
 
+    // Create a configurable slider for scale rotations (basically speed)
+    DynamicInputs.DynamicNum(
+      "Swerve/Controller Scales/Scale Translation",
+     Constants.Controller.scaleTranslation,
+      value -> {
+        streams.configureAll(stream -> {
+          stream.scaleTranslation(value);
+        });
+      }
+    );
+
+    DynamicInputs.DynamicNum(
+      "Swerve/Controller Scales/Scale Rotation",
+     Constants.Controller.scaleRotation,
+      value -> {
+        streams.configureAll(stream -> {
+          stream.scaleRotation(value);
+        });
+      }
+    );
+
     // Configure the trigger bindings
     setupBindings();
 
