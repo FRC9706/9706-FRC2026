@@ -16,8 +16,16 @@ public class SwerveConfigurator {
         public SwerveInputStream driveRobotOriented;
         public SwerveInputStream driveAngularVelocityKeyboard;
         public SwerveInputStream driveDirectAngleKeyboard;    
-    }
 
+        public void configureAll(java.util.function.Consumer<SwerveInputStream> config) {
+          config.accept(driveAngularVelocity);
+          config.accept(driveDirectAngle);
+          config.accept(driveRobotOriented);
+          config.accept(driveAngularVelocityKeyboard);
+          config.accept(driveDirectAngleKeyboard);
+      }
+    }
+    
     public static SwerveStreams InputStreams(RobotContainer container) {
         SwerveStreams stream = new SwerveStreams();
 
