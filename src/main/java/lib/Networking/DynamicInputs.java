@@ -35,6 +35,11 @@ public final class DynamicInputs {
     return instance.createNumber(key, defaultValue);
   }
 
+  // Create a dynamic input box for whate
+  public static void DynamicNum(String name, double defaultValue, numConsumer consumer) {
+    number(name, defaultValue).onChange(consumer::accept);
+  }
+
   // Create a tunable PID set
   public static void pid(
       String name,
@@ -246,6 +251,10 @@ public final class DynamicInputs {
   // ---------------------------------------------------------------------------
 
   @FunctionalInterface
+  public interface numConsumer {
+    void accept(double value);
+  }
+
   public interface PIDConsumer {
     void accept(double kP, double kI, double kD);
   }
