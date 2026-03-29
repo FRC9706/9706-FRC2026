@@ -42,10 +42,7 @@ public class ControllerConfigurator {
 
         // Reset Gyro/Oreint robot to current facing position
         container.getMDriverController().a().onTrue(
-            Commands.sequence(
-                Commands.runOnce(container.getDrivebase()::zeroGyroAndSyncHeading),
-                Commands.runOnce(container.getDrivebase()::zeroGyroWithAlliance)
-            )
+            Commands.runOnce(container.getDrivebase()::zeroGyroWithAlliance)
         );
 
         // container.getMDriverController().b().whileTrue(
