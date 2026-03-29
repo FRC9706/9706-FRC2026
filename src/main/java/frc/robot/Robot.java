@@ -65,7 +65,7 @@ public class Robot extends LoggedRobot {
     DynamicInputs.periodic();
 
     // Use limelight vision measurements to estimate robot position
-    m_robotContainer.getLimelightInst().createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
+    //m_robotContainer.getLimelightInst().createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -138,7 +138,11 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    Logger.recordMetadata("akitLogger", "LoggerStopLogging"); // Set a metadata value
+    // Set a metadata value
+    Logger.recordMetadata("akitLogger", "LoggerStopLogging");
+
+    // Disable signal logger by default, so roborio wont have a heart attack at startup
+    SignalLogger.stop();
 
     if (isReal()) {
         // Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
@@ -154,8 +158,5 @@ public class Robot extends LoggedRobot {
         }
       }
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-
-    // Disable signal logger by default, so roborio wont have a heart attack at startup
-    SignalLogger.stop();
   }
 }

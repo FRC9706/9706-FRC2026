@@ -1,41 +1,41 @@
-package frc.robot.subsystems.Intake;
+// package frc.robot.subsystems.Intake;
 
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.hardware.TalonFX;
+// import com.ctre.phoenix6.controls.DutyCycleOut;
+// import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase {
-    // Singleton instance
-    private static Intake mInstance = null;
-    public static synchronized Intake getInstance() {
-        if (mInstance == null) {
-            mInstance = new Intake();
-        }
-        return mInstance;
-    }
+// public class Intake extends SubsystemBase {
+//     // Singleton instance
+//     private static Intake mInstance = null;
+//     public static synchronized Intake getInstance() {
+//         if (mInstance == null) {
+//             mInstance = new Intake();
+//         }
+//         return mInstance;
+//     }
 
-    // init motor variables
-    private TalonFX motor;
+//     // init motor variables
+//     private TalonFX motor;
 
-    public Intake() {
-        // Init motors
-        motor = new TalonFX(IntakeConstants.motorID);
+//     public Intake() {
+//         // Init motors
+//         motor = new TalonFX(IntakeConstants.motorID);
 
-        // configure motor
-        MotorConfigs.configureMotor(motor);
-    }
+//         // configure motor
+//         MotorConfigs.configureMotor(motor);
+//     }
 
-    public void stopIntake() {
-        motor.stopMotor();
-    }
+//     public void stopIntake() {
+//         motor.stopMotor();
+//     }
 
-    public void intake(double power) {
-        motor.setControl(new DutyCycleOut(power));
-    }
+//     public void intake(double power) {
+//         motor.setControl(new DutyCycleOut(power));
+//     }
 
-    @Override
-    public void periodic() {
-        // Nothing needed here
-    }
-}
+//     @Override
+//     public void periodic() {
+//         // Nothing needed here
+//     }
+// }

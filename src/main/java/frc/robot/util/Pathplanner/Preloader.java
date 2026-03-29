@@ -7,9 +7,6 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.wpilibj2.command.Command; // Import the Command class
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
-import frc.robot.commands.Hopper.HopperControl;
-import frc.robot.commands.Score.AutoScore;
-import frc.robot.subsystems.Hopper.Hopper.hopperState;
 
 public class Preloader {
     // Private constructor to prevent instantiation (since this is a utility)
@@ -22,7 +19,7 @@ public class Preloader {
         // Declare the fields as static so they can be initialized in the static preload method.
         // The type should be PathPlannerAuto, which is a Command.
         public static Command rigthAuto; 
-        public static Command middleAuto;
+        public static Command centerAuto;
         public static Command leftAuto;
     }
 
@@ -37,7 +34,7 @@ public class Preloader {
         // NOTE: PathPlannerAuto will load the path file with the given name (e.g., "autohOne.auto")
         // It will also automatically load ALL referenced .path files inside the auto.
         preloadedAutos.rigthAuto = new PathPlannerAuto("rightAuto");
-        // preloadedAutos.middleAuto = new PathPlannerAuto("middleAuto");
+        preloadedAutos.centerAuto = new PathPlannerAuto("centerAuto");
         preloadedAutos.leftAuto = new PathPlannerAuto("leftAuto");
         
     
@@ -49,15 +46,15 @@ public class Preloader {
      * @implNote Assure that the auto you are passing in is handled in the function
      */
     public static void registerNamedCmds(String auto, RobotContainer container) {
-        Function<hopperState, Command> hopperCommand = state -> new HopperControl(container.getHopperInst(), state);
+        // Function<hopperState, Command> hopperCommand = state -> new HopperControl(container.getHopperInst(), state);
         switch(auto) {
             case "rightAuto":
                 NamedCommands.clearAll();
-                NamedCommands.registerCommand("Score with no intake", 
-                    new AutoScore(container.getTurretBetaInst(), container.getSpindexerInst(), container.getIntakeInst(), 
-                    hopperCommand, 
-                    true, false)
-                );
+                // NamedCommands.registerCommand("Score with no intake", 
+                //     new AutoScore(container.getTurretBetaInst(), container.getSpindexerInst(), container.getIntakeInst(), 
+                //     hopperCommand, 
+                //     true, false)
+                // );
             break;
 
             case "centerAuto":
@@ -81,7 +78,7 @@ public class Preloader {
     public static Command getpath(String pathName) {
         return switch (pathName) {
             case "rightAuto" -> preloadedAutos.rigthAuto;
-            case "middleAuto" -> preloadedAutos.middleAuto;
+            case "middleAuto" -> preloadedAutos.centerAuto;
             case "leftAuto" -> preloadedAutos.leftAuto;
             default -> {
                 // Handle case where path is not found (e.g., return an empty command or throw error)
