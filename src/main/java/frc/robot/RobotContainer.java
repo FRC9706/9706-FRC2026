@@ -50,7 +50,7 @@ public class RobotContainer {
   //@Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
-  // MAKE SURE TO LOAD TURRET MATH FIRST\
+  // MAKE SURE TO LOAD TURRET MATH FIRST
   // @Getter private final Hood hoodInst = Hood.getInstance();
   // @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
   // @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
@@ -237,7 +237,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    if (getAutoChoice().equals("No Auto")) {
+    if (getAutoChoice() == "No Auto") {
       System.out.println("[Auto Choice]: No auto selected!");
       return null;
     } else {
