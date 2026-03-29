@@ -19,11 +19,6 @@ import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lombok.Getter;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
-import frc.robot.subsystems.Hopper.Hopper;
-import frc.robot.subsystems.Indexer.Spindexer;
-import frc.robot.subsystems.Intake.Intake;
-import frc.robot.subsystems.Score.TurretBeta;
-import frc.robot.subsystems.Score.Hood.Hood;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import java.io.File;
@@ -52,24 +47,24 @@ public class RobotContainer {
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
 
   // Init limelight subsystem
-  @Getter private final Limelight limelightInst = Limelight.getInstance();
+  //@Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
   // MAKE SURE TO LOAD TURRET MATH FIRST\
-  @Getter private final Hood hoodInst = Hood.getInstance();
-  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
-  @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
-    getDrivebase(), getTurretMathInst()
-  );
+  // @Getter private final Hood hoodInst = Hood.getInstance();
+  // @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
+  // @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
+  //   getDrivebase(), getTurretMathInst()
+  // );
 
-  // Init spindexer subsystem
-  @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
+  // // Init spindexer subsystem
+  // @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
 
-  // Init hopper subsystem
-  @Getter private final Hopper hopperInst = Hopper.getInstance();
+  // // Init hopper subsystem
+  // @Getter private final Hopper hopperInst = Hopper.getInstance();
   
-  // init intake subsystem
-  @Getter private final Intake intakeInst = Intake.getInstance();
+  // // init intake subsystem
+  // @Getter private final Intake intakeInst = Intake.getInstance();
 
   // ----------------------------------------
   // Initalize Variables
@@ -138,16 +133,16 @@ public class RobotContainer {
 
     // Configure the trigger bindings
     setupBindings();
-    DriverStation.silenceJoystickConnectionWarning(true);
 
     // Preload any trajectories for Path Planner
     Preloader.preloadsAutos();
 
     // Load Port Fowarder
-    limelightInst.createPortFowardSlider();
+    // limelightInst.createPortFowardSlider();
 
     // List of autos for auto choice
     autosList = new String[] {
+      "No Auto",
       "rightAuto",
       "centerAuto",
       "leftAuto"
@@ -161,15 +156,18 @@ public class RobotContainer {
       autoIndex -> {
         switch (autoIndex) {
           case 0:
-            System.out.println("Auto choice updated! Index: " + 0);
-            Preloader.registerNamedCmds(autosList[autoIndex], this);
+            System.out.println("[Auto Choice]: choice updated! Index: " + 0 + " (No Auto)");
           break;
           case 1:
-            System.out.println("Auto choice updated! Index: " + 1);
+            System.out.println("[Auto Choice]: choice updated! Index: " + 1);
             Preloader.registerNamedCmds(autosList[autoIndex], this);
           break;
           case 2:
-            System.out.println("Auto choice updated! Index: " + 2);
+            System.out.println("[Auto Choice]: choice updated! Index: " + 2);
+            Preloader.registerNamedCmds(autosList[autoIndex], this);
+          break;
+          case 3:
+            System.out.println("[Auto Choice]: choice updated! Index: " + 3);
             Preloader.registerNamedCmds(autosList[autoIndex], this);
           break;
         }
@@ -221,13 +219,10 @@ public class RobotContainer {
     // Set the driving method depending on mode (Real or Simulation)
     if (RobotBase.isSimulation()) {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
+      controllerConfiguratorInstance.configureControllerSim(this);
     } else {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
       controllerConfiguratorInstance.configureControllerTL(this);
-    }
-
-    if (Robot.isSimulation()) {
-      ControllerConfigurator.configureControllerSim(this);
     }
 
     if (DriverStation.isTest()) {
@@ -242,8 +237,13 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    System.out.println("Request autonmous command: " + getAutoChoice());
-    return Preloader.getpath(getAutoChoice());
+    if (getAutoChoice().equals("No Auto")) {
+      System.out.println("[Auto Choice]: No auto selected!");
+      return null;
+    } else {
+      System.out.println("Requesting autonomous command: " + getAutoChoice());
+      return Preloader.getpath(getAutoChoice());
+    }
   }
 
   public void setMotorBrake(boolean brake) {
