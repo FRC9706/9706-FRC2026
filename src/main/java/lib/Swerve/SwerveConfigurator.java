@@ -1,4 +1,6 @@
-package frc.robot.util.Swerve;
+package lib.Swerve;
+
+import java.util.function.Consumer;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants;
@@ -17,7 +19,7 @@ public class SwerveConfigurator {
         public SwerveInputStream driveAngularVelocityKeyboard;
         public SwerveInputStream driveDirectAngleKeyboard;    
 
-        public void configureAll(java.util.function.Consumer<SwerveInputStream> config) {
+        public void configureAll(Consumer<SwerveInputStream> config) {
           config.accept(driveAngularVelocity);
           config.accept(driveDirectAngle);
           config.accept(driveRobotOriented);
