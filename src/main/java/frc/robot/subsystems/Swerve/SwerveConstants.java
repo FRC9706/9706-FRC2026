@@ -71,15 +71,15 @@ public class SwerveConstants {
 
 
     // Translation PID tuning (meters)
-    public static final double translationP = 25;
+    public static final double translationP = 1;
     public static final double translationI = 0;
     public static final double translationD = 0;
 
 
     // Rotation PID tuning (radians)
-    public static final double rotationP = 50;
-    public static final double rotationI = 0.5;
-    public static final double rotationD = 0.55;
+    public static final double rotationP = 1;
+    public static final double rotationI = 0;
+    public static final double rotationD = 0;
 
 
     // -------------------------------
