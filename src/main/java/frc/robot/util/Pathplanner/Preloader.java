@@ -78,7 +78,7 @@ public class Preloader {
     public static Command getpath(String pathName) {
         return switch (pathName) {
             case "rightAuto" -> preloadedAutos.rigthAuto;
-            case "middleAuto" -> preloadedAutos.centerAuto;
+            case "centerAuto" -> preloadedAutos.centerAuto;
             case "leftAuto" -> preloadedAutos.leftAuto;
             default -> {
                 // Handle case where path is not found (e.g., return an empty command or throw error)
