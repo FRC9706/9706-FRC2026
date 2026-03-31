@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
-import lib.Geometry.Translation2d;
 import lib.Networking.DynamicInputs.dynamicNum;
 
 public class ControllerConfigurator {
