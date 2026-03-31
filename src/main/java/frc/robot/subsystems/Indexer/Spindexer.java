@@ -1,57 +1,32 @@
-// package frc.robot.subsystems.Indexer;
+package frc.robot.subsystems.Indexer;
 
-// import com.ctre.phoenix6.controls.VelocityVoltage;
-// import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import lib.Networking.DynamicInputs;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+public class Spindexer extends SubsystemBase{
+    // Hardware
+    TalonFX motor;
 
-// public class Spindexer extends SubsystemBase{
-//     // Singleton instance
-//     private static Spindexer mInstance = null;
-//     public static synchronized Spindexer getInstance() {
-//         if (mInstance == null) {
-//             mInstance = new Spindexer();
-//         }
-//         return mInstance;
-//     }
+    private DutyCycleOut request = new DutyCycleOut(0);
 
-//     // Hardware
-//     TalonFX motor;
+    public Spindexer() {
+        // Intialize Motors
+        motor = new TalonFX(SpindexerConstants.motorID);
 
-//     public Spindexer() {
-//         // Intialize Motors
-//         motor = new TalonFX(SpindexerConstants.motorID);
-
-//         // Configure motors
-//         MotorConfigs.configureMotors(motor);
-
-//         // Setup live tuning for spindexer PID
-//         DynamicInputs.pid(
-//             "Spindexer/PID", 
-//             SpindexerConstants.kPID[0], 
-//             SpindexerConstants.kPID[1], 
-//             SpindexerConstants.kPID[2],
-//             (p, i, d) -> MotorConfigs.configureSpinPID(motor, p, i, d)
-//         );
-//     }
-
-//     public void stopDexer() {
-//         motor.stopMotor();
-//     }
+        // Configure motors
+        motor.getConfigurator().apply(SpindexerConstants.config);
+    }
     
-//     public void spinDexer(double rpm) {
-//         // rpm -> velocity
-//         double vel = rpm/60;
-//         System.out.println("Spinning at RPM: " + rpm + " Velocity: " + vel);
+    public Command setDutyCycle(double dutyCycle) {
+        return this.runOnce(() ->
+            request = new DutyCycleOut(dutyCycle)
+        );    
+    }
 
-//         // velocity control
-//         final VelocityVoltage m_request = new VelocityVoltage(vel).withSlot(0);
-//         motor.setControl(m_request);
-//     }
-
-//     @Override
-//     public void periodic() {
-//         // Nothing here yet
-//     }
-// }
+    @Override
+    public void periodic() {
+        motor.setControl(request);
+    }
+}

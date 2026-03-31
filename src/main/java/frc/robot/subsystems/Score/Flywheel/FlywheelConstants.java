@@ -1,8 +1,7 @@
-package frc.robot.subsystems.Score.Hood;
+package frc.robot.subsystems.Score.Flywheel;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
-import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -10,14 +9,10 @@ import com.ctre.phoenix6.configs.VoltageConfigs;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import edu.wpi.first.math.util.Units;
-public class HoodConstants {
+public class FlywheelConstants {
 
     // Motor ID
-    public static final int motorID = 12;
-
-    public static final int minAngle = 0;
-    public static final int maxAngle = 30;
+    public static final int[] motorIDs = {13,12};
     
     public static final TalonFXConfiguration config = new TalonFXConfiguration()
             .withMotorOutput(
@@ -46,11 +41,6 @@ public class HoodConstants {
             .withSlot0(
                 new Slot0Configs()
                     .withKP(10)
-                )
-            .withMotionMagic(
-              new MotionMagicConfigs()
-              .withMotionMagicCruiseVelocity(Units.degreesToRotations(360))
-              .withMotionMagicAcceleration(Units.degreesToRotations(360))
             );
 
 }

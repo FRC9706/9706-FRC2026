@@ -141,10 +141,13 @@ public class boomBox {
         }
 
         // *****************************************
-        // Build Hopper List
+        // Build intake List
         // *****************************************
-        TalonFX[] hopperMotors = container.getHopperInst().getHopperMotors();
-        for (TalonFX motor : hopperMotors) {
+        TalonFX rollerMotor = container.getIntake().getRollerMotor();
+        motorList.add(rollerMotor);
+
+        TalonFX[] extMotors = container.getIntake().getExtMotors();
+        for (TalonFX motor : extMotors) {
             motorList.add(motor);
         }
         

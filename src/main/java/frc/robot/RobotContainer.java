@@ -19,9 +19,11 @@ import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
-import frc.robot.subsystems.Hopper.Hopper;
-import frc.robot.subsystems.Score.TurretBeta;
-import frc.robot.subsystems.Score.TurretModules.TurretMath;
+import frc.robot.subsystems.Indexer.Spindexer;
+import frc.robot.subsystems.Intake.IntakeSubsystem;
+import frc.robot.subsystems.Score.Flywheel.FlywheelSubsystem;
+import frc.robot.subsystems.Score.Hood.HoodSubsystem;
+import frc.robot.subsystems.Score.Turret.TurretSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import java.io.File;
@@ -52,22 +54,16 @@ public class RobotContainer {
   // Init limelight subsystem
   @Getter private final Limelight limelightInst = Limelight.getInstance();
 
-  // Init the Turret subsysem
-  // MAKE SURE TO LOAD TURRET MATH FIRST
-  // @Getter private final Hood hoodInst = Hood.getInstance();
-  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
-  @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
-    getDrivebase(), getTurretMathInst()
-  );
+  // Init the Score subsystems
+  @Getter private final TurretSubsystem turret = new TurretSubsystem();
+  @Getter private final FlywheelSubsystem flywheel = new FlywheelSubsystem();
+  @Getter private final HoodSubsystem hood = new HoodSubsystem();
 
-  // // Init spindexer subsystem
-  // @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
+  // Init spindexer subsystem
+  @Getter private final Spindexer spindexer = new Spindexer();
 
   // Init hopper subsystem
-  @Getter private final Hopper hopperInst = Hopper.getInstance();
-  
-  // // init intake subsystem
-  // @Getter private final Intake intakeInst = Intake.getInstance();
+  @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
 
   // init doom and despair - boomBox subsystem
   @Getter private final boomBox boomBoxInst = boomBox.getInstance();
@@ -130,6 +126,10 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
+
+
+
+
     var streams = SwerveConfigurator.InputStreams(this);
     driveAngularVelocity = streams.driveAngularVelocity;
     driveDirectAngle = streams.driveDirectAngle;
