@@ -20,6 +20,7 @@ import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
 import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Score.TurretBeta;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -49,15 +50,15 @@ public class RobotContainer {
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
 
   // Init limelight subsystem
-  //@Getter private final Limelight limelightInst = Limelight.getInstance();
+  @Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Turret subsysem
   // MAKE SURE TO LOAD TURRET MATH FIRST
   // @Getter private final Hood hoodInst = Hood.getInstance();
-  // @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
-  // @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
-  //   getDrivebase(), getTurretMathInst()
-  // );
+  @Getter private final TurretMath turretMathInst = TurretMath.getInstance(drivebase.getPose());
+  @Getter private final TurretBeta turretBetaInst = TurretBeta.getInstance(
+    getDrivebase(), getTurretMathInst()
+  );
 
   // // Init spindexer subsystem
   // @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
@@ -164,7 +165,7 @@ public class RobotContainer {
     Preloader.preloadsAutos();
 
     // Load Port Fowarder
-    // limelightInst.createPortFowardSlider();
+    limelightInst.createPortFowardSlider();
 
     // List of autos for auto choice
     autosList = new String[] {
