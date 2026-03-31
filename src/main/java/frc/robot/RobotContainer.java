@@ -66,7 +66,7 @@ public class RobotContainer {
   @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
 
   // init doom and despair - boomBox subsystem
-  @Getter private final boomBox boomBoxInst = boomBox.getInstance();
+  @Getter private final boomBox boomBox = new boomBox();
 
   // ----------------------------------------
   // Initalize Variables
@@ -201,6 +201,9 @@ public class RobotContainer {
       }
     );
 
+    // Create orchestra
+    boomBox.createMusicChoice(this);
+
   // After swerveDrive is fully created, attach live tuning:
   // var modules = drivebase.getSwerveDrive().getModules();
 
@@ -241,7 +244,6 @@ public class RobotContainer {
    */
   private void setupBindings() {
     Command driveFieldOrientedAngularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
-    Command driveFieldOrientedDirectAngleKeyboard = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 
     // Set the driving method depending on mode (Real or Simulation)
     if (RobotBase.isSimulation()) {

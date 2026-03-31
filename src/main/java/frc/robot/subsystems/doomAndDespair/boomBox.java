@@ -15,14 +15,6 @@ import lib.Networking.DynamicInputs.DynamicChoice;
 import swervelib.SwerveModule;
 
 public class boomBox {
-    private static boomBox mInstance = null;
-    public static synchronized boomBox getInstance() {
-        if (mInstance == null) {
-            mInstance = new boomBox();
-        }
-        return mInstance;
-    }
-
     private Orchestra mOrchestra;
     private AudioConfigs audioConfig;
     private boolean isInitialized = false;
@@ -40,16 +32,15 @@ public class boomBox {
     }
     private String[] trackNames;
 
-    private boomBox() {
+    public boomBox() {
         // Init objects
         mOrchestra = new Orchestra();
         audioConfig = new AudioConfigs();
 
         // setup track names for dynamic input
         trackNames = convertEnumsToStrings();
-
-        // create track choices
-        createMusicChoice();
+        
+        // Note: createMusicChoice will be called from RobotContainer after construction
     }
 
     public void initOrchestra(TalonFX[] motorListInput) {
@@ -76,7 +67,7 @@ public class boomBox {
             initOrchestra(getAllMotors(container));
         }
 
-        String track = "/src/main/deploy/track/" + choice + ".chrp";
+        String track = "tracks/" + choice + ".chrp";
         var status = mOrchestra.loadMusic(track);
         if (!(status.isOK())) {
             System.err.println("Track loading failed! Attempted track: " + track + " Status: " + status.getDescription());
@@ -90,21 +81,27 @@ public class boomBox {
         mOrchestra.stop();
     }
 
-    public void createMusicChoice() {
+    public void createMusicChoice(RobotContainer container) {
         trackChoice = DynamicInputs.choice("boomBox/selectedTrack", 
         0, 
         trackNames, 
         chosen -> {
-            switch(chosen) {
-                case 0:
-                    mOrchestra.stop();
-                break;
+            // Loop through enum values and find matching index
+            boomBoxControl[] allTracks = boomBoxControl.values();
+            for (int i = 0; i < allTracks.length; i++) {
+                if (i == chosen) {
+                    boomBoxControl selectedTrack = allTracks[i];
 
-                case 1: 
-                    mOrchestra.pause();
-                break;
-
-                
+                    if (selectedTrack == boomBoxControl.disabled) {
+                        mOrchestra.stop();
+                    } else if (selectedTrack == boomBoxControl.paused) {
+                        mOrchestra.pause();
+                    } else {
+                        // Any other enum values are tracks
+                        loadAndPlayMusic(selectedTrack.toString(), container);
+                    }
+                    break;
+                }
             }
         });
     }
