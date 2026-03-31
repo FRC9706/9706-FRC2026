@@ -1,104 +1,98 @@
-// package frc.robot.commands.Hopper;
+package frc.robot.commands.Hopper;
 
-// import edu.wpi.first.wpilibj2.command.Command;
-// import frc.robot.subsystems.Hopper.Hopper;
-// import frc.robot.subsystems.Hopper.HopperConstants;
-// import frc.robot.subsystems.Hopper.Hopper.hopperState;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.subsystems.Hopper.Hopper;
+import frc.robot.subsystems.Hopper.HopperConstants;
+import frc.robot.subsystems.Hopper.Hopper.hopperState;
 
-// public class HopperControl extends Command {
-//   // initalize subsystem varibales
-//   private final Hopper mHopper;
-//   private final hopperState desiredState;
+public class HopperControl extends Command {
+  // initalize subsystem varibales
+  private final Hopper mHopper;
+  private final hopperState desiredState;
 
-//   // initalize all other variables
-//   private boolean hasReachedGoal;
+  // initalize all other variables
+  private Wiggle wiggleClass;
 
-//   /**
-//    * This command will set the hopper to the given ENUM state
-//    * @param subsystem Requires access to the hopper subsystem
-//    * @implNote Don't pass in an IDLE state, there is literally no purpose to pass an idle state into this.
-//    */
-//   public HopperControl(Hopper hopper, hopperState desiredStateInput) {
-//     mHopper = hopper;
-//     desiredState = desiredStateInput;
+  /**
+   * This command will set the hopper to the given ENUM state
+   * @param subsystem Requires access to the hopper subsystem
+   * @implNote Don't pass in an IDLE state, there is literally no purpose to pass an idle state into this.
+   */
+  public HopperControl(Hopper hopper, hopperState desiredStateInput) {
+    mHopper = hopper;
+    desiredState = desiredStateInput;
 
-//     // Declare subsystem dependencies.
-//     addRequirements(hopper);
-//   }
+    Wiggle wiggleClass = new Wiggle();
 
-//   // Called when the command is initially scheduled.
-//   @Override
-//   public void initialize() {
-//     if (desiredState == hopperState.WIGGLE) {
-//       System.out.println("The desired state is wiggle; setting hopper state to wiggle");
-//       mHopper.setHopperState(hopperState.WIGGLE);
-//     }
-//   }
+    // Declare subsystem dependencies.
+    addRequirements(hopper);
+  }
 
-//   // Construct wiggle class
-//   class Wiggle {
-//     boolean checkWiggStatusP1() {
-//       return mHopper.hasReachedPos(HopperConstants.wiggleRange[0]);
-//     }
+  // Called when the command is initially scheduled.
+  @Override
+  public void initialize() {
+    if (desiredState == hopperState.WIGGLE) {
+      System.out.println("The desired state is wiggle; setting hopper state to wiggle");
+      mHopper.setHopperState(hopperState.WIGGLE);
+    }
+  }
 
-//     boolean checkWiggStatusP2() {
-//       return mHopper.hasReachedPos(HopperConstants.wiggleRange[1]);
-//     }
+  // Construct wiggle class
+  class Wiggle {
+    boolean checkWiggStatusP1() {
+      return mHopper.hasReachedPos(HopperConstants.wiggleRange[0]);
+    }
 
-//     void wiggle() {
-//       if (!(checkWiggStatusP1())) {
-//         mHopper.moveHopperToPos(HopperConstants.wiggleRange[0]);
-//       } else if (!(checkWiggStatusP2())) {
-//         mHopper.moveHopperToPos(HopperConstants.wiggleRange[1]);
-//       }
-//     }
-//   }
+    boolean checkWiggStatusP2() {
+      return mHopper.hasReachedPos(HopperConstants.wiggleRange[1]);
+    }
 
-//   // Called every time the scheduler runs while the command is scheduled.
-//   @Override
-//   public void execute() {
-//     if (desiredState == hopperState.EXTENDED) {
-//       mHopper.extendMotors();
-//     } 
+    void wiggle() {
+      if (!(checkWiggStatusP1())) {
+        System.out.println("Hopper is not at position 1, moving to position 1.");
+        mHopper.moveHopperToPos(HopperConstants.wiggleRange[0]);
+      } else if (!(checkWiggStatusP2())) {
+        System.out.println("Hopper is not at position 2, moving to position 2.");
+        mHopper.moveHopperToPos(HopperConstants.wiggleRange[1]);
+      }
+    }
+  }
+
+  // Called every time the scheduler runs while the command is scheduled.
+  @Override
+  public void execute() {
+    if (desiredState == hopperState.EXTENDED) {
+      mHopper.extendMotors();
+    } 
       
-//     if (desiredState == hopperState.RETRACTED) {
-//       mHopper.retractMotors();
-//     }
+    if (desiredState == hopperState.RETRACTED) {
+      mHopper.retractMotors();
+    }
       
-//     if (desiredState == hopperState.IDLE) {
-//       System.out.println(
-//         "Why would you give me an idle state you bafoon just use stopMotors(); if that is what you are looking for"
-//       );
-//     }
+    if (desiredState == hopperState.IDLE) {
+      System.out.println(
+        "Why would you give me an idle state you bafoon just use stopMotors(); if that is what you are looking for"
+      );
+    }
 
-//     if (desiredState == hopperState.WIGGLE) {
-//       new Wiggle().wiggle();
-//     }
-//   }
+    if (desiredState == hopperState.WIGGLE) {
+      wiggleClass.wiggle();
+    }
+  }
 
-//   // Returns true when the command should end.
-//   @Override
-//   public boolean isFinished() {
-//     if (desiredState == hopperState.WIGGLE) {
-//       return false;
-//     } else {
-//       // return command just incase idle is passed in
-//       hasReachedGoal = (desiredState == mHopper.getCurrHopperState()) || (desiredState == hopperState.IDLE);
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return false;
+  }
 
-//       if (hasReachedGoal) {
-//         System.out.println("The hopper reached the desired state: " + desiredState.toString());
-//       }
-//       return hasReachedGoal;
-//     }
-//   }
-
-//   @Override
-//   public void end(boolean interrupted) {
-//     if (desiredState == hopperState.WIGGLE) {
-//       System.out.println("Hopper command was wiggle, exiting command & reseting hopper status to idle.");
-//       mHopper.setHopperState(hopperState.IDLE);
-//     } else {
-//        System.out.println("Exiting hopper command now");
-//     }
-//   }
-// }
+  @Override
+  public void end(boolean interrupted) {
+    if (desiredState == hopperState.WIGGLE) {
+      System.out.println("Hopper command was wiggle, exiting command & reseting hopper status to idle.");
+      mHopper.setHopperState(hopperState.IDLE);
+    } else {
+       System.out.println("Exiting hopper command now");
+    }
+  }
+}
