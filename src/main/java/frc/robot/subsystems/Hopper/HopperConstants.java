@@ -8,13 +8,13 @@ public class HopperConstants {
     public static int maxVoltage = 10;
 
     // Motor positions
-    public static double retractedPos = 9;
-    public static double extendedPos = -9;
+    public static double retractedPos = 0;
+    public static double extendedPos = 3;
     public static double posTolerance = 1;
-    public static double[] wiggleRange = {9,8};
+    public static double[] wiggleRange = {9,7};
 
     public static final double[] kPID = {
-      0, // kP
+      10, // kP
       0, // kI
       0,  // kD
       0.25, // kS
