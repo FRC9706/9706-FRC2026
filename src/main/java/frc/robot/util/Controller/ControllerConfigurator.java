@@ -71,16 +71,6 @@ public class ControllerConfigurator {
         container.getMDriverController().povLeft().onTrue(
             new HopperControl(container.getHopperInst(), hopperState.IDLE)
         );
-
-        // Orchestra
-        container.getMDriverController().povUp().onTrue(
-            Commands.runOnce(() -> container.getBoomBoxInst().loadAndPlayMusic(container.getBoomBoxInst().getMusicChoice(), container))
-        );
-
-         container.getMDriverController().povDown().onTrue(
-            Commands.runOnce(() -> container.getBoomBoxInst().stopMusic())
-         );
-
    }
 
     public void configureControllerSim(RobotContainer container) {
