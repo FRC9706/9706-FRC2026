@@ -40,31 +40,32 @@ public class MotorConfigs {
     }
 
     public static void configureMotors(TalonFX[] hopperMotors) {
-        // 0 will be the leading motor; 1 will be the follower
+        // They are grouped together, but they are treated independently
         TalonFXConfiguration[] hopperConfig = new TalonFXConfiguration[] {
             new TalonFXConfiguration(),
             new TalonFXConfiguration()
         };
 
-        // Set current limits for all motors
+        // Set current limits for hopper motors
         for (TalonFXConfiguration config : hopperConfig) {
-            config.CurrentLimits.SupplyCurrentLimit = 40;
+            config.CurrentLimits.SupplyCurrentLimit = 25;
             config.CurrentLimits.SupplyCurrentLimitEnable = true;
         }
     
-        // Set voltage limits for all motors
+        // Set voltage limits for hopper motors
         for (TalonFXConfiguration config : hopperConfig) {
             config.Voltage.PeakForwardVoltage = HopperConstants.maxVoltage;
             config.Voltage.PeakReverseVoltage = -HopperConstants.maxVoltage;
         }
 
-        // Set the motors to coast on during idle
+        // Set the motors to brake on during idle
         for (TalonFXConfiguration config : hopperConfig) {
-            config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         }
 
-        // Set the MASTER motor's direction (follower will oppose later)
+        // Set the directions for the motors
         hopperConfig[0].MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        hopperConfig[1].MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         // Configure PID for the hopper motors
         configurePID(
@@ -84,11 +85,6 @@ public class MotorConfigs {
         for (int i = 0; i < hopperMotors.length; i++) {
             hopperMotors[i].getConfigurator().apply(hopperConfig[i]);
         }
-
-        // Set the second firing motor to follow the first with opposite direction
-        hopperMotors[1].setControl(new Follower
-            (hopperMotors[0].getDeviceID(), MotorAlignmentValue.Opposed)
-        );
 
         System.out.println("Hopper master ID: " + hopperMotors[0].getDeviceID());
         System.out.println("Hopper follower ID: " + hopperMotors[1].getDeviceID());
