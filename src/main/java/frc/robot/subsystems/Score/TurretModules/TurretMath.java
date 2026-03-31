@@ -35,11 +35,11 @@ public class TurretMath {
         robotPoseTranslation = new Translation2d(robotPose.getX(), robotPose.getY());
 
         // Initalize interpolating tree maps with points
-        treeMapTurretRPM = new InterpolatingDoubleTreeMap();
-            treeMapTurretRPM.put(null, null);
+        // treeMapTurretRPM = new InterpolatingDoubleTreeMap();
+        //     treeMapTurretRPM.put(null, null);
 
-        treeMapHoodPos = new InterpolatingDoubleTreeMap();
-            treeMapHoodPos.put(null, null);
+        // treeMapHoodPos = new InterpolatingDoubleTreeMap();
+        //     treeMapHoodPos.put(null, null);
     }
 
     public Translation2d getHubTranslation() {
