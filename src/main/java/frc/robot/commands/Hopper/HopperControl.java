@@ -11,8 +11,7 @@ public class HopperControl extends Command {
   private final hopperState desiredState;
 
   // initalize all other variables
-  private Wiggle wiggleClass;
-
+  
   /**
    * This command will set the hopper to the given ENUM state
    * @param subsystem Requires access to the hopper subsystem
@@ -21,8 +20,6 @@ public class HopperControl extends Command {
   public HopperControl(Hopper hopper, hopperState desiredStateInput) {
     mHopper = hopper;
     desiredState = desiredStateInput;
-
-    Wiggle wiggleClass = new Wiggle();
 
     // Declare subsystem dependencies.
     addRequirements(hopper);
@@ -34,27 +31,6 @@ public class HopperControl extends Command {
     if (desiredState == hopperState.WIGGLE) {
       System.out.println("The desired state is wiggle; setting hopper state to wiggle");
       mHopper.setHopperState(hopperState.WIGGLE);
-    }
-  }
-
-  // Construct wiggle class
-  class Wiggle {
-    boolean checkWiggStatusP1() {
-      return mHopper.hasReachedPos(HopperConstants.wiggleRange[0]);
-    }
-
-    boolean checkWiggStatusP2() {
-      return mHopper.hasReachedPos(HopperConstants.wiggleRange[1]);
-    }
-
-    void wiggle() {
-      if (!(checkWiggStatusP1())) {
-        System.out.println("Hopper is not at position 1, moving to position 1.");
-        mHopper.moveHopperToPos(HopperConstants.wiggleRange[0]);
-      } else if (!(checkWiggStatusP2())) {
-        System.out.println("Hopper is not at position 2, moving to position 2.");
-        mHopper.moveHopperToPos(HopperConstants.wiggleRange[1]);
-      }
     }
   }
 
@@ -76,7 +52,11 @@ public class HopperControl extends Command {
     }
 
     if (desiredState == hopperState.WIGGLE) {
-      wiggleClass.wiggle();
+      if (!(mHopper.hasReachedPos(HopperConstants.wiggleRange[0]))) {
+        mHopper.moveHopperToPos(HopperConstants.wiggleRange[0]);
+      } else if (!(mHopper.hasReachedPos(HopperConstants.wiggleRange[1]))) {
+        mHopper.moveHopperToPos(HopperConstants.wiggleRange[1]);
+      }
     }
   }
 
