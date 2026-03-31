@@ -2,16 +2,18 @@ package frc.robot.subsystems.Hopper;
 
 public class HopperConstants {
     // Motor IDs
-    public static int[] hopperMotors = {15, 16};
+    public static final int[] hopperMotors = {15, 16};
 
     // Motor Variables
-    public static int maxVoltage = 10;
+    public static final int maxVoltage = 10;
+    public static final int supplyLimit = 25;
+    public static final int statorLimit = 25;
 
     // Motor positions
-    public static double retractedPos = 0;
-    public static double extendedPos = 3;
-    public static double posTolerance = 1;
-    public static double[] wiggleRange = {9,7};
+    public static final double retractedPos = 0;
+    public static final double extendedPos = 3;
+    public static final double posTolerance = 1;
+    public static final double[] wiggleRange = {3,2};
 
     public static final double[] kPID = {
       10, // kP
