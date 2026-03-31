@@ -7,6 +7,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.RobotContainer;
 import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
@@ -27,7 +29,11 @@ public class boomBox {
 
     private DynamicChoice trackChoice;
 
-    public enum trackList {
+    public enum boomBoxControl {
+        // Controls
+        disabled,
+        paused,
+        // Tracks
         ussr,
         usa,
         test
@@ -35,10 +41,9 @@ public class boomBox {
     private String[] trackNames;
 
     private boomBox() {
+        // Init objects
         mOrchestra = new Orchestra();
-
         audioConfig = new AudioConfigs();
-        audioConfig.withAllowMusicDurDisable(true);
 
         // setup track names for dynamic input
         trackNames = convertEnumsToStrings();
@@ -53,12 +58,15 @@ public class boomBox {
             return;
         }
         
+        audioConfig.withAllowMusicDurDisable(true);
         for (TalonFX motor : motorListInput) {
-            mOrchestra.addInstrument(motor);        
+            mOrchestra.addInstrument(motor);
+            motor.getConfigurator().apply(audioConfig);    
         }
         
         isInitialized = true;
-        System.out.println("Orchestra initialized with " + motorListInput.length + " motors");
+        Logger.recordOutput("BoomBox/Orchestra Motor Count", motorListInput.length);
+        Logger.recordOutput("BoomBox/Orchestra Initialized", true);
     }
 
     public void loadAndPlayMusic(String choice, RobotContainer container) {
@@ -67,8 +75,8 @@ public class boomBox {
             System.out.println("Orchestra not initialized yet, initializing now...");
             initOrchestra(getAllMotors(container));
         }
-        
-        String track = choice.concat(".chrp");
+
+        String track = "/src/main/deploy/track/" + choice + ".chrp";
         var status = mOrchestra.loadMusic(track);
         if (!(status.isOK())) {
             System.err.println("Track loading failed! Attempted track: " + track + " Status: " + status.getDescription());
@@ -87,7 +95,15 @@ public class boomBox {
         0, 
         trackNames, 
         chosen -> {
-            System.out.println("Selected track: " + chosen);
+            switch(chosen) {
+                case 0:
+                    mOrchestra.stop();
+                break;
+
+                case 1: 
+                    mOrchestra.pause();
+                break;
+            }
         });
     }
 
@@ -98,7 +114,7 @@ public class boomBox {
     public String[] convertEnumsToStrings() {
         List<String> namesList = new ArrayList<>();
 
-        for (trackList track : trackList.values()) {
+        for (boomBoxControl track : boomBoxControl.values()) {
             namesList.add(track.toString());
         }
 
