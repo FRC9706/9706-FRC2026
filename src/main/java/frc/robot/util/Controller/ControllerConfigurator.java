@@ -28,19 +28,6 @@ public class ControllerConfigurator {
         // Button bindings
         // ====================
 
-        // Move foward for one second
-        // container.getDriverController().y().whileTrue(
-        //     Commands.run(() -> container.getDrivebase().drive(new ChassisSpeeds(0.3, 0, 0)))
-        // );
-
-        // container.getMDriverController().y().whileTrue(
-        //     Commands.run(() -> container.getTurretBetaInst().resetRotEncoderPositons())
-        // );
-
-        // container.getMDriverController().x().whileTrue(
-        //     Commands.run(() -> container.getTurretBetaInst().smartMoveToHub())
-        // );
-
         // Reset Gyro/Oreint robot to current facing position
         container.getMDriverController().a().onTrue(
             Commands.runOnce(container.getDrivebase()::zeroGyroWithAlliance)
@@ -68,16 +55,6 @@ public class ControllerConfigurator {
         container.getMDriverController().povLeft().onTrue(
             Commands.runOnce(() -> container.getTurret().setTurretPosition(Units.degreesToRotations(180)))
         );
-
-        // container.getMDriverController().b().whileTrue(
-        //     Commands.run(() -> container.getTurretBetaInst().smartMoveTurretToPos(-190.0/360.0))
-        // );
-
-        // motorRPM = DynamicInputs.number("Turret/ShootRPM", 3400);
-
-        // container.getMDriverController().leftBumper().onTrue(
-        //     Commands.runOnce(() -> container.getTurretBetaInst().shoot(motorRPM.get())))
-        //     .onFalse(Commands.runOnce(() -> container.getTurretBetaInst().stopShootMotors()));
 
         container.getMDriverController().rightBumper().onTrue(
             container.getIntake().extend()
