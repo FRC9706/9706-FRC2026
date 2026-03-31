@@ -18,6 +18,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -127,8 +128,8 @@ public class SwerveSubsystem extends SubsystemBase {
     Logger.recordOutput("Drivetrain/Pose", swerveDrive.getPose());
 
     // testing
-    // Logger.recordOutput("Limelight/Pose-FR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontri").pose);
-    // Logger.recordOutput("Limelight/Pose-FL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontle").pose);
+    Logger.recordOutput("Limelight/Pose-FR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontri").pose);
+    Logger.recordOutput("Limelight/Pose-FL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontle").pose);
     // Logger.recordOutput("Limelight/Pose-BR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backri").pose);
     // Logger.recordOutput("Limelight/Pose-BL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backle").pose);
   }
@@ -651,7 +652,7 @@ public class SwerveSubsystem extends SubsystemBase {
   public void createVisionMeasurement(String llName, double timeStamp) {
     if (LimelightHelpers.getTargetCount(llName) >= 1) {
     swerveDrive.addVisionMeasurement(
-      LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose, timeStamp);
+      LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose, timeStamp, VecBuilder.fill(0.4,0.4, Units.degreesToRadians(30)));
     }
   }
 
