@@ -103,6 +103,8 @@ public class boomBox {
                 case 1: 
                     mOrchestra.pause();
                 break;
+
+                
             }
         });
     }
@@ -141,15 +143,18 @@ public class boomBox {
         }
 
         // *****************************************
-        // Build intake List
+        // Build Score List
         // *****************************************
-        TalonFX rollerMotor = container.getIntake().getRollerMotor();
-        motorList.add(rollerMotor);
-
-        TalonFX[] extMotors = container.getIntake().getExtMotors();
-        for (TalonFX motor : extMotors) {
+        TalonFX[] flyMotors = container.getFlywheel().getMotors();
+        for (TalonFX motor : flyMotors) {
             motorList.add(motor);
         }
+
+        TalonFX hoodMotor = container.getHood().getHoodMotor();
+        motorList.add(hoodMotor);
+
+        TalonFX turretMotor = container.getTurret().getTurretMotor();
+        motorList.add(turretMotor);
         
         // Convert list to array
         return motorList.toArray(new TalonFX[0]);

@@ -73,5 +73,11 @@ public class IntakeConstants {
                 .withMotionMagicCruiseVelocity(6)
                 .withMotionMagicAcceleration(6)
         );
+
+    public static final TalonFXConfiguration extConfig2 = extConfig
+        .withMotorOutput(new MotorOutputConfigs()
+            .withInverted(InvertedValue.CounterClockwise_Positive)
+            .withNeutralMode(NeutralModeValue.Coast)
+        );
     
 }

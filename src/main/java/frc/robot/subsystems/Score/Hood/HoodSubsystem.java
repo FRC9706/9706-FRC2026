@@ -7,18 +7,19 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Getter;
 
 public class HoodSubsystem extends SubsystemBase {
 
-  private TalonFX motor;
+  @Getter private TalonFX hoodMotor;
   private MotionMagicVoltage request = new MotionMagicVoltage(0);
   private InterpolatingDoubleTreeMap hoodMap = new InterpolatingDoubleTreeMap();
 
   public HoodSubsystem() {
 
-    motor = new TalonFX(HoodConstants.motorID);
-    motor.getConfigurator().apply(HoodConstants.config);
-    motor.setPosition(Units.degreesToRotations(HoodConstants.minAngle));
+    hoodMotor = new TalonFX(HoodConstants.motorID);
+    hoodMotor.getConfigurator().apply(HoodConstants.config);
+    hoodMotor.setPosition(Units.degreesToRotations(HoodConstants.minAngle));
 
     hoodMap.put(1d, Units.degreesToRotations(HoodConstants.minAngle));
     hoodMap.put(2d, Units.degreesToRotations(HoodConstants.maxAngle));
@@ -37,10 +38,10 @@ public class HoodSubsystem extends SubsystemBase {
   public void periodic() {
 
     Logger.recordOutput("Hood/Setpoint", Units.rotationsToDegrees(request.Position));
-    Logger.recordOutput("Hood/Position", Units.rotationsToDegrees(motor.getPosition().getValueAsDouble()));
-    Logger.recordOutput("Hood/Velocity", Units.rotationsToDegrees(motor.getVelocity().getValueAsDouble()));
-    Logger.recordOutput("Hood/AppliedVoltage", motor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Hood/Position", Units.rotationsToDegrees(hoodMotor.getPosition().getValueAsDouble()));
+    Logger.recordOutput("Hood/Velocity", Units.rotationsToDegrees(hoodMotor.getVelocity().getValueAsDouble()));
+    Logger.recordOutput("Hood/AppliedVoltage", hoodMotor.getMotorVoltage().getValueAsDouble());
 
-    motor.setControl(request);
+    hoodMotor.setControl(request);
   }
 }

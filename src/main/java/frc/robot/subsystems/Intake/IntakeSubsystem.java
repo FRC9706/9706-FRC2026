@@ -26,10 +26,8 @@ public class IntakeSubsystem extends SubsystemBase {
         extMotors[0] = new TalonFX(IntakeConstants.extMotorIDs[0]);
         extMotors[1] = new TalonFX(IntakeConstants.extMotorIDs[1]);
 
-        for (TalonFX extMotor : extMotors) {
-            extMotor.getConfigurator().apply(IntakeConstants.extConfig);
-            extMotor.setPosition(0);
-        }
+        extMotors[0].getConfigurator().apply(IntakeConstants.extConfig);
+        extMotors[1].getConfigurator().apply(IntakeConstants.extConfig2);
     }
 
     public void setExtPos(double pos) {

@@ -10,10 +10,11 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import lombok.Getter;
 
 public class FlywheelSubsystem extends SubsystemBase {
 
-  private TalonFX[] motors;
+  @Getter private TalonFX[] motors;
   private VelocityVoltage request = new VelocityVoltage(0);
 
   private InterpolatingDoubleTreeMap flyMap = new InterpolatingDoubleTreeMap();

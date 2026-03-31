@@ -11,18 +11,19 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Field.FieldConstants;
 import lib.Geometry.Translation2d;
+import lombok.Getter;
 
 public class TurretSubsystem extends SubsystemBase {
 
-  private TalonFX motor;
+  @Getter private TalonFX turretMotor;
   private MotionMagicVoltage request = new MotionMagicVoltage(0);
 
   public TurretSubsystem() {
 
-    motor = new TalonFX(TurretConstants.rotationMotor);
-    motor.getConfigurator().apply(TurretConstants.config);
+    turretMotor = new TalonFX(TurretConstants.rotationMotor);
+    turretMotor.getConfigurator().apply(TurretConstants.config);
 
-    motor.setPosition(0);
+    turretMotor.setPosition(0);
 
   }
 
@@ -39,7 +40,7 @@ public class TurretSubsystem extends SubsystemBase {
       clampedInput = clampedInput + 360;
     }
 
-    if (Math.abs(clampedInput - (Units.rotationsToDegrees(motor.getPosition().getValueAsDouble()) - minAngle)) > 180) {
+    if (Math.abs(clampedInput - (Units.rotationsToDegrees(turretMotor.getPosition().getValueAsDouble()) - minAngle)) > 180) {
       /*if the desired position is that far away from the current position, then we want to check if we can go the other way! */
       if (clampedInput + 360 < maxAngle) {
         clampedInput += 360;
@@ -66,10 +67,10 @@ public class TurretSubsystem extends SubsystemBase {
   public void periodic() {
 
     Logger.recordOutput("Turret/Setpoint", Units.rotationsToDegrees(request.Position));
-    Logger.recordOutput("Turret/Position", Units.rotationsToDegrees(motor.getPosition().getValueAsDouble()));
-    Logger.recordOutput("Turret/Velocity", Units.rotationsToDegrees(motor.getVelocity().getValueAsDouble()));
-    Logger.recordOutput("Turret/AppliedVoltage", motor.getMotorVoltage().getValueAsDouble());
+    Logger.recordOutput("Turret/Position", Units.rotationsToDegrees(turretMotor.getPosition().getValueAsDouble()));
+    Logger.recordOutput("Turret/Velocity", Units.rotationsToDegrees(turretMotor.getVelocity().getValueAsDouble()));
+    Logger.recordOutput("Turret/AppliedVoltage", turretMotor.getMotorVoltage().getValueAsDouble());
 
-    motor.setControl(request);
+    turretMotor.setControl(request);
   }
 }
