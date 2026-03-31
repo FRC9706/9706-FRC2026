@@ -12,12 +12,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.doomAndDespair.boomBox;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
 import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
+import frc.robot.subsystems.Hopper.Hopper;
 import frc.robot.subsystems.Score.TurretModules.TurretMath;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -60,11 +62,14 @@ public class RobotContainer {
   // // Init spindexer subsystem
   // @Getter private final Spindexer spindexerInst = Spindexer.getInstance();
 
-  // // Init hopper subsystem
-  // @Getter private final Hopper hopperInst = Hopper.getInstance();
+  // Init hopper subsystem
+  @Getter private final Hopper hopperInst = Hopper.getInstance();
   
   // // init intake subsystem
   // @Getter private final Intake intakeInst = Intake.getInstance();
+
+  // init doom and despair - boomBox subsystem
+  @Getter private final boomBox boomBoxInst = boomBox.getInstance();
 
   // ----------------------------------------
   // Initalize Variables
