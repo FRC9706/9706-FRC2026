@@ -1,10 +1,8 @@
 package frc.robot.subsystems.Hopper;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class MotorConfigs {
@@ -48,7 +46,8 @@ public class MotorConfigs {
 
         // Set current limits for hopper motors
         for (TalonFXConfiguration config : hopperConfig) {
-            config.CurrentLimits.SupplyCurrentLimit = 25;
+            config.CurrentLimits.SupplyCurrentLimit = HopperConstants.supplyLimit;
+            config.CurrentLimits.StatorCurrentLimit = HopperConstants.statorLimit;
             config.CurrentLimits.SupplyCurrentLimitEnable = true;
         }
     
