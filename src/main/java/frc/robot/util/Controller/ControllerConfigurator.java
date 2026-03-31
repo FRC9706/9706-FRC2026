@@ -6,7 +6,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.RobotContainer;
-import lib.Networking.DynamicInputs;
+import frc.robot.commands.Hopper.HopperControl;
+import frc.robot.subsystems.Hopper.Hopper.hopperState;
 import lib.Networking.DynamicInputs.dynamicNum;
 
 public class ControllerConfigurator {
@@ -55,31 +56,63 @@ public class ControllerConfigurator {
         //     Commands.runOnce(() -> container.getTurretBetaInst().shoot(motorRPM.get())))
         //     .onFalse(Commands.runOnce(() -> container.getTurretBetaInst().stopShootMotors()));
 
+        container.getMDriverController().rightBumper().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.EXTENDED)
+        );
+
+        container.getMDriverController().leftBumper().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.RETRACTED)
+        );
+
+        container.getMDriverController().povRight().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.WIGGLE)
+        );
+
+        container.getMDriverController().povLeft().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.IDLE)
+        );
+
+        // Orchestra
+        container.getMDriverController().povUp().onTrue(
+            Commands.runOnce(() -> container.getBoomBoxInst().loadAndPlayMusic(container.getBoomBoxInst().getMusicChoice(), container))
+        );
+
+         container.getMDriverController().povDown().onTrue(
+            Commands.runOnce(() -> container.getBoomBoxInst().stopMusic())
+         );
+
    }
 
     public void configureControllerSim(RobotContainer container) {
+        // THIS IS SIMULATION
 
       container.getMDriverController().start().onTrue(Commands.runOnce(() -> 
         container.getDrivebase().resetOdometry(
             new Pose2d(3, 3, new Rotation2d())
         )
       ));
+
+        // THIS IS SIMULATION
       
-        // container.getMDriverController().povUp().onTrue(
-        //     new HopperControl(container.getHopperInst(), hopperState.EXTENDED)
-        // );
+        container.getMDriverController().povUp().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.EXTENDED)
+        );
 
-        // container.getMDriverController().povDown().onTrue(
-        //     new HopperControl(container.getHopperInst(), hopperState.RETRACTED)
-        // );
+        container.getMDriverController().povDown().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.RETRACTED)
+        );
 
-        // container.getMDriverController().povRight().onTrue(
-        //     new HopperControl(container.getHopperInst(), hopperState.WIGGLE)
-        // );
+        // THIS IS SIMULATION
 
-        // container.getMDriverController().povLeft().onTrue(
-        //     new HopperControl(container.getHopperInst(), hopperState.IDLE)
-        // );
+        container.getMDriverController().povRight().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.WIGGLE)
+        );
+
+        container.getMDriverController().povLeft().onTrue(
+            new HopperControl(container.getHopperInst(), hopperState.IDLE)
+        );
+
+        // THIS IS SIMULATION
     }
 
     public static void configureControllerTest(RobotContainer container) {}
