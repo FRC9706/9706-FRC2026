@@ -16,8 +16,6 @@ public class SpindexerConstants {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true)
-                .withStatorCurrentLimit(40)
-                .withStatorCurrentLimitEnable(true)
         )
         .withVoltage(
             new VoltageConfigs()
@@ -26,7 +24,7 @@ public class SpindexerConstants {
         )
         .withMotorOutput(
             new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive)
+                .withInverted(InvertedValue.CounterClockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Coast)   
         );
 
