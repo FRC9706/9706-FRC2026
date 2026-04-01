@@ -20,17 +20,17 @@ public class IntakeConstants {
 
     // Motor positions for extention motor
     public static final double retractedPos = 0;
-    public static final double extendedPos = 3;
+    public static final double extendedPos = 4.1895947219511;
     public static final double[] wiggleRange = {3,2};
 
 
     public static final TalonFXConfiguration intakeConfig = new TalonFXConfiguration()
         .withCurrentLimits(
             new CurrentLimitsConfigs()
-                .withSupplyCurrentLimit(40)
+                .withSupplyCurrentLimit(30)
                 .withSupplyCurrentLimitEnable(true)
-                .withStatorCurrentLimit(40)
-                .withStatorCurrentLimitEnable(true)
+                // Disable stator
+                .withStatorCurrentLimitEnable(false)
         )
         .withVoltage(
             new VoltageConfigs()
@@ -56,28 +56,42 @@ public class IntakeConstants {
                 .withPeakForwardVoltage(10)
                 .withPeakReverseVoltage(-10)
         )
-        .withFeedback(
-            new FeedbackConfigs().withSensorToMechanismRatio(Math.PI)
-        )
         .withMotorOutput(
             new MotorOutputConfigs()
-                .withInverted(InvertedValue.CounterClockwise_Positive)
+                .withInverted(InvertedValue.Clockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Coast)   
+        )
+        .withFeedback(
+            new FeedbackConfigs().withSensorToMechanismRatio(1)
+        )
+        .withSlot0(
+            new Slot0Configs()
+                .withKP(12)
+                .withKD(0.25)
+                .withKS(0.25)
+                .withKV(0.10)
+                .withKA(0.01)
+        )
+        .withMotionMagic(
+            new MotionMagicConfigs()
+                .withMotionMagicCruiseVelocity(40)
+                .withMotionMagicAcceleration(120)
+                .withMotionMagicJerk(1600)
+        );
+
+    public static final TalonFXConfiguration extConfig2 = extConfig.clone()
+        .withMotorOutput(
+            new MotorOutputConfigs()
+            .withInverted(InvertedValue.CounterClockwise_Positive)
+            .withNeutralMode(NeutralModeValue.Coast)
         )
         .withSlot0(
             new Slot0Configs()
                 .withKP(10)
-        )
-        .withMotionMagic(
-            new MotionMagicConfigs()
-                .withMotionMagicCruiseVelocity(6)
-                .withMotionMagicAcceleration(6)
-        );
-
-    public static final TalonFXConfiguration extConfig2 = extConfig
-        .withMotorOutput(new MotorOutputConfigs()
-            .withInverted(InvertedValue.Clockwise_Positive)
-            .withNeutralMode(NeutralModeValue.Coast)
+                .withKD(0.25)
+                .withKS(0.25)
+                .withKV(0.10)
+                .withKA(0.01)
         );
     
 }
