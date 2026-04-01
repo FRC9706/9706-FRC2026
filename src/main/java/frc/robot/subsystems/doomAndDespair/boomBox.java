@@ -4,8 +4,6 @@ import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +28,8 @@ public class boomBox {
         // Tracks
         ussr,
         usa,
+        jeopardy,
+        rickroll,
         test
     }
     private String[] trackNames;
