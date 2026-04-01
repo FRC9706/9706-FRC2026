@@ -42,11 +42,11 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().x().onTrue(
-          container.getSpindexer().setDutyCycle(1)
+          Commands.runOnce(() -> container.getIntake().setRollerDutyCycle(1))
         );
 
         container.getMDriverController().b().onTrue(
-          container.getSpindexer().setDutyCycle(0)
+          Commands.runOnce(() -> container.getIntake().setRollerDutyCycle(1))
         );
 
 
