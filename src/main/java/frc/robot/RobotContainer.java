@@ -55,9 +55,9 @@ public class RobotContainer {
   @Getter private final Limelight limelightInst = Limelight.getInstance();
 
   // Init the Score subsystems
-  @Getter private final TurretSubsystem turret = new TurretSubsystem();
-  @Getter private final FlywheelSubsystem flywheel = new FlywheelSubsystem();
-  @Getter private final HoodSubsystem hood = new HoodSubsystem();
+  //@Getter private final TurretSubsystem turret = new TurretSubsystem();
+  //@Getter private final FlywheelSubsystem flywheel = new FlywheelSubsystem();
+  //@Getter private final HoodSubsystem hood = new HoodSubsystem();
 
   // Init spindexer subsystem
   @Getter private final Spindexer spindexer = new Spindexer();
@@ -66,7 +66,7 @@ public class RobotContainer {
   @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
 
   // init doom and despair - boomBox subsystem
-  @Getter private final boomBox boomBox = new boomBox();
+  @Getter private final boomBox boomBox = new boomBox(this);
 
   // ----------------------------------------
   // Initalize Variables
@@ -200,9 +200,6 @@ public class RobotContainer {
         }
       }
     );
-
-    // Create orchestra
-    boomBox.createMusicChoice(this);
 
   // After swerveDrive is fully created, attach live tuning:
   // var modules = drivebase.getSwerveDrive().getModules();
