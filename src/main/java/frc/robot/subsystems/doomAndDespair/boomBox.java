@@ -34,7 +34,7 @@ public class boomBox {
     }
     private String[] trackNames;
 
-    public boomBox() {
+    public boomBox(RobotContainer container) {
         // Init objects
         mOrchestra = new Orchestra();
         audioConfig = new AudioConfigs();
@@ -42,7 +42,8 @@ public class boomBox {
         // setup track names for dynamic input
         trackNames = convertEnumsToStrings();
         
-        // Note: createMusicChoice will be called from RobotContainer after construction
+        // Create music choice
+        createMusicChoice(container);
     }
 
     public void initOrchestra(TalonFX[] motorListInput) {
@@ -84,7 +85,7 @@ public class boomBox {
     }
 
     public void createMusicChoice(RobotContainer container) {
-        trackChoice = DynamicInputs.choice("boomBox/selectedTrack", 
+        trackChoice = DynamicInputs.choice("BoomBox/selectedTrack", 
         0, 
         trackNames, 
         chosen -> {
