@@ -16,6 +16,8 @@ public class SpindexerConstants {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(40)
                 .withSupplyCurrentLimitEnable(true)
+                // Disable stator
+                .withStatorCurrentLimitEnable(false)
         )
         .withVoltage(
             new VoltageConfigs()
