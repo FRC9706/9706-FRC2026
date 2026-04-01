@@ -9,6 +9,9 @@ import java.util.function.Consumer;
 import java.util.function.DoubleConsumer;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -97,6 +100,118 @@ public final class DynamicInputs {
     cruiseVel.onChange(v -> apply.run());
     accel.onChange(v -> apply.run());
     jerk.onChange(v -> apply.run());
+  }
+
+  // Auto-apply PID config to motor from TalonFXConfiguration
+  public static void autoTalonFXPID(
+      String name,
+      TalonFXConfiguration config,
+      TalonFX motor) {
+    
+    double defaultP = config.Slot0.kP;
+    double defaultI = config.Slot0.kI;
+    double defaultD = config.Slot0.kD;
+
+    pid(name, defaultP, defaultI, defaultD, (kP, kI, kD) -> {
+      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      updatedConfig.Slot0.kP = kP;
+      updatedConfig.Slot0.kI = kI;
+      updatedConfig.Slot0.kD = kD;
+      motor.getConfigurator().apply(updatedConfig);
+    });
+  }
+
+  // Auto-apply Motion Magic config to motor from TalonFXConfiguration
+  public static void autoTalonFXMotionMagicPID(
+      String name,
+      TalonFXConfiguration config,
+      TalonFX motor) {
+    
+    double defaultP = config.Slot0.kP;
+    double defaultI = config.Slot0.kI;
+    double defaultD = config.Slot0.kD;
+    double defaultS = config.Slot0.kS;
+    double defaultV = config.Slot0.kV;
+    double defaultA = config.Slot0.kA;
+    double defaultCruiseVel = config.MotionMagic.MotionMagicCruiseVelocity;
+    double defaultAccel = config.MotionMagic.MotionMagicAcceleration;
+    double defaultJerk = config.MotionMagic.MotionMagicJerk;
+
+    pidMagicMotion(name, 
+        defaultP, defaultI, defaultD,
+        defaultS, defaultV, defaultA,
+        defaultCruiseVel, defaultAccel, defaultJerk,
+        (kP, kI, kD, kS, kV, kA, cruiseVel, accel, jerk) -> {
+      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      updatedConfig.Slot0.kP = kP;
+      updatedConfig.Slot0.kI = kI;
+      updatedConfig.Slot0.kD = kD;
+      updatedConfig.Slot0.kS = kS;
+      updatedConfig.Slot0.kV = kV;
+      updatedConfig.Slot0.kA = kA;
+      updatedConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVel;
+      updatedConfig.MotionMagic.MotionMagicAcceleration = accel;
+      updatedConfig.MotionMagic.MotionMagicJerk = jerk;
+      motor.getConfigurator().apply(updatedConfig);
+    });
+  }
+
+  // Auto-apply PID config to multiple motors from TalonFXConfiguration
+  public static void autoTalonFXPID(
+      String name,
+      TalonFXConfiguration config,
+      TalonFX[] motors) {
+    
+    double defaultP = config.Slot0.kP;
+    double defaultI = config.Slot0.kI;
+    double defaultD = config.Slot0.kD;
+
+    pid(name, defaultP, defaultI, defaultD, (kP, kI, kD) -> {
+      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      updatedConfig.Slot0.kP = kP;
+      updatedConfig.Slot0.kI = kI;
+      updatedConfig.Slot0.kD = kD;
+      for (TalonFX motor : motors) {
+        motor.getConfigurator().apply(updatedConfig);
+      }
+    });
+  }
+
+  // Auto-apply Motion Magic config to multiple motors from TalonFXConfiguration
+  public static void autoTalonFXMotionMagicPID(
+      String name,
+      TalonFXConfiguration config,
+      TalonFX[] motors) {
+    
+    double defaultP = config.Slot0.kP;
+    double defaultI = config.Slot0.kI;
+    double defaultD = config.Slot0.kD;
+    double defaultS = config.Slot0.kS;
+    double defaultV = config.Slot0.kV;
+    double defaultA = config.Slot0.kA;
+    double defaultCruiseVel = config.MotionMagic.MotionMagicCruiseVelocity;
+    double defaultAccel = config.MotionMagic.MotionMagicAcceleration;
+    double defaultJerk = config.MotionMagic.MotionMagicJerk;
+
+    pidMagicMotion(name, 
+        defaultP, defaultI, defaultD,
+        defaultS, defaultV, defaultA,
+        defaultCruiseVel, defaultAccel, defaultJerk,
+        (kP, kI, kD, kS, kV, kA, cruiseVel, accel, jerk) -> {
+      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      updatedConfig.Slot0.kP = kP;
+      updatedConfig.Slot0.kI = kI;
+      updatedConfig.Slot0.kD = kD;
+      updatedConfig.Slot0.kS = kS;
+      updatedConfig.Slot0.kV = kV;
+      updatedConfig.Slot0.kA = kA;
+      updatedConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVel;
+      updatedConfig.MotionMagic.MotionMagicAcceleration = accel;
+      updatedConfig.MotionMagic.MotionMagicJerk = jerk;
+      for (TalonFX motor : motors) {
+        motor.getConfigurator().apply(updatedConfig);
+      }
+    });
   }
 
   /**
