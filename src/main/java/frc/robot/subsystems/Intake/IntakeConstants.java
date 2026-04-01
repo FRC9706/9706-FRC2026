@@ -54,14 +54,14 @@ public class IntakeConstants {
         .withVoltage(
             new VoltageConfigs()
                 .withPeakForwardVoltage(10)
-                .withPeakReverseVoltage(10)
+                .withPeakReverseVoltage(-10)
         )
         .withFeedback(
             new FeedbackConfigs().withSensorToMechanismRatio(Math.PI)
         )
         .withMotorOutput(
             new MotorOutputConfigs()
-                .withInverted(InvertedValue.Clockwise_Positive)
+                .withInverted(InvertedValue.CounterClockwise_Positive)
                 .withNeutralMode(NeutralModeValue.Coast)   
         )
         .withSlot0(
@@ -76,7 +76,7 @@ public class IntakeConstants {
 
     public static final TalonFXConfiguration extConfig2 = extConfig
         .withMotorOutput(new MotorOutputConfigs()
-            .withInverted(InvertedValue.CounterClockwise_Positive)
+            .withInverted(InvertedValue.Clockwise_Positive)
             .withNeutralMode(NeutralModeValue.Coast)
         );
     

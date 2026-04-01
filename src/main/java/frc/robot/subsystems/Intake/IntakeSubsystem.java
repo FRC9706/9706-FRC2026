@@ -28,6 +28,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         extMotors[0].getConfigurator().apply(IntakeConstants.extConfig);
         extMotors[1].getConfigurator().apply(IntakeConstants.extConfig2);
+
+        for (TalonFX motor : extMotors) {
+            motor.setPosition(0);
+        }
     }
 
     public void setExtPos(double pos) {
@@ -63,8 +67,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        extMotors[0].setControl(extRequest);
-        extMotors[1].setControl(extRequest);
+        for (TalonFX motor : extMotors) {
+            motor.setControl(extRequest);
+        }
 
         rollerMotor.setControl(rollerRequest);
     }
