@@ -4,6 +4,8 @@ import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.AudioConfigs;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -140,18 +142,35 @@ public class boomBox {
         }
 
         // *****************************************
-        // Build Score List
+        // Build Indexer List
         // *****************************************
-        TalonFX[] flyMotors = container.getFlywheel().getMotors();
-        for (TalonFX motor : flyMotors) {
+        TalonFX indexerMotor = container.getSpindexer().getSpindexerMotor();
+        motorList.add(indexerMotor);
+
+        // *****************************************
+        // Build Intake List
+        // *****************************************
+        TalonFX rollerMotor = container.getIntake().getRollerMotor();
+        motorList.add(rollerMotor);
+
+        TalonFX[] extMotors = container.getIntake().getExtMotors();
+        for (TalonFX motor : extMotors) {
             motorList.add(motor);
         }
 
-        TalonFX hoodMotor = container.getHood().getHoodMotor();
-        motorList.add(hoodMotor);
+        // *****************************************
+        // Build Score List
+        // *****************************************
+        // TalonFX[] flyMotors = container.getFlywheel().getMotors();
+        // for (TalonFX motor : flyMotors) {
+        //     motorList.add(motor);
+        // }
 
-        TalonFX turretMotor = container.getTurret().getTurretMotor();
-        motorList.add(turretMotor);
+        // TalonFX hoodMotor = container.getHood().getHoodMotor();
+        // motorList.add(hoodMotor);
+
+        // TalonFX turretMotor = container.getTurret().getTurretMotor();
+        // motorList.add(turretMotor);
         
         // Convert list to array
         return motorList.toArray(new TalonFX[0]);
