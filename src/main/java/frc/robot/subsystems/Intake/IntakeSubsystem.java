@@ -56,17 +56,25 @@ public class IntakeSubsystem extends SubsystemBase {
         rollerRequest = new DutyCycleOut(dutyCycle);
     }
 
+    public Command toggleRollers() {
+        return this.runOnce(() -> {
+            if (rollerRequest.Output != 1) {
+                setRollerDutyCycle(1);
+            } else {
+                setRollerDutyCycle(-1);
+            }
+        });
+    }
+
     public Command extend() {
         return this.runOnce(() -> {
             setExtPos(IntakeConstants.extendedPos);
-            setRollerDutyCycle(1);
         });
     }
 
     public Command retract() {
         return this.runOnce(() -> {
             setExtPos(IntakeConstants.retractedPos);
-            setRollerDutyCycle(0);
         });
     }
     
