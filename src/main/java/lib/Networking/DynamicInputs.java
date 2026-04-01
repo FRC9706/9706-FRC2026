@@ -113,7 +113,7 @@ public final class DynamicInputs {
     double defaultD = config.Slot0.kD;
 
     pid(name, defaultP, defaultI, defaultD, (kP, kI, kD) -> {
-      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      TalonFXConfiguration updatedConfig = config.clone();
       updatedConfig.Slot0.kP = kP;
       updatedConfig.Slot0.kI = kI;
       updatedConfig.Slot0.kD = kD;
@@ -142,7 +142,7 @@ public final class DynamicInputs {
         defaultS, defaultV, defaultA,
         defaultCruiseVel, defaultAccel, defaultJerk,
         (kP, kI, kD, kS, kV, kA, cruiseVel, accel, jerk) -> {
-      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
+      TalonFXConfiguration updatedConfig = config.clone();
       updatedConfig.Slot0.kP = kP;
       updatedConfig.Slot0.kI = kI;
       updatedConfig.Slot0.kD = kD;
@@ -156,60 +156,70 @@ public final class DynamicInputs {
     });
   }
 
-  // Auto-apply PID config to multiple motors from TalonFXConfiguration
+  // Auto-apply PID config to multiple motors from parallel config array
   public static void autoTalonFXPID(
       String name,
-      TalonFXConfiguration config,
+      TalonFXConfiguration[] configs,
       TalonFX[] motors) {
     
-    double defaultP = config.Slot0.kP;
-    double defaultI = config.Slot0.kI;
-    double defaultD = config.Slot0.kD;
+    if (configs.length != motors.length) {
+      throw new IllegalArgumentException("configs and motors arrays must have the same length");
+    }
+
+    // Use first config for defaults
+    double defaultP = configs[0].Slot0.kP;
+    double defaultI = configs[0].Slot0.kI;
+    double defaultD = configs[0].Slot0.kD;
 
     pid(name, defaultP, defaultI, defaultD, (kP, kI, kD) -> {
-      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
-      updatedConfig.Slot0.kP = kP;
-      updatedConfig.Slot0.kI = kI;
-      updatedConfig.Slot0.kD = kD;
-      for (TalonFX motor : motors) {
-        motor.getConfigurator().apply(updatedConfig);
+      for (int i = 0; i < motors.length; i++) {
+        TalonFXConfiguration updatedConfig = configs[i].clone();
+        updatedConfig.Slot0.kP = kP;
+        updatedConfig.Slot0.kI = kI;
+        updatedConfig.Slot0.kD = kD;
+        motors[i].getConfigurator().apply(updatedConfig);
       }
     });
   }
 
-  // Auto-apply Motion Magic config to multiple motors from TalonFXConfiguration
+  // Auto-apply Motion Magic config to multiple motors from parallel config array
   public static void autoTalonFXMotionMagicPID(
       String name,
-      TalonFXConfiguration config,
+      TalonFXConfiguration[] configs,
       TalonFX[] motors) {
     
-    double defaultP = config.Slot0.kP;
-    double defaultI = config.Slot0.kI;
-    double defaultD = config.Slot0.kD;
-    double defaultS = config.Slot0.kS;
-    double defaultV = config.Slot0.kV;
-    double defaultA = config.Slot0.kA;
-    double defaultCruiseVel = config.MotionMagic.MotionMagicCruiseVelocity;
-    double defaultAccel = config.MotionMagic.MotionMagicAcceleration;
-    double defaultJerk = config.MotionMagic.MotionMagicJerk;
+    if (configs.length != motors.length) {
+      throw new IllegalArgumentException("configs and motors arrays must have the same length");
+    }
+
+    // Use first config for defaults
+    double defaultP = configs[0].Slot0.kP;
+    double defaultI = configs[0].Slot0.kI;
+    double defaultD = configs[0].Slot0.kD;
+    double defaultS = configs[0].Slot0.kS;
+    double defaultV = configs[0].Slot0.kV;
+    double defaultA = configs[0].Slot0.kA;
+    double defaultCruiseVel = configs[0].MotionMagic.MotionMagicCruiseVelocity;
+    double defaultAccel = configs[0].MotionMagic.MotionMagicAcceleration;
+    double defaultJerk = configs[0].MotionMagic.MotionMagicJerk;
 
     pidMagicMotion(name, 
         defaultP, defaultI, defaultD,
         defaultS, defaultV, defaultA,
         defaultCruiseVel, defaultAccel, defaultJerk,
         (kP, kI, kD, kS, kV, kA, cruiseVel, accel, jerk) -> {
-      TalonFXConfiguration updatedConfig = new TalonFXConfiguration();
-      updatedConfig.Slot0.kP = kP;
-      updatedConfig.Slot0.kI = kI;
-      updatedConfig.Slot0.kD = kD;
-      updatedConfig.Slot0.kS = kS;
-      updatedConfig.Slot0.kV = kV;
-      updatedConfig.Slot0.kA = kA;
-      updatedConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVel;
-      updatedConfig.MotionMagic.MotionMagicAcceleration = accel;
-      updatedConfig.MotionMagic.MotionMagicJerk = jerk;
-      for (TalonFX motor : motors) {
-        motor.getConfigurator().apply(updatedConfig);
+      for (int i = 0; i < motors.length; i++) {
+        TalonFXConfiguration updatedConfig = configs[i].clone();
+        updatedConfig.Slot0.kP = kP;
+        updatedConfig.Slot0.kI = kI;
+        updatedConfig.Slot0.kD = kD;
+        updatedConfig.Slot0.kS = kS;
+        updatedConfig.Slot0.kV = kV;
+        updatedConfig.Slot0.kA = kA;
+        updatedConfig.MotionMagic.MotionMagicCruiseVelocity = cruiseVel;
+        updatedConfig.MotionMagic.MotionMagicAcceleration = accel;
+        updatedConfig.MotionMagic.MotionMagicJerk = jerk;
+        motors[i].getConfigurator().apply(updatedConfig);
       }
     });
   }
