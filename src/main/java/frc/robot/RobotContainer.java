@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.subsystems.Vision.Limelight;
+import frc.robot.subsystems.Vision.VisionSubsystem;
 import frc.robot.subsystems.doomAndDespair.boomBox;
 import frc.robot.util.Controller.ControllerConfigurator;
 import frc.robot.util.Pathplanner.Preloader;
@@ -19,11 +19,7 @@ import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
-import frc.robot.subsystems.Indexer.Spindexer;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
-import frc.robot.subsystems.Score.Flywheel.FlywheelSubsystem;
-import frc.robot.subsystems.Score.Hood.HoodSubsystem;
-import frc.robot.subsystems.Score.Turret.TurretSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 import java.io.File;
@@ -52,7 +48,7 @@ public class RobotContainer {
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
 
   // Init limelight subsystem
-  @Getter private final Limelight limelightInst = Limelight.getInstance();
+  @Getter private final VisionSubsystem limelight = new VisionSubsystem();
 
   // Init the Score subsystems
   //@Getter private final TurretSubsystem turret = new TurretSubsystem();
@@ -60,7 +56,7 @@ public class RobotContainer {
   //@Getter private final HoodSubsystem hood = new HoodSubsystem();
 
   // Init spindexer subsystem
-  @Getter private final Spindexer spindexer = new Spindexer();
+  // @Getter private final Spindexer spindexer = new Spindexer();
 
   // Init hopper subsystem
   @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
@@ -126,10 +122,6 @@ public class RobotContainer {
    * The container for the robot. Contains subsystems, OI devices, and commands.
    */
   public RobotContainer() {
-
-
-
-
     var streams = SwerveConfigurator.InputStreams(this);
     driveAngularVelocity = streams.driveAngularVelocity;
     driveDirectAngle = streams.driveDirectAngle;
@@ -163,9 +155,6 @@ public class RobotContainer {
 
     // Preload any trajectories for Path Planner
     Preloader.preloadsAutos();
-
-    // Load Port Fowarder
-    limelightInst.createPortFowardSlider();
 
     // List of autos for auto choice
     autosList = new String[] {
