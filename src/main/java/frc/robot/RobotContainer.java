@@ -48,7 +48,7 @@ public class RobotContainer {
   public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
 
   // Init limelight subsystem
-  @Getter private final VisionSubsystem limelight = new VisionSubsystem();
+  @Getter private final VisionSubsystem limelight = new VisionSubsystem(drivebase.getSwerveDrive());
 
   // Init the Score subsystems
   //@Getter private final TurretSubsystem turret = new TurretSubsystem();
