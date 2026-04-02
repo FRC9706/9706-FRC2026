@@ -18,7 +18,7 @@ import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 
-import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -26,6 +26,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 // import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
@@ -36,7 +38,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
-import frc.robot.subsystems.Vision.LimelightHelpers;
 
 import java.io.File;
 import java.io.IOException;
@@ -125,12 +126,6 @@ public class SwerveSubsystem extends SubsystemBase {
     
     // Record the drivetrain's position into a folder called drivetrain and a variable called Pose
     Logger.recordOutput("Drivetrain/Pose", swerveDrive.getPose());
-
-    // testing
-    Logger.recordOutput("Limelight/Pose-FR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontri").pose);
-    Logger.recordOutput("Limelight/Pose-FL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-frontle").pose);
-    // Logger.recordOutput("Limelight/Pose-BR", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backri").pose);
-    // Logger.recordOutput("Limelight/Pose-BL", LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight-backle").pose);
   }
 
   @Override
@@ -646,13 +641,6 @@ public class SwerveSubsystem extends SubsystemBase {
    */
   public void addFakeVisionReading() {
     swerveDrive.addVisionMeasurement(new Pose2d(3, 3, Rotation2d.fromDegrees(65)), Timer.getFPGATimestamp());
-  }
-
-  public void createVisionMeasurement(String llName, double timeStamp) {
-    if (LimelightHelpers.getTargetCount(llName) >= 1) {
-    swerveDrive.addVisionMeasurement(
-      LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose, timeStamp, VecBuilder.fill(0.4,0.4, Units.degreesToRadians(30)));
-    }
   }
 
   /**
