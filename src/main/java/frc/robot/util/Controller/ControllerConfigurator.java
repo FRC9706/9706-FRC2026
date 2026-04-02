@@ -9,15 +9,6 @@ import frc.robot.RobotContainer;
 import lib.Networking.DynamicInputs.dynamicNum;
 
 public class ControllerConfigurator {
-    private static ControllerConfigurator instance;  // Singleton pattern
-    
-    public static ControllerConfigurator getInstance() {
-        if (instance == null) {
-            instance = new ControllerConfigurator();
-        }
-        return instance;
-    }
-
     // Temp tunnable num for RPM
     dynamicNum motorRPM;
 

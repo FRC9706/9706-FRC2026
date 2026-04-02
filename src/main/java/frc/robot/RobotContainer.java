@@ -45,7 +45,7 @@ public class RobotContainer {
   // ----------------------------------------
 
   // Init Controller configurator
-  public final ControllerConfigurator controllerConfiguratorInstance = ControllerConfigurator.getInstance();
+  public final ControllerConfigurator controllerConfig = new ControllerConfigurator();
 
   // Init limelight subsystem
   @Getter private final VisionSubsystem limelight = new VisionSubsystem(drivebase.getSwerveDrive());
@@ -234,10 +234,10 @@ public class RobotContainer {
     // Set the driving method depending on mode (Real or Simulation)
     if (RobotBase.isSimulation()) {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
-      controllerConfiguratorInstance.configureControllerSim(this);
+      controllerConfig.configureControllerSim(this);
     } else {
       drivebase.setDefaultCommand(driveFieldOrientedAngularVelocity);
-      controllerConfiguratorInstance.configureControllerTL(this);
+      controllerConfig.configureControllerTL(this);
     }
 
     if (DriverStation.isTest()) {
