@@ -65,7 +65,10 @@ public class Robot extends LoggedRobot {
     DynamicInputs.periodic();
 
     // Use limelight vision measurements to estimate robot position
-    m_robotContainer.getLimelightInst().createVisionMeasurements(m_robotContainer, Timer.getTimestamp());
+    m_robotContainer.getLimelight().factorVisionMeasurements(
+      m_robotContainer, 
+      Timer.getTimestamp()
+    );
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
