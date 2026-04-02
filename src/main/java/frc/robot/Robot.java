@@ -63,12 +63,6 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     // Live tuner updates
     DynamicInputs.periodic();
-
-    // Use limelight vision measurements to estimate robot position
-    m_robotContainer.getLimelight().factorVisionMeasurements(
-      m_robotContainer, 
-      Timer.getTimestamp()
-    );
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
