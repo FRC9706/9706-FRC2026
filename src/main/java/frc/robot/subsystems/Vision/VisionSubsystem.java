@@ -1,24 +1,44 @@
 package frc.robot.subsystems.Vision;
+import org.littletonrobotics.junction.Logger;
+
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import lib.Networking.DynamicInputs;
 import lib.Networking.PortForwardUtils;
 
-public class Limelight {
-   public static Limelight mInstance = null;
-   public static Limelight getInstance() {
-       if(mInstance==null){
-           mInstance = new Limelight();
-       }
-       return mInstance;
-   }
+public class VisionSubsystem extends SubsystemBase {
+    public VisionSubsystem() {
+        // Create an auto-port forwardering slider
+        createPortFowardSlider();
+    }
 
-   public void createVisionMeasurements(RobotContainer container, double timeStamp) {
-    // Front
-    container.getDrivebase().createVisionMeasurement("limelight-frontri", timeStamp);
-    container.getDrivebase().createVisionMeasurement("limelight-frontle", timeStamp);
-    // Back
-    // container.getDrivebase().createVisionMeasurement("limelight-backri", timeStamp);
-    // container.getDrivebase().createVisionMeasurement("limelight-backle", timeStamp);
+   public void factorVisionMeasurements(RobotContainer container, double timeStamp) {
+    Matrix<N3,N1> stdDevs = VecBuilder.fill(0.4,0.4, Units.degreesToRadians(30));
+
+        for (String llName : VisionConstants.limelightNames) {
+            Pose2d llPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose;
+            double tagCount = LimelightHelpers.getTargetCount(llName);
+
+            // Add logging for the limelight's specific pose
+            Logger.recordOutput(
+                "Vision/PoseEstimates/" + llName, 
+                llPoseEstimate
+            );
+
+            if ((llPoseEstimate != null) && (tagCount >= 1)) {
+                container.getDrivebase().getSwerveDrive().addVisionMeasurement(
+                    llPoseEstimate, 
+                    timeStamp, 
+                    stdDevs
+                );
+            }
+        }
    }
 
     public void portFowardLL(String LL) {
