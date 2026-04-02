@@ -145,8 +145,8 @@ public class boomBox {
         // *****************************************
         // Build Indexer List
         // *****************************************
-        TalonFX indexerMotor = container.getSpindexer().getSpindexerMotor();
-        motorList.add(indexerMotor);
+        // TalonFX indexerMotor = container.getSpindexer().getSpindexerMotor();
+        // motorList.add(indexerMotor);
 
         // *****************************************
         // Build Intake List
