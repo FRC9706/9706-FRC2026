@@ -33,15 +33,13 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().x().onTrue(
-            container.getSuperStructure().setFloorOuttake(0.20)
-        ).onFalse(
-            container.getSuperStructure().stopFloor()
+            container.getSuperStructure().retractIntake()
         );
 
         container.getMDriverController().b().onTrue(
           container.getSuperStructure().setRollers(0.20)
         ).onFalse(
-            container.getSuperStructure().stopFloor()
+            container.getSuperStructure().stopRollers()
         );
 
 
@@ -59,11 +57,15 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().rightBumper().onTrue(
-            container.getSuperStructure().extendIntake()
+            container.getSuperStructure().intakeFuel(0.20, 0.20)
+        ).onFalse(
+            container.getSuperStructure().endIntakeFuel()
         );
 
         container.getMDriverController().leftBumper().onTrue(
-            container.getSuperStructure().retractIntake()
+            container.getSuperStructure().outtakeFuel(0.20, 0.20)
+        ).onFalse(
+            container.getSuperStructure().endOuttakeFuel()
         );
    }
 
