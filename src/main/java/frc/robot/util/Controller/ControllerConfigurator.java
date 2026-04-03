@@ -32,15 +32,13 @@ public class ControllerConfigurator {
         //     )
         // );
 
-        container.getMDriverController().x().onTrue(
-            container.getSuperStructure().retractIntake()
-        );
+        // container.getMDriverController().x().onTrue(
+        //     container.getSuperStructure().retractIntake()
+        // );
 
-        container.getMDriverController().b().onTrue(
-          container.getSuperStructure().setRollers(0.20)
-        ).onFalse(
-            container.getSuperStructure().stopRollers()
-        );
+        // container.getMDriverController().b().onTrue(
+        //   container.getSuperStructure().clearTrenchIntake()
+        // );
 
 
         // container.getMDriverController().povUp().onTrue(
@@ -56,17 +54,17 @@ public class ControllerConfigurator {
         //     Commands.runOnce(() -> container.getTurret().setTurretPosition(Units.degreesToRotations(180)))
         // );
 
-        container.getMDriverController().rightBumper().onTrue(
-            container.getSuperStructure().intakeFuel(0.20, 0.20)
-        ).onFalse(
-            container.getSuperStructure().endIntakeFuel()
-        );
+        // container.getMDriverController().rightBumper().onTrue(
+        //     container.getSuperStructure().intakeFuel(0.20, 0.20)
+        // ).onFalse(
+        //     container.getSuperStructure().endIntakeFuel()
+        // );
 
-        container.getMDriverController().leftBumper().onTrue(
-            container.getSuperStructure().outtakeFuel(0.20, 0.20)
-        ).onFalse(
-            container.getSuperStructure().endOuttakeFuel()
-        );
+        // container.getMDriverController().leftBumper().onTrue(
+        //     container.getSuperStructure().outtakeFuel(0.20, 0.20)
+        // ).onFalse(
+        //     container.getSuperStructure().endOuttakeFuel()
+        // );
    }
 
     public void configureControllerSim(RobotContainer container) {
