@@ -19,6 +19,7 @@ import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
+import frc.robot.subsystems.Floor.FloorSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
 
@@ -57,6 +58,9 @@ public class RobotContainer {
 
   // Init spindexer subsystem
   // @Getter private final Spindexer spindexer = new Spindexer();
+
+  // Init floor subsystem
+  @Getter private final FloorSubsystem floor = new FloorSubsystem();
 
   // Init hopper subsystem
   @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
