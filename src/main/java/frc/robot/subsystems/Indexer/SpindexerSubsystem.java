@@ -6,13 +6,13 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lombok.Getter;
-public class Spindexer extends SubsystemBase{
+public class SpindexerSubsystem extends SubsystemBase{
     // Hardware
     @Getter TalonFX spindexerMotor;
 
     private DutyCycleOut request = new DutyCycleOut(0);
 
-    public Spindexer() {
+    public SpindexerSubsystem() {
         // Intialize Motors
         spindexerMotor = new TalonFX(SpindexerConstants.motorID);
 
