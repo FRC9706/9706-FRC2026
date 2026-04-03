@@ -18,16 +18,15 @@ public class SuperStructure extends SubsystemBase {
     }
 
     // Intake roller commands
-    public Command toggleRollerDir() {
-        double rollerDutyCycle = 1;
-
-        return this.runOnce(() -> {
-            if (intake.getRollerRequest().Output != rollerDutyCycle) {
-                intake.setRollerDutyCycle(rollerDutyCycle);
-            } else {
-                intake.setRollerDutyCycle(-rollerDutyCycle);
-            }
-        });
+    public Command setRollers(double dutyCycle) {
+        return this.runOnce(() ->
+            intake.setRollerDutyCycle(dutyCycle)
+        );
+    }
+    public Command stopRollers() {
+        return this.runOnce(() ->
+            intake.setRollerDutyCycle(0)
+        );
     }
 
     // Intake extender commands
@@ -53,15 +52,48 @@ public class SuperStructure extends SubsystemBase {
     }
 
     // Floor commands
-    public Command toggleFloorOuttake() {
-        return this.runOnce(() -> {
-            double dutyCycle = 0.20;
+    public Command setFloorOuttake(double dutyCycle) {
+        return this.runOnce(() ->
+            floor.setFloorDutyCycle(dutyCycle)
+        );
+    }
 
-            if (floor.getFloorRequest().Output != dutyCycle) {
-                floor.setFloorDutyCycle(dutyCycle);
-            } else {
-                floor.setFloorDutyCycle(0);
-            }
-        });
-    }   
+    public Command stopFloor() {
+        return this.runOnce(() ->
+            floor.setFloorDutyCycle(0)
+        );
+    }
+
+    // Combined
+    public Command intakeFuel(double floorDutyCycle, double rollerDutyCycle) {
+        return Commands.sequence(
+            Commands.run(() -> intake.setExtPos(IntakeConstants.extendedPos))
+                .until(() -> intake.isExtPosReached()),
+            Commands.runOnce(() -> floor.setFloorDutyCycle(-floorDutyCycle)),
+            Commands.runOnce(() -> intake.setRollerDutyCycle(rollerDutyCycle))
+        );
+    }
+
+    public Command endIntakeFuel() {
+        return Commands.sequence(
+            Commands.runOnce(() -> floor.setFloorDutyCycle(0)),
+            Commands.runOnce(() -> intake.setRollerDutyCycle(0))
+        );
+    }
+
+    public Command outtakeFuel(double floorDutyCycle, double rollerDutyCycle) {
+        return Commands.sequence(
+            Commands.run(() -> intake.setExtPos(IntakeConstants.extendedPos))
+                .until(() -> intake.isExtPosReached()),
+            Commands.runOnce(() -> floor.setFloorDutyCycle(floorDutyCycle)),
+            Commands.runOnce(() -> intake.setRollerDutyCycle(-rollerDutyCycle))
+        );
+    }
+
+    public Command endOuttakeFuel() {
+        return Commands.sequence(
+            Commands.runOnce(() -> floor.setFloorDutyCycle(0)),
+            Commands.runOnce(() -> intake.setRollerDutyCycle(0))
+        );
+    }
 }
