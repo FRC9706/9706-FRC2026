@@ -56,9 +56,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public boolean isExtPosReached() {
         if (
-            (getExtMotorsPos(0) - extRequest.Position) <= IntakeConstants.extPosTolerance
+            (Math.abs(getExtMotorsPos(0) - extRequest.Position)) <= IntakeConstants.extPosTolerance
             &&
-            (getExtMotorsPos(1) - extRequest.Position) <= IntakeConstants.extPosTolerance
+            (Math.abs(getExtMotorsPos(1) - extRequest.Position)) <= IntakeConstants.extPosTolerance
         ) {
             return true;
         } else {

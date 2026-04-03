@@ -19,7 +19,7 @@ public class IntakeConstants {
     public static int maxVoltage = 10;
 
     // Motor positions for extention motor
-    public static final double extPosTolerance = 0.2;
+    public static final double extPosTolerance = 0.5;
     public static final double retractedPos = 0;
     public static final double extendedPos = 4.1895947219511;
     public static final double[] wiggleRange = {3,2};
