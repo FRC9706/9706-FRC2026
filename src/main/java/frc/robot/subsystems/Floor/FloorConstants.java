@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class FloorConstants {
 
-    public static final int floorMotorID = 1;
+    public static final int floorMotorID = 19;
 
     public static final TalonFXConfiguration floorConfig = new TalonFXConfiguration()
         .withCurrentLimits(
