@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import lib.Networking.DynamicInputs;
 import lib.Networking.PortForwardUtils;
@@ -50,9 +49,9 @@ public class VisionSubsystem extends SubsystemBase {
    @Override
    public void periodic() {
         // Factor vision measurements
-        factorVisionMeasurements(
-            Timer.getTimestamp()
-        );
+        //factorVisionMeasurements(
+        //    Timer.getTimestamp()
+        //);
    }
 
     public void portFowardLL(String LL) {
