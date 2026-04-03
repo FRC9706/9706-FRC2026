@@ -19,8 +19,9 @@ public class IntakeConstants {
     public static int maxVoltage = 10;
 
     // Motor positions for extention motor
-    public static final double extPosTolerance = 0.5;
+    public static final double extPosTolerance = 1;
     public static final double retractedPos = 0;
+    public static final double clearTrenchPos = 2.634766;
     public static final double extendedPos = 4.1895947219511;
     public static final double[] wiggleRange = {3,2};
 
@@ -49,8 +50,8 @@ public class IntakeConstants {
             new CurrentLimitsConfigs()
                 .withSupplyCurrentLimit(25)
                 .withSupplyCurrentLimitEnable(true)
-                .withStatorCurrentLimit(25)
-                .withStatorCurrentLimitEnable(true)
+                .withStatorCurrentLimit(50)
+                .withStatorCurrentLimitEnable(false)
         )
         .withVoltage(
             new VoltageConfigs()
@@ -60,7 +61,7 @@ public class IntakeConstants {
         .withMotorOutput(
             new MotorOutputConfigs()
                 .withInverted(InvertedValue.Clockwise_Positive)
-                .withNeutralMode(NeutralModeValue.Coast)   
+                .withNeutralMode(NeutralModeValue.Brake)   
         )
         .withFeedback(
             new FeedbackConfigs().withSensorToMechanismRatio(1)
@@ -84,7 +85,7 @@ public class IntakeConstants {
         .withMotorOutput(
             new MotorOutputConfigs()
             .withInverted(InvertedValue.CounterClockwise_Positive)
-            .withNeutralMode(NeutralModeValue.Coast)
+            .withNeutralMode(NeutralModeValue.Brake)
         )
         .withSlot0(
             new Slot0Configs()
