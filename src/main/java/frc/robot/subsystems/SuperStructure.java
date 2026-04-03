@@ -69,7 +69,7 @@ public class SuperStructure extends SubsystemBase {
         return Commands.sequence(
             Commands.run(() -> intake.setExtPos(IntakeConstants.extendedPos))
                 .until(() -> intake.isExtPosReached()),
-            Commands.runOnce(() -> floor.setFloorDutyCycle(-floorDutyCycle)),
+            //Commands.runOnce(() -> floor.setFloorDutyCycle(-floorDutyCycle)),
             Commands.runOnce(() -> intake.setRollerDutyCycle(rollerDutyCycle))
         );
     }
@@ -85,7 +85,7 @@ public class SuperStructure extends SubsystemBase {
         return Commands.sequence(
             Commands.run(() -> intake.setExtPos(IntakeConstants.extendedPos))
                 .until(() -> intake.isExtPosReached()),
-            Commands.runOnce(() -> floor.setFloorDutyCycle(floorDutyCycle)),
+            //Commands.runOnce(() -> floor.setFloorDutyCycle(floorDutyCycle)),
             Commands.runOnce(() -> intake.setRollerDutyCycle(-rollerDutyCycle))
         );
     }
