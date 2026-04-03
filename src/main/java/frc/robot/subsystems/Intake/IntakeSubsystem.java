@@ -1,80 +1,99 @@
-package frc.robot.subsystems.Intake;
+// package frc.robot.subsystems.Intake;
 
-import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.hardware.TalonFX;
+// import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import lib.Networking.DynamicInputs;
-import lombok.Getter;
+// import com.ctre.phoenix6.controls.DutyCycleOut;
+// import com.ctre.phoenix6.controls.MotionMagicVoltage;
+// import com.ctre.phoenix6.hardware.TalonFX;
 
-public class IntakeSubsystem extends SubsystemBase {
+// import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import lib.Networking.DynamicInputs;
+// import lombok.Getter;
 
-    // init motor variables
-    @Getter private TalonFX rollerMotor;
-    @Getter private TalonFX[] extMotors;
+// public class IntakeSubsystem extends SubsystemBase {
 
-    @Getter private MotionMagicVoltage extRequest = new MotionMagicVoltage(0);
-    @Getter private DutyCycleOut rollerRequest = new DutyCycleOut(0);
+//     // init motor variables
+//     @Getter private TalonFX rollerMotor;
+//     @Getter private TalonFX[] extMotors;
 
-    public IntakeSubsystem() {
-        rollerMotor = new TalonFX(IntakeConstants.rollerMotorID);
-        rollerMotor.getConfigurator().apply(IntakeConstants.intakeConfig);
+//     @Getter private MotionMagicVoltage extRequest = new MotionMagicVoltage(0);
+//     @Getter private DutyCycleOut rollerRequest = new DutyCycleOut(0);
+
+//     public IntakeSubsystem() {
+//         rollerMotor = new TalonFX(IntakeConstants.rollerMotorID);
+//         rollerMotor.getConfigurator().apply(IntakeConstants.intakeConfig);
         
-        extMotors = new TalonFX[] {
-            new TalonFX(IntakeConstants.extMotorIDs[0]),
-            new TalonFX(IntakeConstants.extMotorIDs[1])
-        };
+//         extMotors = new TalonFX[] {
+//             new TalonFX(IntakeConstants.extMotorIDs[0]),
+//             new TalonFX(IntakeConstants.extMotorIDs[1])
+//         };
 
-        extMotors[0].getConfigurator().apply(IntakeConstants.extConfig);
-        extMotors[1].getConfigurator().apply(IntakeConstants.extConfig2);
+//         extMotors[0].getConfigurator().apply(IntakeConstants.extConfig);
+//         extMotors[1].getConfigurator().apply(IntakeConstants.extConfig2);
 
-        extMotors[0].setPosition(0);
-        extMotors[1].setPosition(0);
+//         extMotors[0].setPosition(0);
+//         extMotors[1].setPosition(0);
 
-        // auto dynamic pid tuning
-        DynamicInputs.autoTalonFXMotionMagicPID(
-            "Intake/Ext Motors[0]", 
-            IntakeConstants.extConfig, 
-            extMotors[0]
-        );
+//         // auto dynamic pid tuning
+//         DynamicInputs.autoTalonFXMotionMagicPID(
+//             "Intake/Ext Motors[0]", 
+//             IntakeConstants.extConfig, 
+//             extMotors[0]
+//         );
 
-        DynamicInputs.autoTalonFXMotionMagicPID(
-            "Intake/Ext Motors[1]", 
-            IntakeConstants.extConfig2, 
-            extMotors[1]
-        );
-    }
+//         DynamicInputs.autoTalonFXMotionMagicPID(
+//             "Intake/Ext Motors[1]", 
+//             IntakeConstants.extConfig2, 
+//             extMotors[1]
+//         );
 
-    public double getExtMotorsPos(int index) {
-        return extMotors[index].getPosition().getValueAsDouble();
-    }
 
-    public void setExtPos(double pos) {
-        extRequest = new MotionMagicVoltage(pos);
-    }
+//     }
 
-    public boolean isExtPosReached() {
-        if (
-            (Math.abs(getExtMotorsPos(0) - extRequest.Position)) <= IntakeConstants.extPosTolerance
-            &&
-            (Math.abs(getExtMotorsPos(1) - extRequest.Position)) <= IntakeConstants.extPosTolerance
-        ) {
-            return true;
-        } else {
-            return false;
-        }
-    }
+//     public double getExtMotorsPos(int index) {
+//         return extMotors[index].getPosition().getValueAsDouble();
+//     }
 
-    public void setRollerDutyCycle(double dutyCycle) {
-        rollerRequest = new DutyCycleOut(dutyCycle);
-    }
+//     public void setExtPos(double pos) {
+//         extRequest = new MotionMagicVoltage(pos);
+//     }
 
-    @Override
-    public void periodic() {
-        extMotors[0].setControl(extRequest);
-        extMotors[1].setControl(extRequest);
+//     public boolean isExtPosReached() {
+//         if (
+//             (Math.abs(getExtMotorsPos(0) - extRequest.Position)) <= IntakeConstants.extPosTolerance
+//             &&
+//             (Math.abs(getExtMotorsPos(1) - extRequest.Position)) <= IntakeConstants.extPosTolerance
+//         ) {
+//             return true;
+//         } else {
+//             return false;
+//         }
+//     }
 
-        rollerMotor.setControl(rollerRequest);
-    }
-}
+//     public void setRollerDutyCycle(double dutyCycle) {
+//         rollerRequest = new DutyCycleOut(dutyCycle);
+//     }
+
+//     @Override
+//     public void periodic() {
+//         extMotors[0].setControl(extRequest);
+//         extMotors[1].setControl(extRequest);
+
+//         rollerMotor.setControl(rollerRequest);
+
+//         Logger.recordOutput("Intake/Extendor/Ext Request", extRequest.Position);
+
+//         Logger.recordOutput("Intake/Extendor/Ext Positions", 
+//             new double[] {getExtMotorsPos(0), getExtMotorsPos(1)}
+//         );
+
+//         Logger.recordOutput("Intake/Extendor/Ext differences", 
+//             new double[] {
+//                 Math.abs(getExtMotorsPos(0) - extRequest.Position),
+//                 Math.abs(getExtMotorsPos(1) - extRequest.Position)
+//             }
+//         );
+
+//         Logger.recordOutput("Intake/Extendor/Is Ext Pos reached", isExtPosReached());
+//     }
+// }
