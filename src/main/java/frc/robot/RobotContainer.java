@@ -19,6 +19,7 @@ import lib.Networking.DynamicInputs;
 import lib.Networking.DynamicInputs.DynamicChoice;
 import lib.Swerve.SwerveConfigurator;
 import lombok.Getter;
+import frc.robot.subsystems.SuperStructure;
 import frc.robot.subsystems.Floor.FloorSubsystem;
 import frc.robot.subsystems.Intake.IntakeSubsystem;
 import frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -57,13 +58,16 @@ public class RobotContainer {
   //@Getter private final HoodSubsystem hood = new HoodSubsystem();
 
   // Init spindexer subsystem
-  // @Getter private final Spindexer spindexer = new Spindexer();
+  // @Getter private final SpindexerSubsystem spindexer = new SpindexerSubsystem();
 
   // Init floor subsystem
   @Getter private final FloorSubsystem floor = new FloorSubsystem();
 
   // Init hopper subsystem
   @Getter private final IntakeSubsystem intake = new IntakeSubsystem();
+
+  // Init superstructure
+  @Getter private final SuperStructure superStructure = new SuperStructure(intake, floor);
 
   // init doom and despair - boomBox subsystem
   @Getter private final boomBox boomBox = new boomBox(this);
