@@ -33,11 +33,15 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().x().onTrue(
-            container.getSuperStructure().toggleFloorOuttake()
+            container.getSuperStructure().setFloorOuttake(0.20)
+        ).onFalse(
+            container.getSuperStructure().stopFloor()
         );
 
         container.getMDriverController().b().onTrue(
-          Commands.runOnce(() -> container.getIntake().setRollerDutyCycle(0))
+          container.getSuperStructure().setRollers(0.20)
+        ).onFalse(
+            container.getSuperStructure().stopFloor()
         );
 
 
