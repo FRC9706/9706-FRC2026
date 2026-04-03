@@ -12,7 +12,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 public class FlywheelConstants {
 
     // Motor ID
-    public static final int[] motorIDs = {13,12};
+    public static final int[] motorIDs = {13,14};
     
     public static final TalonFXConfiguration config = new TalonFXConfiguration()
             .withMotorOutput(
