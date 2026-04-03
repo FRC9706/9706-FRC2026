@@ -12,8 +12,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class IntakeConstants {
     // Motor ID
-    public static int rollerMotorID = 14;
-    public static int[] extMotorIDs = {15, 16};
+    public static int rollerMotorID = 15;
+    public static int[] extMotorIDs = {16, 17};
 
     // Motor variables
     public static int maxVoltage = 10;

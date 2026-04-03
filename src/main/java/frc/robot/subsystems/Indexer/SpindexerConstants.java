@@ -9,7 +9,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 public class SpindexerConstants {
     // Motor IDs
-    public static int motorID = 13;
+    public static int motorID = 18;
 
     public static final TalonFXConfiguration config = new TalonFXConfiguration()
         .withCurrentLimits(
