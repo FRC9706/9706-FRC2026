@@ -33,7 +33,7 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().x().onTrue(
-            container.getFloor().toggleFloorOuttake()
+            container.getSuperStructure().toggleFloorOuttake()
         );
 
         container.getMDriverController().b().onTrue(
@@ -55,11 +55,11 @@ public class ControllerConfigurator {
         // );
 
         container.getMDriverController().rightBumper().onTrue(
-            container.getIntake().extend()
+            container.getSuperStructure().extendIntake()
         );
 
         container.getMDriverController().leftBumper().onTrue(
-            container.getIntake().retract()
+            container.getSuperStructure().retractIntake()
         );
    }
 
