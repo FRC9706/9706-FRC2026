@@ -46,8 +46,24 @@ public class IntakeSubsystem extends SubsystemBase {
         );
     }
 
+    public double getExtMotorsPos(int index) {
+        return extMotors[index].getPosition().getValueAsDouble();
+    }
+
     public void setExtPos(double pos) {
         extRequest = new MotionMagicVoltage(pos);
+    }
+
+    public boolean isExtPosReached() {
+        if (
+            (getExtMotorsPos(0) - extRequest.Position) <= IntakeConstants.extPosTolerance
+            &&
+            (getExtMotorsPos(1) - extRequest.Position) <= IntakeConstants.extPosTolerance
+        ) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public void setRollerDutyCycle(double dutyCycle) {
