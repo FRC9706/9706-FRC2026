@@ -41,7 +41,8 @@ public class TurretSubsystem extends SubsystemBase {
     }
 
     if (Math.abs(clampedInput - (Units.rotationsToDegrees(turretMotor.getPosition().getValueAsDouble()) - minAngle)) > 180) {
-      /*if the desired position is that far away from the current position, then we want to check if we can go the other way! */
+      /*if the desired position is that far away from the current position, 
+      then we want to check if we can go the other way! */
       if (clampedInput + 360 < maxAngle) {
         clampedInput += 360;
       }
