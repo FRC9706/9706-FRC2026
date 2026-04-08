@@ -1,9 +1,12 @@
 package frc.robot.subsystems.Vision;
+import java.util.Optional;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
@@ -27,18 +30,29 @@ public class VisionSubsystem extends SubsystemBase {
     Matrix<N3,N1> stdDevs = VecBuilder.fill(0.4,0.4, Units.degreesToRadians(30));
 
         for (String llName : VisionConstants.limelightNames) {
-            Pose2d llPoseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose;
+            /*
+            This weird logic is being done due to the fact that .getBotPoseEstimate 
+            is a weird function and it can return weird null values.
+
+            Therefore, I had to use an Optional<> variable, specifically .ofNullable since
+            it can return a null value. I want to clarify this is avoiding a massive failure
+            and java execption and not just being negligent.
+            */
+            Optional<Pose2d> llPoseEstimate = Optional.ofNullable(
+                LimelightHelpers.getBotPoseEstimate_wpiBlue(llName).pose
+            ).or(() -> Optional.of(new Pose2d(0, 0, new Rotation2d(0))));
+
             double tagCount = LimelightHelpers.getTargetCount(llName);
 
             // Add logging for the limelight's specific pose
             Logger.recordOutput(
                 "Vision/PoseEstimates/" + llName, 
-                llPoseEstimate
+                llPoseEstimate.get()
             );
 
             if ((llPoseEstimate != null) && (tagCount >= 1)) {
                 mSwerveDrive.addVisionMeasurement(
-                    llPoseEstimate, 
+                    llPoseEstimate.get(), 
                     timeStamp, 
                     stdDevs
                 );
@@ -48,7 +62,7 @@ public class VisionSubsystem extends SubsystemBase {
 
    @Override
    public void periodic() {
-        // Factor vision measurements
+        //Factor vision measurements
         //factorVisionMeasurements(
         //    Timer.getTimestamp()
         //);
