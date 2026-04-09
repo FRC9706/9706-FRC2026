@@ -30,6 +30,7 @@ public class boomBox {
         usa,
         jeopardy,
         rickroll,
+        happyBDay,
         test
     }
     private String[] trackNames;
